@@ -1,0 +1,61 @@
+keylang {
+    under = "_"
+    q = "\'"
+    qq = "\""
+
+    number  (a number)
+        = "-"? digit+ "." digit+ --float
+        | "-"? digit+ --int
+
+    string (a plain string with single or double quotes)
+      = q (~q any)*  q
+      | qq(~qq any)* qq
+
+    boolean = "true" | "false"
+
+    ListLiteral = "[" ListOf<Exp,","> "]"
+
+    Literal = ListLiteral | number | string | boolean
+
+    not = "not" ~ident
+    keyword = "fun" | "if" | "else" | "true" | "false" | "and" | "or" | not
+    ident = ~keyword valid_ident
+    valid_ident = letter (letter | digit | under)* dot_part?
+    dot_part = "." ident
+
+    comment = space* "//" toEOL
+    toEOL = (~"\n" any)* "\n"
+
+    binop = "+" | "-" | "*" | "/" | ">=" | "<=" | "<" | ">" | "==" | "and" | "or"
+    BinExp = Exp binop Exp
+    unop = "not"
+    UnExp  = unop Exp
+    ParenExp = "(" Exp ")"
+    Assignment = ident "=" Exp
+    VarDec
+        = "var" ident "=" Exp --assign
+        | "var" ident --dec
+
+    Deref = Exp "." ident
+    PositionalFunCall = Exp "(" ListOf<SoloExp,","> ")"
+    KeywordArg = ident ":" Exp
+    KeywordFunCall = Exp "(" ListOf<KeywordArg,","> ")"
+    FunctionCall = PositionalFunCall | KeywordFunCall
+    FunctionDef  = "fun" ident "(" ListOf<ident,","> ")" Block
+    CondExp
+        = "if" SoloExp SoloExp --slim
+        | "if" ParenExp Block ("else" Block)? --full
+
+    Lambda
+       =  "@" "(" ListOf<ident,","> ")" "=>" Block   --full
+       |  "@" ident "=>" SoloExp                     --slim
+       |  "@" SoloExp                                --superslim
+
+
+    SoloExp = FunctionCall | Return | Lambda | BinExp | ParenExp | UnExp | Deref | Literal | ident | comment
+    Return = "return" SoloExp
+    Directive = "@" ident "(" ListOf<Exp,","> ")"
+
+    Block = "{" Exp* "}"
+    Exp = Directive | FunctionDef | VarDec | CondExp | Assignment | SoloExp | Block
+}
