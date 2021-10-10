@@ -120,7 +120,7 @@ function button_click(ast, out) {
     out.comment("end while")
     out.outdent()
     out.end_fun_def()
-    out.after(`tm.register('${wrapper_name}',${wrapper_name},'event')`)
+    // out.after(`tm.register('${wrapper_name}',${wrapper_name},'event')`)
 }
 
 function setup_block(ast, out) {
@@ -134,7 +134,7 @@ function setup_block(ast, out) {
     out.line("# end user code")
     out.outdent()
     out.end_fun_def()
-    out.after(`tm.register('${name}',${name},'start')`)
+    // out.after(`tm.register('${name}',${name},'start')`)
 }
 
 function forever_loop(ast, out) {
@@ -159,7 +159,7 @@ function forever_loop(ast, out) {
     out.outdent()
     out.outdent()
     out.end_fun_def()
-    out.after(`tm.register('${wrapper_name}',${wrapper_name},'loop')`)
+    // out.after(`tm.register('${wrapper_name}',${wrapper_name},'loop')`)
 }
 
 export function ast_to_py(ast, out) {
@@ -232,9 +232,9 @@ export function ast_to_py(ast, out) {
     }
     if (ast.type === 'fundef') {
         let name = ast_to_py(ast.name, out)
-        if (name === 'my_button_clicked') return button_click(ast, out)
-        if (name === 'loop') return forever_loop(ast, out)
-        if (name === 'setup') return setup_block(ast, out)
+        // if (name === 'my_button_clicked') return button_click(ast, out)
+        // if (name === 'loop') return forever_loop(ast, out)
+        // if (name === 'setup') return setup_block(ast, out)
         let args = ast.args.map(a => ast_to_py(a), out).join(", ")
         out.start_fun_def(name, args)
         out.indent()
