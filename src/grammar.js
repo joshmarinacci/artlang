@@ -20,7 +20,7 @@ export const FUN_CALL_TYPES = {
 const readFile = fs.promises.readFile
 
 export async function make_grammar() {
-    let grammar_source = await readFile("./grammar.ohm")
+    let grammar_source = await readFile("./src/grammar.ohm")
     return ohm.grammar(grammar_source.toString())
 }
 export async function make_grammar_semantics() {

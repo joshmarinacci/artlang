@@ -1,6 +1,6 @@
 import child_process from 'child_process'
 import chalk from 'chalk'
-import util, {promisify} from './util'
+import util, {promisify} from 'util'
 import path from 'path'
 import fs from 'fs'
 import {mkdirs} from './util.js'

@@ -1,10 +1,10 @@
 import fs from 'fs'
 import path from 'path'
 import child_process from 'child_process'
+import {promisify} from 'util'
 import {ast_to_js, unreturn} from './generate_js.js'
 import {STD_SCOPE} from '../libs_js/common.js'
 import {make_grammar_semantics} from './grammar.js'
-import {promisify} from 'src/util.js'
 
 const exec = promisify(child_process.exec);
 

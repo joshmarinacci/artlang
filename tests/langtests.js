@@ -8,7 +8,7 @@ import {
     KRect, KVector,
     STD_SCOPE
 } from '../libs_js/common.js'
-import {checkEqual, file_to_string, force_delete, test_js} from '../src/util.js'
+import {checkEqual, file_to_string, test_js} from '../src/util.js'
 import path from 'path'
 import fs from 'fs'
 
