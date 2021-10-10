@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from 'path'
 import express from "express"
-import {copy_file, file_to_string, mkdirs, write_to_file} from './util.js'
+import {copy_file, file_exists, file_to_string, mkdirs, write_to_file} from './util.js'
 import {make_grammar_semantics} from './grammar.js'
 import {STD_SCOPE} from '../libs_js/common.js'
 import {ast_to_js} from './generate_js.js'
@@ -241,9 +241,15 @@ export async function compile_py(opts) {
     console.log(`writing ${outfile}`)
     await write_to_file(outfile, template)
 
+    const MPY_ENABLED = false
     console.log('doing libs for board',board.python.libs)
     for(let name of board.python.libs) {
-        await copy_file(`libs_py/${name}.py`,path.join(outdir,`${name}.py`))
+        let use_mpy = await file_exists(`libs_py/${name}.mpy`)
+        if(use_mpy && MPY_ENABLED) {
+            await copy_file(`libs_py/${name}.mpy`, path.join(outdir,`${name}.mpy`))
+        } else {
+            await copy_file(`libs_py/${name}.py`, path.join(outdir, `${name}.py`))
+        }
         console.log("doing library",name)
     }
 

@@ -21,6 +21,14 @@ export function log(...args) {
     console.info(...args)
 }
 
+export async function file_exists(src_file) {
+    try {
+        await fs.promises.stat(src_file)
+        return true
+    } catch(e) {
+        return false
+    }
+}
 export async function file_to_string(src_file) {
     // log("reading from", src_file)
     let raw = await fs.promises.readFile(src_file)
