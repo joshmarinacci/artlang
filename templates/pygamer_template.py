@@ -13,7 +13,7 @@ from common import System
 from common import WHITE, BLACK, RED, GREEN, BLUE
 
 print("py-gamer end everything")
-
+print("Pygammer fix")
 ${BOARD_IMPORTS}
 
 tm = TaskMaster()
