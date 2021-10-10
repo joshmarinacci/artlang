@@ -220,11 +220,23 @@ export async function compile_py(opts) {
                 after.push(`tm.register("${name}",${name},'loop') #compiler.js`)
             }
             if (dir.args[0].value === 'event') {
-                // console.log("got an event directive",dir)
+                console.log("got an event directive",dir)
                 let input = dir.args[1].name
                 let fun_name = dir.args[2].name
-                let wrapper_name = genid('wrapper_'+fun_name)
-                after.push(`
+                let wrapper_name = genid('wrapper_' + fun_name)
+                if(input === 'buttons') {
+                    console.log("need to generate buttons code")
+                    after.push(`
+def ${wrapper_name}():
+    while True:
+        event = buttons.event.get()
+        if event:
+            ${fun_name}()
+        yield 0.01
+    # end while
+                    `)
+                } else {
+                    after.push(`
 def ${wrapper_name}():
     while True:
         ${input}.update()
@@ -233,6 +245,7 @@ def ${wrapper_name}():
         yield 0.01
     # end while
 `)
+                }
                 after.push(`tm.register("${fun_name}",${wrapper_name},'event') #compiler.js`)
             }
         }
