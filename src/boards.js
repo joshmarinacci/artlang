@@ -85,6 +85,8 @@ from lists import List
         python: {
             libs:[
                 'common',
+                'pygamer',
+                'lists',
                 'tasks',
             ],
             imports:``,
