@@ -73,7 +73,9 @@ export class PyOutput {
         let last = this.children.pop()
         this.lines.push(`def ${last.name}(${last.args}):`)
         let refs_set = new Set(last.refs)
-        last.args.split(",").map(arg => arg.trim()).forEach(arg => {
+        let args = last.args
+        if(typeof args === 'string') args = args.split(",")
+        args.map(arg => arg.trim()).forEach(arg => {
             if(refs_set.has(arg)) refs_set.delete(arg)
         })
         let refs = [...refs_set]
@@ -137,7 +139,7 @@ function setup_block(ast, out) {
 }
 
 function forever_loop(ast, out) {
-    print('generating a forever loop')
+    // console.log('generating a forever loop')
     let name = ast_to_py(ast.name, out)
     let args = ast.args.map(a => ast_to_py(a), out).join(", ")
     out.start_fun_def(name, args)

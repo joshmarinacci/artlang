@@ -212,24 +212,24 @@ export async function compile_py(opts) {
             if (dir.args[0].value === 'start') {
                 // console.log("got a setup directive",dir)
                 let name = dir.args[1].name
-                after.push(`tm.register_start("${name}",${name})`)
+                // after.push(`tm.register_start("${name}",${name})`)
             }
             if (dir.args[0].value === 'loop') {
                 // console.log("got a loop directive")
                 let name = dir.args[1].name
-                after.push(`tm.register_loop("${name}",${name})`)
+                // after.push(`tm.register_loop("${name}",${name})`)
             }
             if (dir.args[0].value === 'event') {
                 // console.log("got an event directive",dir)
                 let name = dir.args[1].name
                 let fun = dir.args[2].name
-                after.push(`const event_wrapper = ()=> {
-                    if(${name}.wasClicked()) {
-                       ${fun}()
-                    }
-                    ${name}.clear()
-                }`)
-                after.push(`tm.register_event("${name}",event_wrapper)`)
+                // after.push(`const event_wrapper = ()=> {
+                //     if(${name}.wasClicked()) {
+                //        ${fun}()
+                //     }
+                //     ${name}.clear()
+                // }`)
+                // after.push(`tm.register_event("${name}",event_wrapper)`)
             }
         }
     })
