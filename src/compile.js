@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from 'path'
 import express from "express"
-import {copy_file, file_exists, file_to_string, mkdirs, write_to_file} from './util.js'
+import {copy_file, file_exists, file_to_string, genid, mkdirs, write_to_file} from './util.js'
 import {make_grammar_semantics} from './grammar.js'
 import {STD_SCOPE} from '../libs_js/common.js'
 import {ast_to_js} from './generate_js.js'
@@ -43,12 +43,12 @@ async function compile_js(src_file,out_dir) {
             if(dir.args[0].value === 'start') {
                 // console.log("got a setup directive",dir)
                 let name = dir.args[1].name
-                after.push(`tm.register_start("${name}",${name})`)
+                after.push(`tm.register("${name}",${name},'start')`)
             }
             if(dir.args[0].value === 'loop') {
                 // console.log("got a loop directive")
                 let name = dir.args[1].name
-                after.push(`tm.register_loop("${name}",${name})`)
+                after.push(`tm.register("${name}",${name},'loop')`)
             }
             if(dir.args[0].value === 'event') {
                 // console.log("got an event directive",dir)
@@ -60,7 +60,7 @@ async function compile_js(src_file,out_dir) {
                     }
                     ${name}.clear()
                 }`)
-                after.push(`tm.register_event("${name}",event_wrapper)`)
+                after.push(`tm.register("${name}",event_wrapper,'event')`)
             }
         }
     })
@@ -212,24 +212,28 @@ export async function compile_py(opts) {
             if (dir.args[0].value === 'start') {
                 // console.log("got a setup directive",dir)
                 let name = dir.args[1].name
-                // after.push(`tm.register_start("${name}",${name})`)
+                after.push(`tm.register("${name}",${name},'start') #compiler.js`)
             }
             if (dir.args[0].value === 'loop') {
                 // console.log("got a loop directive")
                 let name = dir.args[1].name
-                // after.push(`tm.register_loop("${name}",${name})`)
+                after.push(`tm.register("${name}",${name},'loop') #compiler.js`)
             }
             if (dir.args[0].value === 'event') {
                 // console.log("got an event directive",dir)
-                let name = dir.args[1].name
-                let fun = dir.args[2].name
-                // after.push(`const event_wrapper = ()=> {
-                //     if(${name}.wasClicked()) {
-                //        ${fun}()
-                //     }
-                //     ${name}.clear()
-                // }`)
-                // after.push(`tm.register_event("${name}",event_wrapper)`)
+                let input = dir.args[1].name
+                let fun_name = dir.args[2].name
+                let wrapper_name = genid('wrapper_'+fun_name)
+                after.push(`
+def ${wrapper_name}():
+    while True:
+        ${input}.update()
+        if ${input}.fell:
+            ${fun_name}()
+        yield 0.01
+    # end while
+`)
+                after.push(`tm.register("${fun_name}",${wrapper_name},'event') #compiler.js`)
             }
         }
     })
