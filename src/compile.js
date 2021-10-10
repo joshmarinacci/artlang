@@ -125,7 +125,7 @@ async function copy_js_libs(out_dir) {
     await copy_file("./libs_js/trellis.js",path.join(out_dir,'trellis.js'))
     await copy_file("./libs_js/thumby.js",path.join(out_dir,'thumby.js'))
     await copy_file("./libs_js/trinkey.js",path.join(out_dir,'trinkey.js'))
-    await copy_file("./reload.js",path.join(out_dir,'reload.js'))
+    await copy_file("./templates/reload.js",path.join(out_dir,'reload.js'))
 }
 
 async function start_webserver(src,outdir) {
