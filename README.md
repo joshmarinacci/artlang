@@ -153,4 +153,27 @@ screen.strokeRect(rect,BLACK)
 }
 
 ```
-* This code will make a canavas and make a streight line on it is just a example to build on.
+* This code will make a canavas and make a streight line on it is just a example to build on for javasrcipt.
+
+
+# Neo trelis curicut python
+# Led trelis fill
+
+```javascript
+@board("trellis")
+
+print("yo")
+//var rand = makeRandom()
+@type("start",setup)
+fun setup() {
+    print("in the setup")
+    //setup standard trellis canvas and button grid
+    //clear to black
+    canvas.fill(BLUE)
+    wait(1)
+    canvas.fill(RED)
+    wait(1)
+    canvas.fill(BLACK)
+}
+```
+This is some code for the neo trelis that will fill all the pixels on the neo trellis with diferent colors.
