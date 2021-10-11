@@ -13,6 +13,7 @@ import keypad
 from tasks import TaskMaster
 from common import System
 from common import WHITE, BLACK, RED, GREEN, BLUE
+from lists import equals
 from pygamer import Canvas
 
 

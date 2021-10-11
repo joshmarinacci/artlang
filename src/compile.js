@@ -229,9 +229,9 @@ export async function compile_py(opts) {
                     after.push(`
 def ${wrapper_name}():
     while True:
-        event = buttons.event.get()
+        event = buttons.events.get()
         if event:
-            ${fun_name}()
+            ${fun_name}(event)
         yield 0.01
     # end while
                     `)
