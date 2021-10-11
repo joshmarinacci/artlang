@@ -370,6 +370,14 @@ export class MDArray {
         })
         return MDArray_fromList(arr,this.shape)
     }
+    push_end(v) {
+        if(this.rank !== 1) throw new Error(`can't push into array of rank ${this.rank}`)
+        this.data.push(v)
+    }
+    pop_start() {
+        if(this.rank !== 1) throw new Error(`can't pop into array of rank ${this.rank}`)
+        return this.data.shift()
+    }
 }
 export function MDArray_fromList(data, shape) {
     let arr = new MDArray(shape)
@@ -562,6 +570,7 @@ export const greaterthanorequal = makeBinOp((a,b)=>a>=b)
 export const equal = makeBinOp((a,b)=>a===b)
 export const or    = makeBinOp((a,b)=>a||b)
 export const not   = (a) => !a
+export const mod   = makeBinOp((a,b) => a%b)
 
 
 function xmur3(str) {
@@ -729,6 +738,7 @@ export const STD_SCOPE = {
     equal,
     not,
     or,
+    mod,
     randi,
     randf,
     choose,
@@ -762,14 +772,8 @@ export class TaskManager {
     constructor() {
         this.tasks = []
     }
-    register_start(name,fun) {
-        this.register_task('start',name,fun)
-    }
-    register_loop(name,fun) {
-        this.register_task('loop',name,fun)
-    }
-    register_event(name,fun) {
-        this.register_task('event',name,fun)
+    register(name,fun,type) {
+        this.register_task(type,name,fun)
     }
 
     register_task(type, name, fun) {
