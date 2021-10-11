@@ -37,6 +37,9 @@ const BIN_OPS = {
     'or':{
         name: 'or'
     },
+    'and':{
+        name:'and',
+    },
     'mod':{
         name: 'mod'
     }
