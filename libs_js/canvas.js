@@ -1,4 +1,4 @@
-import {isBrowser, KRect} from './common.js'
+import {isBrowser, KRect, MDList} from './common.js'
 
 export class KCanvas extends KRect {
     constructor(x,y,w,h,scale) {
@@ -137,3 +137,27 @@ export class KCanvas extends KRect {
     }
 }
 
+
+export class DPadWrapper {
+    constructor() {
+        this.state = {
+            'ArrowDown':false,
+            'ArrowUp':false,
+            'ArrowRight':false,
+            'ArrowLeft':false,
+        }
+        this.keydown = (e) => this.state[e.code] = true
+        this.keyup = (e) => this.state[e.code] = false
+        document.addEventListener('keydown',this.keydown)
+        document.addEventListener('keyup', this.keyup)
+    }
+    current() {
+        let h = 0
+        if(this.state.ArrowLeft)  h = -1
+        if(this.state.ArrowRight) h = 1
+        let v = 0
+        if(this.state.ArrowUp)   v = -1
+        if(this.state.ArrowDown) v = 1
+        return MDList(h,v)
+    }
+}
