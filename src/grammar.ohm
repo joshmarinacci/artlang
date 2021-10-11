@@ -26,7 +26,7 @@ keylang {
     comment = space* "//" toEOL
     toEOL = (~"\n" any)* "\n"
 
-    binop = "+" | "-" | "*" | "/" | ">=" | "<=" | "<" | ">" | "==" | "and" | "or"
+    binop = "+" | "-" | "*" | "/" | ">=" | "<=" | "<" | ">" | "==" | "and" | "or" | "mod"
     BinExp = Exp binop Exp
     unop = "not"
     UnExp  = unop Exp

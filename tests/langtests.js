@@ -48,6 +48,7 @@ async function syntax_tests() {
     test_parse('4<5')
     test_parse('4<=5')
     test_parse('5>=4')
+    test_parse('5 mod 6')
 
     //function call with positional arguments
     test_parse('foo()')
@@ -139,6 +140,7 @@ async function unit_tests() {
     test_eval('','4.8',4.8)
     test_eval('',"'foo'","foo")
     test_eval('','4+5',9)
+    test_eval('','5 mod 4',1)
     test_eval('','true',true)
     test_eval('','false',false)
     test_eval('','true and true',true)

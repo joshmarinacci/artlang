@@ -188,9 +188,16 @@ class MDPropView {
         return v[this.propname]
     }
 }
+
+function is_mdarray(def) {
+    if(def && def.data) return true
+    return false
+}
+
 class MDView {
     constructor(array, def) {
-        // console.log("making a slice view",array,def)
+        if(is_mdarray(def)) def = def.data
+        console.log("making a slice view",array,def)
         this.array = array
         this.sliceshape=def
         this.shape = []
@@ -213,6 +220,20 @@ class MDView {
             let i = this.sliceshape[0]
             let j = n
             this.array.set2(i, j, v)
+        }
+    }
+    fill(v) {
+        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+            let i = this.sliceshape[0]
+            for(let j = 0; j<this.array.shape[1]; j++) {
+                this.array.set2(i, j, v)
+            }
+        }
+        if(this.sliceshape[0]== null && this.sliceshape[1] !== null) {
+            let j = this.sliceshape[1]
+            for(let i = 0; i<this.array.shape[0]; i++) {
+                this.array.set2(i,j, v)
+            }
         }
     }
 
@@ -369,6 +390,17 @@ export class MDArray {
             }
         })
         return MDArray_fromList(arr,this.shape)
+    }
+    push_end(v) {
+        if(this.rank !== 1) throw new Error(`can't push into array of rank ${this.rank}`)
+        this.data.push(v)
+        this.shape[0] += 1
+    }
+    pop_start() {
+        if(this.rank !== 1) throw new Error(`can't pop into array of rank ${this.rank}`)
+        let val = this.data.shift()
+        this.shape[0] -= 1
+        return val
     }
 }
 export function MDArray_fromList(data, shape) {
@@ -562,6 +594,7 @@ export const greaterthanorequal = makeBinOp((a,b)=>a>=b)
 export const equal = makeBinOp((a,b)=>a===b)
 export const or    = makeBinOp((a,b)=>a||b)
 export const not   = (a) => !a
+export const mod   = makeBinOp((a,b) => a%b)
 
 
 function xmur3(str) {
@@ -729,6 +762,7 @@ export const STD_SCOPE = {
     equal,
     not,
     or,
+    mod,
     randi,
     randf,
     choose,
@@ -762,14 +796,8 @@ export class TaskManager {
     constructor() {
         this.tasks = []
     }
-    register_start(name,fun) {
-        this.register_task('start',name,fun)
-    }
-    register_loop(name,fun) {
-        this.register_task('loop',name,fun)
-    }
-    register_event(name,fun) {
-        this.register_task('event',name,fun)
+    register(name,fun,type) {
+        this.register_task(type,name,fun)
     }
 
     register_task(type, name, fun) {

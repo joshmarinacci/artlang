@@ -292,6 +292,14 @@ async function mdarray_tests() {
         test(mat.toJSFlatArray(),[1,1,0,0,1,1])
     }
     {
+        //make 2d array of zeros
+        let arr = new MDArray([3,3])
+        arr.fill(0)
+        test(arr.toJSFlatArray(), [0,0,0, 0,0,0, 0,0,0])
+        arr.slice([0,null]).fill(1)
+        test(arr.toJSFlatArray(), [1,0,0, 1,0,0, 1,0,0])
+    }
+    {
         //add and assign to the y component of a list of points as a 2d array
         let data = [1,2,
                     3,4,

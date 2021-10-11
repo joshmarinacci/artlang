@@ -205,6 +205,7 @@ export function eval_ast(ast,scope) {
         if(ast.op === '+') return A+B
         if(ast.op === 'and') return A&&B
         if(ast.op === 'or') return A||B
+        if(ast.op === 'mod') return A%B
     }
     if(ast.type === 'unexp') {
         let A = eval_ast(ast.exp)
