@@ -188,9 +188,16 @@ class MDPropView {
         return v[this.propname]
     }
 }
+
+function is_mdarray(def) {
+    if(def && def.data) return true
+    return false
+}
+
 class MDView {
     constructor(array, def) {
-        // console.log("making a slice view",array,def)
+        if(is_mdarray(def)) def = def.data
+        console.log("making a slice view",array,def)
         this.array = array
         this.sliceshape=def
         this.shape = []
@@ -213,6 +220,20 @@ class MDView {
             let i = this.sliceshape[0]
             let j = n
             this.array.set2(i, j, v)
+        }
+    }
+    fill(v) {
+        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+            let i = this.sliceshape[0]
+            for(let j = 0; j<this.array.shape[1]; j++) {
+                this.array.set2(i, j, v)
+            }
+        }
+        if(this.sliceshape[0]== null && this.sliceshape[1] !== null) {
+            let j = this.sliceshape[1]
+            for(let i = 0; i<this.array.shape[0]; i++) {
+                this.array.set2(i,j, v)
+            }
         }
     }
 

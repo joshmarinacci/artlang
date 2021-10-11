@@ -74,14 +74,14 @@ async function compile_js(src_file,out_dir) {
 
     before.push(imports)
     before.push(`import {GREEN, RED, BLACK, WHITE, BLUE, GRAY, isHeadless, TaskManager, print, makeRandom} from './common.js'`)
-    if(board.before) before.push(board.before)
+    if(board.javascript.before) before.push(board.javascript.before)
     before.push("const tm = new TaskManager()")
     before.push(`let system = {
     startTime: new Date().getTime()/1000,
     currentTime:0
       }\n`)
 
-    if(board.standard_cycle===true) {
+    if(board.javascript.standard_cycle===true) {
         after.push(`
             tm.start()
             function do_cycle() {
@@ -108,7 +108,7 @@ async function prep(outdir) {
 async function web_template(src, out_dir, board) {
     console.log("doing html template for",board)
     let TEMPLATE_PATH = "templates/web_template.html"
-    if(board.template_path) TEMPLATE_PATH = board.template_path
+    if(board.javascript.template_path) TEMPLATE_PATH = board.javascript.template_path
     console.log("using template",TEMPLATE_PATH)
     let name = path.basename(src,'.key')
     let templ = await file_to_string(TEMPLATE_PATH)

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<head>
+  <style type="text/css">
+    .ledbutton {
+      width: 10em;
+      height: 10em;
+    }
+    canvas {
+      border: 1px solid black;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-crisp-edges;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .trellis-wrapper {
+      border: 4px solid red;
+      display: grid;
+      width: calc(40px * 8);
+      grid-template-columns: repeat(8, 40px);
+      grid-auto-rows: 40px;
+    }
+    .trellis-wrapper .button {
+      border: 1px solid #666;
+    }
+    .thumby-wrapper {
+      border: 5px solid red;
+    }
+  </style>
+</head>
+<body>
+
+<!--<canvas id="canvas" width="640" height="320"></canvas>-->
+<script src="${LIB_SRC}" type="module"></script>
+<script src="${APP_SRC}" type="module"></script>
+<script src="${RELOAD}" type="module"></script>
+
+</body>
+</html>
