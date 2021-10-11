@@ -373,10 +373,13 @@ export class MDArray {
     push_end(v) {
         if(this.rank !== 1) throw new Error(`can't push into array of rank ${this.rank}`)
         this.data.push(v)
+        this.shape[0] += 1
     }
     pop_start() {
         if(this.rank !== 1) throw new Error(`can't pop into array of rank ${this.rank}`)
-        return this.data.shift()
+        let val = this.data.shift()
+        this.shape[0] -= 1
+        return val
     }
 }
 export function MDArray_fromList(data, shape) {
