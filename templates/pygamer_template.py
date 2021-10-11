@@ -18,8 +18,12 @@ from pygamer import Canvas
 
 
 # pygamer already has variables for joystick_x, joystick_y, and buttons
+# pygamer already has a pixels variable
+
 joystick_x = analogio.AnalogIn(board.JOYSTICK_X)
 joystick_y = analogio.AnalogIn(board.JOYSTICK_Y)
+
+pixels = neopixel.NeoPixel(board.NEOPIXEL, 5, auto_write=False)
 
 buttons = keypad.ShiftRegisterKeys(
     clock = board.BUTTON_CLOCK,
