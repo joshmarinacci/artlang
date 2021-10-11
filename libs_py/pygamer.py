@@ -76,3 +76,17 @@ class Canvas(displayio.TileGrid):
 
 
 
+class DPadWrapper:
+    x = 0
+    y = 0
+    xv = 0
+    yv = 0
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+        self.xv = 0
+    def update(self)
+        xv = self.x.value * 3.3 / 65536
+        yv = self.y.value * 3.3 / 65536
+
+

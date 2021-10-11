@@ -14,7 +14,7 @@ from tasks import TaskMaster
 from common import System
 from common import WHITE, BLACK, RED, GREEN, BLUE
 from lists import equals
-from pygamer import Canvas
+from pygamer import Canvas, DPadWrapper
 
 
 # pygamer already has variables for joystick_x, joystick_y, and buttons
@@ -22,6 +22,8 @@ from pygamer import Canvas
 
 joystick_x = analogio.AnalogIn(board.JOYSTICK_X)
 joystick_y = analogio.AnalogIn(board.JOYSTICK_Y)
+
+dpad = DPadWrapper(joystick_x, joystick_y)
 
 pixels = neopixel.NeoPixel(board.NEOPIXEL, 5, auto_write=False)
 
@@ -64,6 +66,7 @@ board.DISPLAY.show(g)
 tm.start()
 while True:
     system.update()
+    dpad.update()
     board.DISPLAY.show(g)
     tm.cycle(0.01)
 
