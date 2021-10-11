@@ -85,8 +85,8 @@ class DPadWrapper:
         self.x = x
         self.y = y
         self.xv = 0
-    def update(self)
-        xv = self.x.value * 3.3 / 65536
-        yv = self.y.value * 3.3 / 65536
+    def update(self):
+        self.xv = round(((self.x.value * 10 / 65536) - 5)/5)
+        self.yv = round(((self.y.value * 10 / 65536) - 5)/5)
 
 
