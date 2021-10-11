@@ -116,7 +116,7 @@ doit()
     let pth = `temp/generated_${Math.floor(Math.random()*10000)}.js`
     await write_to_file(pth, res)
     try {
-        let mod = await import("./"+pth)
+        let mod = await import("../"+pth)
         let fres = mod.doit()
         console.log("comparing", fres, ans)
         if (!checkEqual(fres, ans)) throw new Error(`not equal in file ${pth}`)
