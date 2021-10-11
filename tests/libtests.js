@@ -1,7 +1,17 @@
 import {
     range,
     zip,
-    KRect, KObj, KPoint, KVector, STD_SCOPE, MDArray, rangeMD, MDArray_fromList, MDList, makeBinOp
+    KRect,
+    KObj,
+    KPoint,
+    KVector,
+    STD_SCOPE,
+    MDArray,
+    rangeMD,
+    MDArray_fromList,
+    MDList,
+    makeBinOp,
+    equal
 } from '../libs_js/common.js'
 import {checkEqual, copy_file, force_delete, log, test_js, test_raw_py} from '../src/util.js'
 
@@ -204,6 +214,10 @@ async function mdarray_tests() {
         MDArray_fromList([0, 1, 2],[3]),
         MDArray_fromList([5, 6, 7],[3])
     ).toJSFlatArray(),[0,1/6,2/7])
+    test(equal(
+        MDList(0, 1, 2),
+        MDList(0, 1, 2),
+    ),true)
 
     // test(zip(new KList(0,1,2), new KList(3,2,1)), new KList(new KList(0,3),new KList(1,2),new KList(2,1)))
     // test(zip(new KList(0,1,2), new KList(3,2,1)).map(l=>l.get(0)+l.get(1)), new KList(3,3,3))
