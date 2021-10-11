@@ -371,9 +371,9 @@ async function py_lib_tests() {
     await copy_file('libs_py/lists.py','temp/lists.py')
     await test_raw_py(`print(42)`, '42')
     await test_raw_py(`import lists\nprint(lists.List(1,2).toString())`, '1,2')
-    await test_raw_py(`import lists\nprint(lists.range(3).toString())`, '0,1,2')
-    await test_raw_py(`import lists\nprint(lists.range(2,5).toString())`, '2,3,4')
-    await test_raw_py(`import lists\nprint(lists.range(0,10,3).toString())`, '0,3,6,9')
+    await test_raw_py(`import lists\nprint(lists.listrange(3).toString())`, '0,1,2')
+    await test_raw_py(`import lists\nprint(lists.listrange(2,5).toString())`, '2,3,4')
+    await test_raw_py(`import lists\nprint(lists.listrange(0,10,3).toString())`, '0,3,6,9')
     await test_raw_py(`import lists\nprint(lists.wrap(-2,0,10))`,'8')
     await test_raw_py(`import lists\nprint(lists.wrap(12,0,10))`,'2')
 
@@ -443,8 +443,8 @@ Promise.all([
     // list_tests(),
     // math_tests(),
     mdarray_tests(),
-    // md_image_tests(),
-    // py_lib_tests()
+    md_image_tests(),
+    py_lib_tests()
 ])
     .then(()=>console.log("all tests pass"))
     .then(()=> {
