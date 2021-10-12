@@ -114,8 +114,16 @@ async function syntax_tests() {
     test_parse('foo[0,0] = 5')
     test_parse('foo[0,?]')
     test_parse('5 == foo[0,?]')
-    // test_parse('foo[0,?] == 5')
-    // test_parse('foo[0] == 5')
+    test_parse('foo[0,?] == 5')
+    test_parse('foo[0] == 5')
+    test_parse(`foo[bar]`)
+    test_parse(`foo[bar]=5`)
+    test_parse(`foo[bar]==5`)
+    test_parse(`foo[?]`)
+
+    // test_parse(`foo[0].bar()`)
+    // grid[0,?].fill(1)
+
 
     //lambda syntax
     test_parse('var foo = 42')
