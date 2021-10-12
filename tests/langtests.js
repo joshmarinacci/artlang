@@ -239,8 +239,21 @@ async function unit_tests() {
         // await test_js(scope, `{ var l = [4,2,42] l[0] = 88 return l }`,new MDList(88,2,42))
 
         await test_js(scope, `{var l2 = MDArray([3,3]) return l2}`,new MDArray([3,3]))
-        // await test_js(scope, `{var l2 = MDArray([3,3]) l2.fill(42) return l2}`,new MDArray([3,3]).fill(42))
-        // await test_js(scope, `{var l2 = MDArray([3,3]) l2.fill(42) l2[0,0]=88  return l2[0,0]}`,88)
+        await test_js(scope, `{var l2 = MDArray([3,3]) l2.fill(42) return l2}`,new MDArray([3,3]).fill(42))
+
+        //set array element in 2d array
+        await test_js(scope, `{
+        var l2 = MDArray([3,3]) 
+        l2.fill(42) 
+        l2[0,0]=88  
+        return l2[0,0]}`,88)
+        //set element of 1d array
+        await test_js(scope, `{
+        var l2 = MDArray([3]) 
+        l2.fill(42) 
+        l2[2]=88  
+        return l2[2]}`,88)
+
 
         // await test_js(scope, `{
         //     var l2 = MDArray([3,3])

@@ -4,13 +4,17 @@ import {MDList} from '../libs_js/common.js'
 
 export const AST_TYPES = {
     vardec:'vardec',
+    assignment:'assignment',
+    array_assignment:'array-assignment',
     unexp: "unexp",
     conditional: "condition",
     listliteral: 'listliteral',
     funcall: 'funcall',
     keywordarg: 'keywordarg',
     deref: 'deref',
-    binexp: 'binexp'
+    binexp: 'binexp',
+    array_access: 'arrayaccess',
+    array_set_access: 'array-set-access'
 }
 export const FUN_CALL_TYPES = {
     positional: 'positional',
@@ -41,9 +45,14 @@ export async function make_grammar_semantics() {
                 elements: elements.asIteration().children.map(arg => arg.ast())
             }
         },
-        Assignment: (name, e, exp) => ({
-            type: 'assignment',
+        Assignment_simple: (name, e, exp) => ({
+            type: AST_TYPES.assignment,
             name: name.ast(),
+            expression: exp.ast(),
+        }),
+        Assignment_array: (array, e, exp) => ({
+            type: AST_TYPES.array_assignment,
+            array: array.ast(),
             expression: exp.ast(),
         }),
         VarDec_dec:(_var, name) => ({
@@ -117,14 +126,21 @@ export async function make_grammar_semantics() {
         }),
         Deref:(before,dot,after) => {
             return {
-                type:'deref',
+                type:AST_TYPES.deref,
                 before:before.ast(),
                 after:after.ast()
             }
         },
         ArrayAccess:(name, b1, args, b2) => {
             return {
-                type:'arrayaccess',
+                type:AST_TYPES.array_access,
+                name:name.ast(),
+                args:args.asIteration().children.map(arg => arg.ast()),
+            }
+        },
+        ArraySetAccess:(name,b1,args,b2) => {
+            return {
+                type:AST_TYPES.array_set_access,
                 name:name.ast(),
                 args:args.asIteration().children.map(arg => arg.ast()),
             }

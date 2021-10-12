@@ -31,7 +31,6 @@ keylang {
     unop = "not"
     UnExp  = unop Exp
     ParenExp = "(" Exp ")"
-    Assignment = ident "=" Exp
     VarDec
         = "var" ident "=" Exp --assign
         | "var" ident --dec
@@ -53,7 +52,12 @@ keylang {
 
     ArrayIndex = "?" | SoloExp
     ArrayAccess = ident "[" ListOf<ArrayIndex,","> "]"
+    ArraySetAccess = ident "[" ListOf<ArrayIndex,","> "]"
     ArrayGetterExp = ArrayAccess
+    Assignment
+      = ident "=" Exp         --simple
+      | ArraySetAccess "=" Exp   --array
+
     SoloExp = ArrayGetterExp | FunctionCall | Return | Lambda | BinExp | ParenExp | UnExp | Deref | Literal | ident | comment
     Return = "return" SoloExp
     Directive = "@" ident "(" ListOf<Exp,","> ")"
