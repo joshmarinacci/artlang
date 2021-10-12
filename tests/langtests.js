@@ -247,6 +247,7 @@ async function unit_tests() {
         l2.fill(42) 
         l2[0,0]=88  
         return l2[0,0]}`,88)
+
         //set element of 1d array
         await test_js(scope, `{
         var l2 = MDArray([3]) 
