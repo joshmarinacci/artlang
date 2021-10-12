@@ -189,47 +189,46 @@ class MDPropView {
     }
 }
 
-function is_mdarray(def) {
-    if(def && def.data) return true
+export function is_mdarray(def) {
+    if(def && def.rank > 0) return true
     return false
 }
 
 class MDView {
     constructor(array, def) {
         if(is_mdarray(def)) def = def.data
-        console.log("making a slice view",array,def)
         this.array = array
         this.sliceshape=def
         this.shape = []
         def.forEach((d,i) => {
-            if(d !== null) {
+            if(d !== WILDCARD) {
                 this.shape.push(this.array.shape[i])
             }
         })
-        this.rank = def.filter( t => t !== null).length
+        this.rank = def.filter( t => t !== WILDCARD).length
     }
     get1(n) {
-        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+        if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
             let i = this.sliceshape[0]
             return this.array.get2(i,n)
         }
     }
 
     set1(n,v) {
-        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+        if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
             let i = this.sliceshape[0]
             let j = n
             this.array.set2(i, j, v)
         }
     }
     fill(v) {
-        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+        if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
             let i = this.sliceshape[0]
             for(let j = 0; j<this.array.shape[1]; j++) {
                 this.array.set2(i, j, v)
             }
         }
-        if(this.sliceshape[0]== null && this.sliceshape[1] !== null) {
+        if(this.sliceshape[0]== WILDCARD && this.sliceshape[1] !== WILDCARD) {
             let j = this.sliceshape[1]
             for(let i = 0; i<this.array.shape[0]; i++) {
                 this.array.set2(i,j, v)
@@ -240,13 +239,13 @@ class MDView {
     toJSFlatArray() {
         // console.log("shape is",this.shape)
         let out = []
-        if(this.sliceshape[0]===null && this.sliceshape[1] !== null){
+        if(this.sliceshape[0]===WILDCARD && this.sliceshape[1] !== WILDCARD){
             let i = this.sliceshape[1]
             for(let j=0; j<this.array.shape[0]; j++) {
                 out.push(this.array.get2(i,j))
             }
         }
-        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+        if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
             let i = this.sliceshape[0]
             for(let j=0; j<this.array.shape[1]; j++) {
                 out.push(this.array.get2(i,j))
@@ -350,6 +349,7 @@ export class MDArray {
         return this.data[i]
     }
     get2(i,j) {
+        if(i === WILDCARD || j === WILDCARD) return this.slice([i,j])
         let n = i + j*this.shape[0]
         if(n > this.data.length) throw new Error(`index out of range get2(${i},${j}) in shape ${this.shape}`)
         return this.data[n]
@@ -466,6 +466,7 @@ export class KeyColor {
     }
 }
 
+export const WILDCARD = "WILDCARD"
 export const BLACK = new KeyColor({})
 export const BLUE  = new KeyColor({b:1})
 export const RED   = new KeyColor({r:1})
@@ -772,6 +773,7 @@ export const STD_SCOPE = {
     wrap,
     lerp,
     remap,
+    WILDCARD:WILDCARD,
     floor:Math.floor,
     sleep,
     sine1: (v) => remap(Math.sin(v), -1, 1, 0,1),

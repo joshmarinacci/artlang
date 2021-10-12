@@ -39,7 +39,7 @@ async function syntax_tests() {
     test_parse('true')
     test_parse('false')
 
-    // assignment
+    // simple assignment
     test_parse('dot = 5')
     test_parse('dot = true')
     test_parse('dot = tod')
@@ -107,6 +107,15 @@ async function syntax_tests() {
     test_parse('[a,b,c]')
     test_parse('[4+5,5,"foo"]')
 
+    // list / array syntax
+    test_parse('foo[0]')
+    test_parse('foo[0,0]')
+    test_parse('foo[0] = 5')
+    test_parse('foo[0,0] = 5')
+    test_parse('foo[0,?]')
+    test_parse('5 == foo[0,?]')
+    // test_parse('foo[0,?] == 5')
+    // test_parse('foo[0] == 5')
 
     //lambda syntax
     test_parse('var foo = 42')
@@ -256,17 +265,17 @@ async function unit_tests() {
         return l2[2]}`,88)
 
 
-        // await test_js(scope, `{
-        //     var l2 = MDArray([3,3])
-        //     l2[0,0] = 88
-        //     return l2[?,0]
-        // }`, MDList(88,0,0))
+        await test_js(scope, `{
+            var l2 = MDArray([3,3])
+            l2[0,0] = 88
+            return l2[?,0]
+        }`, MDList(88,0,0))
 
-        // await test_js(scope, `{
-        //     var l2 = MDArray([3,3])
-        //     l2[2,2] = 88
-        //     return l2[2,?]
-        // }`, MDList(0,0,88))
+        await test_js(scope, `{
+            var l2 = MDArray([3,3])
+            l2[2,2] = 88
+            return l2[2,?]
+        }`, MDList(0,0,88))
 
         // await test_js(scope,`{
         //     var l2 = MDArray([3,3])

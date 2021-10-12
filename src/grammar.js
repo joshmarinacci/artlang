@@ -14,7 +14,8 @@ export const AST_TYPES = {
     deref: 'deref',
     binexp: 'binexp',
     array_access: 'arrayaccess',
-    array_set_access: 'array-set-access'
+    array_set_access: 'array-set-access',
+    array_wildcard: 'array-wildcard'
 }
 export const FUN_CALL_TYPES = {
     positional: 'positional',
@@ -45,6 +46,9 @@ export async function make_grammar_semantics() {
                 elements: elements.asIteration().children.map(arg => arg.ast())
             }
         },
+        ArraySliceWildcard: (str) => ({
+            type: AST_TYPES.array_wildcard,
+        }),
         Assignment_simple: (name, e, exp) => ({
             type: AST_TYPES.assignment,
             name: name.ast(),

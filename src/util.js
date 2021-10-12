@@ -3,7 +3,7 @@ import path from 'path'
 import child_process from 'child_process'
 import {promisify} from 'util'
 import {ast_to_js, unreturn} from './generate_js.js'
-import {STD_SCOPE} from '../libs_js/common.js'
+import {is_mdarray, STD_SCOPE} from '../libs_js/common.js'
 import {make_grammar_semantics} from './grammar.js'
 
 const exec = promisify(child_process.exec);
@@ -50,6 +50,20 @@ export async function mkdirs(dir) {
     await fs.promises.mkdir(dir, {recursive: true})
 }
 
+function mdarray_compare(A, B) {
+    // console.log("comparing mdarrays",A,B)
+    if(A.rank !== B.rank) return false
+    let a = A.toJSFlatArray()
+    let b = B.toJSFlatArray()
+    // console.log('data',a,b)
+    if(a.length !== b.length) return false
+    for(let i=0; i<a.length; i++) {
+        // console.log("vals",a[i],b[i])
+        if(!checkEqual(a[i],b[i])) return false
+    }
+    return true
+}
+
 export function checkEqual(A, B) {
     if (typeof A !== typeof B) throw new Error("different types", typeof A, "not equal", typeof B)
     // don't compare functions if they already have the same name
@@ -58,6 +72,7 @@ export function checkEqual(A, B) {
     if (A === B) return true
     if (typeof A === 'object') {
         // console.log("checking", A, B)
+        if(is_mdarray(A) && is_mdarray(B))  return mdarray_compare(A,B)
         let a_keys = Object.getOwnPropertyNames(A)
         let b_keys = Object.getOwnPropertyNames(B)
         if (a_keys.length !== b_keys.length) throw new Error("different number of keys")
@@ -85,7 +100,7 @@ export async function force_delete(tempOutDir) {
 
 export async function test_js(scope, code, ans) {
     const [grammar, semantics] = await make_grammar_semantics()
-    // console.log(`parsing: "${code}"`)
+    console.log(`parsing: "${code}"`)
     let result = grammar.match(code, 'Exp')
     if (!result.succeeded()) throw new Error(`failed parsing: ${code}`)
     await mkdirs("temp")
@@ -118,7 +133,7 @@ doit()
     try {
         let mod = await import("../"+pth)
         let fres = mod.doit()
-        console.log("comparing", fres, ans)
+        // console.log("comparing", fres, ans)
         if (!checkEqual(fres, ans)) throw new Error(`not equal in file ${pth}`)
     } catch (e) {
         console.log("error happened",e)

@@ -50,7 +50,8 @@ keylang {
        |  "@" ident "=>" SoloExp                     --slim
        |  "@" SoloExp                                --superslim
 
-    ArrayIndex = "?" | SoloExp
+    ArraySliceWildcard = "?"
+    ArrayIndex = ArraySliceWildcard | SoloExp
     ArrayAccess = ident "[" ListOf<ArrayIndex,","> "]"
     ArraySetAccess = ident "[" ListOf<ArrayIndex,","> "]"
     ArrayGetterExp = ArrayAccess

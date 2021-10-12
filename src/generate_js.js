@@ -64,6 +64,7 @@ export function ast_to_js(ast) {
     if (ast.type === 'comment') {
         return ""
     }
+    if (ast.type === AST_TYPES.array_wildcard) return "WILDCARD"
     if (ast.type === 'literal') {
         if (ast.kind === 'integer') return "" + ast.value
         if (ast.kind === 'boolean') return "" + ast.value
@@ -145,7 +146,11 @@ export function ast_to_js(ast) {
         // console.log("doing array access",ast)
         let args = ast.args.map(a => ast_to_js(a)).flat()
         // console.log("args len",args, args.length)
-        let str = `${ast_to_js(ast.name)}.get1(${args})`
+        let n = args.length
+        if(n === 3) return `${ast_to_js(ast.name)}.get3(${args})`
+        if(n === 2) return `${ast_to_js(ast.name)}.get2(${args})`
+        if(n === 1) return `${ast_to_js(ast.name)}.get1(${args})`
+        let str = `${ast_to_js(ast.name)}.get_invalid(${args})`
         // console.log("generated",str)
         return str
     }
