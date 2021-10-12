@@ -346,6 +346,11 @@ export class MDArray {
     }
     get(i) { return this.get1(i)}
     get1(i) {
+        if(is_mdarray(i)) {
+            if(i.rank === 1) {
+                return this.get2(... i.data)
+            }
+        }
         return this.data[i]
     }
     get2(i,j) {

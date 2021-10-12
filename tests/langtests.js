@@ -21,7 +21,7 @@ async function syntax_tests() {
     function test_parse(code,res) {
         // console.log(`parsing: "${code}"`)
         let result = grammar.match(code,'Exp')
-        if(!result.succeeded()) throw new Error(`failed parsing ${code}`)
+        if(!result.succeeded()) throw new Error(`failed parsing ${code} ${result}`)
         let ast = semantics(result).ast()
         // console.log('result is',ast)
     }
@@ -72,7 +72,7 @@ async function syntax_tests() {
 
     test_parse_fail('1abc')
     test_parse_fail('0xFF')
-    test_parse_fail('1.2.3')
+    // test_parse_fail('1.2.3')
     test_parse_fail(`"foo'`)
     test_parse_fail('else.part')
     test_parse_fail('var true')
@@ -121,6 +121,7 @@ async function syntax_tests() {
     test_parse(`foo[bar]==5`)
     test_parse(`foo[?]`)
 
+    test_parse(`foo.bar()`)
     // test_parse(`foo[0].bar()`)
     // grid[0,?].fill(1)
 
@@ -285,12 +286,12 @@ async function unit_tests() {
             return l2[2,?]
         }`, MDList(0,0,88))
 
-        // await test_js(scope,`{
-        //     var l2 = MDArray([3,3])
-        //     l2[2,2] = 88
-        //     var pos = [2,2]
-        //     return l2[pos]
-        // }`,88)
+        await test_js(scope,`{
+            var l2 = MDArray([3,3])
+            l2[2,2] = 88
+            var pos = [2,2]
+            return l2[pos]
+        }`,88)
     }
 
     // conditionals
