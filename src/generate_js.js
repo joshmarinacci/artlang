@@ -135,6 +135,14 @@ export function ast_to_js(ast) {
         let after = ast_to_js(ast.after)
         return `${before}.${after}`
     }
+    if (ast.type === 'arrayaccess') {
+        // console.log("doing array access",ast)
+        let args = ast.args.map(a => ast_to_js(a)).flat()
+        // console.log("args len",args, args.length)
+        let str = `${ast_to_js(ast.name)}.get1(${args})`
+        // console.log("generated",str)
+        return str
+    }
     if (ast.type === AST_TYPES.binexp) {
         let op = BIN_OPS[ast.op]
         if (op) return `${op.name}(${ast_to_js(ast.exp1)},${ast_to_js(ast.exp2)})`

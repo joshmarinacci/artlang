@@ -122,6 +122,13 @@ export async function make_grammar_semantics() {
                 after:after.ast()
             }
         },
+        ArrayAccess:(name, b1, args, b2) => {
+            return {
+                type:'arrayaccess',
+                name:name.ast(),
+                args:args.asIteration().children.map(arg => arg.ast()),
+            }
+        },
         Lambda_full:(at,p1, args, p2, arrow, body) => {
             return {
                 type:'lambda',

@@ -343,6 +343,7 @@ export class MDArray {
 
     fill(val) {
         this.data.fill(val)
+        return this
     }
     get(i) { return this.get1(i)}
     get1(i) {

@@ -217,7 +217,7 @@ async function mdarray_tests() {
     test(equal(
         MDList(0, 1, 2),
         MDList(0, 1, 2),
-    ),true)
+    ),MDList(true,true,true))
 
     // test(zip(new KList(0,1,2), new KList(3,2,1)), new KList(new KList(0,3),new KList(1,2),new KList(2,1)))
     // test(zip(new KList(0,1,2), new KList(3,2,1)).map(l=>l.get(0)+l.get(1)), new KList(3,3,3))

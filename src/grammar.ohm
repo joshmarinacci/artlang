@@ -51,8 +51,10 @@ keylang {
        |  "@" ident "=>" SoloExp                     --slim
        |  "@" SoloExp                                --superslim
 
-
-    SoloExp = FunctionCall | Return | Lambda | BinExp | ParenExp | UnExp | Deref | Literal | ident | comment
+    ArrayIndex = "?" | SoloExp
+    ArrayAccess = ident "[" ListOf<ArrayIndex,","> "]"
+    ArrayGetterExp = ArrayAccess
+    SoloExp = ArrayGetterExp | FunctionCall | Return | Lambda | BinExp | ParenExp | UnExp | Deref | Literal | ident | comment
     Return = "return" SoloExp
     Directive = "@" ident "(" ListOf<Exp,","> ")"
 

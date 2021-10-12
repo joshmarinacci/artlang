@@ -6,7 +6,7 @@ import {
     KObj,
     KPoint,
     KRect, KVector,
-    STD_SCOPE
+    STD_SCOPE, MDArray
 } from '../libs_js/common.js'
 import {checkEqual, file_to_string, test_js} from '../src/util.js'
 import path from 'path'
@@ -227,6 +227,39 @@ async function unit_tests() {
         await test_js(scope, `4-2`,2)
         await test_js(scope, `4/2`,2)
         await test_js(scope, `4*2`,8)
+    }
+
+    //array syntax
+    {
+        //get and set 1d array
+        await test_js(scope, '[4,2,42]',new MDList(4,2,42))
+        await test_js(scope, `{ var l = [4,2,42] return l[0] }`,4)
+        await test_js(scope, `{ var l = [4,2,42] return l[2] }`,42)
+        // await test_js(scope, `{ var l = [4,2,42] l[0] = 88 return l[0] }`,88)
+        // await test_js(scope, `{ var l = [4,2,42] l[0] = 88 return l }`,new MDList(88,2,42))
+
+        await test_js(scope, `{var l2 = MDArray([3,3]) return l2}`,new MDArray([3,3]))
+        // await test_js(scope, `{var l2 = MDArray([3,3]) l2.fill(42) return l2}`,new MDArray([3,3]).fill(42))
+        // await test_js(scope, `{var l2 = MDArray([3,3]) l2.fill(42) l2[0,0]=88  return l2[0,0]}`,88)
+
+        // await test_js(scope, `{
+        //     var l2 = MDArray([3,3])
+        //     l2[0,0] = 88
+        //     return l2[?,0]
+        // }`, MDList(88,0,0))
+
+        // await test_js(scope, `{
+        //     var l2 = MDArray([3,3])
+        //     l2[2,2] = 88
+        //     return l2[2,?]
+        // }`, MDList(0,0,88))
+
+        // await test_js(scope,`{
+        //     var l2 = MDArray([3,3])
+        //     l2[2,2] = 88
+        //     var pos = [2,2]
+        //     return l2[pos]
+        // }`,88)
     }
 
     // conditionals
