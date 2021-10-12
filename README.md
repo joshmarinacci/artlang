@@ -154,3 +154,41 @@ screen.strokeRect(rect,BLACK)
 
 ```
 * This code will make a canavas and make a streight line on it is just a example to build on.
+
+# Pygammer
+* There are some build in functions like that the buttons,dpad, neo pixels and screen are allredy set up so you dont have yo do much setup.
+* This is simple code for the pygammer that will let you use the buttons on the device.
+* It makes it so when you click the 0 button on the pygammer it will turn blue and the neopixels will got with it.
+* Sence there are 4 buttons you can just do simple code like this
+# EX
+```javascript
+@type("event",buttons,check)
+fun check(event) {
+    if (event.key_number == 0) {
+        screen.fill(BLUE)
+        pixels.fill(BLUE)
+        pixels.show()
+    }
+```
+* It is nice because you dont have to do much to just do something simple
+
+
+
+```javascript
+@boar('pygamer')
+@type("start",setup)
+fun setup() {
+    print("Seting up")
+}
+@type("event",buttons,check)
+fun check(event) {
+    if (event.key_number == 0) {
+        screen.fill(BLUE)
+        pixels.fill(BLUE)
+        pixels.show()
+    }
+    if (event.key_number == 1) {
+        screen.fill(GREEN)
+        pixels.fill(GREEN)
+        pixels.show()
+    }
