@@ -235,8 +235,8 @@ async function unit_tests() {
         await test_js(scope, '[4,2,42]',new MDList(4,2,42))
         await test_js(scope, `{ var l = [4,2,42] return l[0] }`,4)
         await test_js(scope, `{ var l = [4,2,42] return l[2] }`,42)
-        // await test_js(scope, `{ var l = [4,2,42] l[0] = 88 return l[0] }`,88)
-        // await test_js(scope, `{ var l = [4,2,42] l[0] = 88 return l }`,new MDList(88,2,42))
+        await test_js(scope, `{ var l = [4,2,42] l[0] = 88 return l[0] }`,88)
+        await test_js(scope, `{ var l = [4,2,42] l[0] = 88 return l }`,new MDList(88,2,42))
 
         await test_js(scope, `{var l2 = MDArray([3,3]) return l2}`,new MDArray([3,3]))
         await test_js(scope, `{var l2 = MDArray([3,3]) l2.fill(42) return l2}`,new MDArray([3,3]).fill(42))
