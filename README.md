@@ -1,7 +1,7 @@
 # ART lang docs
 So this is a language made for making art.
 It will compile the art lang into javscript then run it in the browser.
-It can also compile it to curcuit puthon for a nwo trelis or a rgb matricks.
+It can also compile it to curcuit puthon for a nwo trelis rgb matrics trinkey or even a pygamer
 It's still in the works it is just basics right now but it is compleatly open source so you can dablle in what ever you want.
 # AutoKey language features
 
@@ -155,10 +155,10 @@ screen.strokeRect(rect,BLACK)
 ```
 * This code will make a canavas and make a streight line on it is just a example to build on.
 
-# Pygammer
+# Pygammer Basics
+# Pygammer buttons
 * There are some build in functions like that the buttons,dpad, neo pixels and screen are allredy set up so you dont have yo do much setup.
 * This is simple code for the pygammer that will let you use the buttons on the device.
-* It makes it so when you click the 0 button on the pygammer it will turn blue and the neopixels will got with it.
 * Sence there are 4 buttons you can just do simple code like this
 # EX
 ```javascript
@@ -170,12 +170,10 @@ fun check(event) {
         pixels.show()
     }
 ```
-* It is nice because you dont have to do much to just do something simple
-
-
-
+It is nice because you dont have to do much to just do something simple.
+* It makes it so when you click the 0 button on the pygammer it will turn blue and the neopixels will got with it.
 ```javascript
-@boar('pygamer')
+@board('pygamer')
 @type("start",setup)
 fun setup() {
     print("Seting up")
@@ -192,3 +190,15 @@ fun check(event) {
         pixels.fill(GREEN)
         pixels.show()
     }
+```
+
+
+# Pygamer neo pixels
+
+The packages for the neo pixels are all alredy install you just have to use them here is some simple code that will turn on the neo pixels it is just simple but you can get a lot more compliated if you want to.
+
+```javascript
+@board('pygammer')
+pixels.fill(RED)
+pixels.show
+```
