@@ -222,3 +222,12 @@ The packages for the neo pixels are all alredy install you just have to use them
 pixels.fill(RED)
 pixels.show
 ```
+
+
+# Neo trelis 
+For the neo trelis you can use the buttons and the neo pixels. 
+The packages for the neo pixels are alredy installed for you so you dont have to import anything.
+For the Neo pixels you can just use very simple code like this.
+
+# Neo trelis Pixel code
+This is some example code for the neo trelis buttons.
