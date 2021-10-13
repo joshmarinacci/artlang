@@ -16,7 +16,8 @@ export const AST_TYPES = {
     array_access: 'arrayaccess',
     array_set_access: 'array-set-access',
     array_wildcard: 'array-wildcard',
-    body: 'body'
+    body: 'body',
+    fundef: 'fundef'
 }
 export const FUN_CALL_TYPES = {
     positional: 'positional',

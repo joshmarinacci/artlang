@@ -68,11 +68,16 @@ export function unreturn(str) {
 }
 
 export function ast_preprocess(ast) {
+    // console.log("checking", ast)
+    if(ast.type === AST_TYPES.fundef) {
+        ast.block = ast_preprocess(ast.block)
+    }
     if(ast.type === AST_TYPES.body) {
         ast.body = ast.body.map(a => ast_preprocess(a))
     }
     if(ast.type === AST_TYPES.binexp) {
         if(ASSIGN_OPS[ast.op]) {
+            // console.log("rewriting assignments")
             ast = {
                 type:'assignment',
                 name: ast.exp1,
