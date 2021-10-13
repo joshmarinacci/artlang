@@ -11,7 +11,7 @@ import {
     MDArray_fromList,
     MDList,
     makeBinOp,
-    equal
+    equal, WILDCARD
 } from '../libs_js/common.js'
 import {checkEqual, copy_file, force_delete, log, test_js, test_raw_py} from '../src/util.js'
 
@@ -263,15 +263,15 @@ async function mdarray_tests() {
         let arr1 = new MDArray([4,4])
         arr1.fillWith((i,j)=>i*j)
         //look at the first row
-        test(arr1.slice([null,0]).toJSFlatArray(), [0,0,0,0])
+        test(arr1.slice([WILDCARD,0]).toJSFlatArray(), [0,0,0,0])
         //first column
-        test(arr1.slice([0,null]).toJSFlatArray(), [0,0,0,0])
+        test(arr1.slice([0,WILDCARD]).toJSFlatArray(), [0,0,0,0])
         //look at the second row
-        test(arr1.slice([null,1]).toJSFlatArray(), [0,1,2,3])
+        test(arr1.slice([WILDCARD,1]).toJSFlatArray(), [0,1,2,3])
         //third row
-        test(arr1.slice([null,2]).toJSFlatArray(), [0,2,4,6])
+        test(arr1.slice([WILDCARD,2]).toJSFlatArray(), [0,2,4,6])
         //fourth row
-        test(arr1.slice([null,3]).toJSFlatArray(), [0,3,6,9])
+        test(arr1.slice([WILDCARD,3]).toJSFlatArray(), [0,3,6,9])
     }
     {
         //scalar times 2d
@@ -285,7 +285,7 @@ async function mdarray_tests() {
         let mat = new MDArray([3,3])
         mat.fillWith((x,y) => x*y)
         // console.log('mat is',mat, mat.toJSFlatArray())
-        let slice = mat.slice([1,null])
+        let slice = mat.slice([1,WILDCARD])
         // console.log("slice is",slice, slice.toJSFlatArray())
         let vec = new MDArray([3])
         vec.fill(3)
@@ -310,7 +310,7 @@ async function mdarray_tests() {
         let arr = new MDArray([3,3])
         arr.fill(0)
         test(arr.toJSFlatArray(), [0,0,0, 0,0,0, 0,0,0])
-        arr.slice([0,null]).fill(1)
+        arr.slice([0,WILDCARD]).fill(1)
         test(arr.toJSFlatArray(), [1,0,0, 1,0,0, 1,0,0])
     }
     {
@@ -321,7 +321,7 @@ async function mdarray_tests() {
         let arr = MDArray_fromList(data,[2,3])
         // console.log('arr is',arr.toJSFlatArray())
         //move down by four pixels
-        let slice = arr.slice([1,null])
+        let slice = arr.slice([1,WILDCARD])
         // console.log("sliceo is",slice,slice.toJSFlatArray())
         // console.log('element 0 of slice is',slice.get1(0))
         incrementMD(slice,4)

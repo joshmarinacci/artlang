@@ -49,6 +49,9 @@ async function syntax_tests() {
     test_parse('4<=5')
     test_parse('5>=4')
     test_parse('5 mod 6')
+    test_parse('not true')
+    test_parse('a + b')
+    test_parse('a += b ')
 
     //function call with positional arguments
     test_parse('foo()')
@@ -192,6 +195,13 @@ async function unit_tests() {
     await test_js(scope,'4<5',true)
     await test_js(scope,'4<=5',true)
     await test_js(scope, '5>=4', true)
+    await test_js(scope, '{ var a = 4  a + 5 }',9)
+    await test_js(scope, '{ var a = 4  a = 5 }',5)
+    await test_js(scope, '{ var a = 4  a += 5 }',9)
+    await test_js(scope, '{ var a = 4  a -= 5 }',-1)
+    await test_js(scope, '{ var a = 4  a *= 5 }',4*5)
+    await test_js(scope, '{ var a = 4  a /= 5 }',4/5)
+    await test_js(scope, `{ var arr1 = [1,1,1] var arr2 = [2,2,2]  arr1+=arr2 }`,new MDList(3,3,3))
 
     //functions
     await test_js(scope, 'List(0,1,2)',new MDList(0,1,2))

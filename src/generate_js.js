@@ -45,6 +45,13 @@ const BIN_OPS = {
     }
 }
 
+const ASSIGN_OPS = {
+    '+=':'+',
+    '-=':'-',
+    '*=':'*',
+    '/=':'/',
+}
+
 function lambdawrap(then_clause, ast) {
     if(ast && ast.type === 'body') {
         if(Array.isArray(then_clause)) {
@@ -60,6 +67,21 @@ export function unreturn(str) {
     return str
 }
 
+export function ast_preprocess(ast) {
+    if(ast.type === AST_TYPES.body) {
+        ast.body = ast.body.map(a => ast_preprocess(a))
+    }
+    if(ast.type === AST_TYPES.binexp) {
+        if(ASSIGN_OPS[ast.op]) {
+            ast = {
+                type:'assignment',
+                name: ast.exp1,
+                expression: { type:'binexp', op:ASSIGN_OPS[ast.op], exp1: ast.exp1, exp2: ast.exp2  }
+            }
+        }
+    }
+    return ast
+}
 export function ast_to_js(ast) {
     if (ast.type === 'comment') {
         return ""
