@@ -59,7 +59,7 @@ keylang {
       = ident "=" Exp         --simple
       | ArraySetAccess "=" Exp   --array
 
-    SoloExp =  FunctionCall | Return | Lambda | BinExp | ArrayGetterExp | ParenExp | UnExp | Deref | Literal | ident | comment
+    SoloExp =  Assignment | FunctionCall | Return | Lambda | BinExp | ArrayGetterExp | ParenExp | UnExp | Deref | Literal | ident | comment
     Return = "return" SoloExp
     Directive = "@" ident "(" ListOf<Exp,","> ")"
 
