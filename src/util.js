@@ -65,7 +65,8 @@ function mdarray_compare(A, B) {
 }
 
 export function checkEqual(A, B) {
-    if (typeof A !== typeof B) throw new Error("different types", typeof A, "not equal", typeof B)
+    // console.log("comparing",A,B)
+    if (typeof A !== typeof B) throw new Error(`different types ${typeof A} not equal ${typeof B}`)
     // don't compare functions if they already have the same name
     if (typeof A === 'function') return true
     // console.log("testing",A,B, A===B)
@@ -105,6 +106,7 @@ export async function test_js(scope, code, ans) {
     if (!result.succeeded()) throw new Error(`failed parsing: ${code}`)
     await mkdirs("temp")
     let ast = semantics(result).ast()
+    // console.log("ast is",ast)
     let ast2 = ast_preprocess(ast)
     let res = ast_to_js(ast2)
     // console.log("initial res is",res)
