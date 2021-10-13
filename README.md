@@ -231,3 +231,6 @@ For the Neo pixels you can just use very simple code like this.
 
 # Neo trelis Pixel code
 This is some example code for the neo trelis buttons.
+
+
+..
