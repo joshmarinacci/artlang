@@ -28,6 +28,9 @@ async function syntax_tests() {
     test_parse('dot = 5')
     test_parse('dot = true')
     test_parse('dot = tod')
+    test_parse('dot := 5')
+    test_parse('dot := true')
+    test_parse('dot := tod')
 
     //operations
     test_parse('4<5')

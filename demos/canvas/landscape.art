@@ -11,7 +11,7 @@ fun MakeBuilding() {
   return Rect(
 	  w: randi(20,30),
       h: randi(20,80),
-      color: pick(BUILDING_COLORS),
+      color: pick(BUILDING_COLORS)
 	)
 }
 fun MakeStar() {
@@ -27,13 +27,13 @@ let stars = []
 let max_len = 0
 @type('setup',setup)
 fun setup() {
-    buildings = range(30) >> map(@MakeBuilding)
+    //buildings = range(30) >> map(@MakeBuilding)
     // set the Y of all buildings
     buildings.y = 0
     // stack them left to right
-    pairwise(buildings, @(a,b) => b.left := a.right)
+    pairwise(buildings, @(a,b) => {b.left = a.right})
     max_len = buildings.last().right
-    stars = range(40).map(@MakeStar)
+    stars = range(40).map(@MakeStar())
 }
 
 
@@ -52,7 +52,7 @@ fun animate() {
 	wait(0.1)
 
     //move buildings off the screen back to the other side
-    buildings.every(@b => {
+    buildings.every(@(b) => {
         if b.right < screen.left {
             b.left = buildings.last().right
         }

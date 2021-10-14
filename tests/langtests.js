@@ -65,6 +65,11 @@ async function unit_tests() {
     await test_js(scope,`add(4,5)`,9)
     await test_js(scope, '4.8',4.8)
 
+
+    // assignment
+    await test_js(scope,'{var foo = 5 foo}',5)
+    await test_js(scope,'{var foo := 5 foo}',5)
+
     // operations
     await test_js(scope,'4<5',true)
     await test_js(scope,'4<=5',true)
@@ -108,9 +113,9 @@ async function unit_tests() {
         dot.xy = add(dot.xy,dot.v)
         await test_js(scope, `{
             let dot = Obj() 
-            dot.xy = Point(5,6) 
-            dot.v = Vector(1,1) 
-            dot.xy = add(dot.xy , dot.v) 
+            dot.xy := Point(5,6) 
+            dot.v := Vector(1,1) 
+            dot.xy := add(dot.xy , dot.v) 
             dot}`, dot)
     }
 
@@ -246,7 +251,7 @@ async function demo_tests() {
 
 async function all_tests() {
     await unit_tests()
-    await demo_tests()
+    // await demo_tests()
 }
 
 
