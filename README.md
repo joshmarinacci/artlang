@@ -1,8 +1,57 @@
 # ART lang docs
-So this is a language made for making art.
-It will compile the art lang into javscript then run it in the browser.
-It can also compile it to curcuit puthon for a nwo trelis rgb matrics trinkey or even a pygamer
-It's still in the works it is just basics right now but it is compleatly open source so you can dablle in what ever you want.
+
+ArtLang, as the name suggests, is a language made for making art. It complies into JavaScript to run in the
+browser and CircuitPython to run on embedded devices like the [NeoTrellis](https://learn.adafruit.com/adafruit-neotrellis),
+[NeoTrinkey](https://www.adafruit.com/product/5020), [MatrixPortal](https://www.adafruit.com/product/4745), and the [PyGamer](https://www.adafruit.com/product/4242).
+It can likely run on many other embedded devices as well with minor porting work.
+
+
+# Language Features
+
+
+ArtLang looks a lot like Javscript or Python. It is dynamically typed with
+objects and functions and numeric operators. It does have a few features that
+make it particularly useful for digital artwork.
+
+* Built in APIs for working with random numbers, colors, images, 2D canvases, grids of buttons, and other embedded components.
+* A terse syntax for working with lists and lambdas.
+* math operators that work on arrays of any dimension (similar to [APL](https://en.wikipedia.org/wiki/APL_(programming_language)) and [NumPy](https://numpy.org/))
+
+These features let you write very compact but still understandable code. For example, if
+you make a simple particles sim where circles fall and bounce on the floor. Gravity,
+velocities, and positions are represented as arrays so you can use
+simple arithmetic for vector 
+
+``` javascript
+// gravity is 0.01 in the y direction
+var gravity = [0,0.01]
+// reflection vector reduces speed by 10% on every bounce 
+let reflect = [1.1,-0.9]
+
+// make 100 circles with random positions and velocities
+var dots = range(100).map(@{
+    Circle(
+        x:randi(0,screen.width),
+        y:randi(0,screen.height),
+        r:1,
+        dot.v: [randf(-0.4,0.4), 0],
+    )
+})
+
+// call this every 10th of a second
+@type("loop",loop,0.1)
+fun loop() {
+    dots.every(@(dot) => {
+        dot.v += g   //speed up velocity with gravity
+        dot.center += dot.v //update position with velocity
+        dot.x = wrap(dot.x, 0, screen.width) //wrap around the left and right edges
+        if (dot.y > screen.height) dot.v *= reflect //bounce if it hits the floor
+        screen.fillCircle(dot,BLACK) //draw
+    })
+}
+```
+
+
 # AutoKey language features
 
 It should be possible to write code without using the shift key or caps lock
