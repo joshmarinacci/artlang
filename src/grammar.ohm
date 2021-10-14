@@ -28,9 +28,10 @@ keylang {
     toEOL = (~"\n" any)* "\n"
 
     compare_op = ">=" | "<=" | "<" | ">" | "==" | "and" | "or" | "mod"
+    op_3  = ">>"
     op_2  = "*" | "/"
     op_1  = "+" | "-"
-    binop = "+=" | "-=" | "*=" | "/=" | op_1 | op_2 | compare_op
+    binop = "+=" | "-=" | "*=" | "/=" | op_1 | op_2 | op_3 | compare_op
     BinExp = Exp binop Exp
 
     unop = "not"

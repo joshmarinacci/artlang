@@ -76,6 +76,16 @@ export function ast_preprocess(ast) {
         ast.body = ast.body.map(a => ast_preprocess(a))
     }
     if(ast.type === AST_TYPES.binexp) {
+        if(ast.op === AST_TYPES.pipeline_operator) {
+            // console.log('rewriting pipeline',ast, ast.exp2)
+            ast = {
+                type:AST_TYPES.funcall,
+                name: ast.exp2.name,
+                form: ast.exp2.form,
+                args: [ast.exp1, ast.exp2.args].flat()
+            }
+            // console.log('new ast is',ast)
+        }
         if(ASSIGN_OPS[ast.op]) {
             // console.log("rewriting assignments")
             ast = {

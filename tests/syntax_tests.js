@@ -127,6 +127,11 @@ async function syntax_tests() {
     test_parse('var foo = @it+42')
     test_parse('var foo = @print(it)')
 
+
+    //pipeline syntax
+    test_parse('bar(foo())')
+    test_parse('foo() >> bar()')
+
     //complex edge cases
     test_parse('r.x = 5')
     test_parse('(4)/2')

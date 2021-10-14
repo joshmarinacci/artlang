@@ -219,6 +219,13 @@ async function unit_tests() {
         await test_js(scope, `{ if (true) {return 5} else {7} return 6}`, 5)
     }
 
+
+    //pipeline syntax
+    {
+        await test_js(scope,'multiply(add(1,2),3)',9)
+        await test_js(scope,'add(1,2) >> multiply(3)',9)
+    }
+
 }
 
 async function test_demo(code) {
