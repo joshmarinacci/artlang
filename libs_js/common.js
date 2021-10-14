@@ -42,7 +42,7 @@ const undef = (A) => typeof A === 'undefined'
 
 export function makeBinOp(op) {
     return function(arr1, arr2) {
-        // console.log("make bin op md",,'op',arr2.rank)
+        // console.log("make bin op md",arr1.rank,'op',arr2.rank)
         if(typeof arr1 === 'undefined') {
             console.error("arr1 is missing for op",op)
         }
@@ -102,7 +102,7 @@ export function makeBinOp(op) {
         if(arr1.rank !== arr2.rank) {
             throw new Error(`cannot multiply arrays of different ranks ${arr1.rank} !== ${arr2.rank}`)
         }
-        // console.log("arr1 shape is",arr1)
+        // console.log(`op on arrays ${arr1.rank} vs ${arr2.rank}`)
         let arr3 = new MDArray(arr1.shape)
         if(arr1.rank === 1) {
             for(let i=0; i<arr1.shape[0]; i++) {
@@ -112,6 +112,7 @@ export function makeBinOp(op) {
                 // console.log(i, ' ' ,a,b,c)
                 arr3.set1(i,c)
             }
+            // console.log("returning array",arr3)
             return arr3
         }
         if(arr1.rank === 2) {
@@ -793,6 +794,19 @@ export const STD_SCOPE = {
     MDArray:(...args) => new MDArray(...args),
     NOTHING:Symbol('nothing'),
     RETURN:Symbol('return'),
+    _test:(val) => {
+        if(typeof val === 'boolean') return val
+        // console.log("testing value",val, typeof val)
+        if(is_mdarray(val)) {
+            let good = true
+            val.map((v,i,j)=>{
+                // console.log("checking element",v)
+                if(!v) good = false
+            })
+            return good
+        }
+        return true
+    },
     ifcond:(p,t,e) => {
         if(p) {
             return t()

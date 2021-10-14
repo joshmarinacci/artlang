@@ -11,7 +11,7 @@ async function syntax_tests() {
         // console.log('result is',ast)
     }
     function test_parse_fail(code,res) {
-        console.log(`parsing for failure: "${code}"`)
+        // console.log(`parsing for failure: "${code}"`)
         let result = grammar.match(code,'Exp')
         if(result.succeeded()) throw new Error("failed parsing")
     }
@@ -92,6 +92,7 @@ async function syntax_tests() {
     test_parse(`if a a==false`)
     test_parse(`{var a = 4 if (true) { a = 5}}`,5)
     test_parse(`{var a = 4 if true a = 5}`,5)
+    test_parse(`if [0,0] == [0,0] 5`,5)
 
 
     // list literals
@@ -142,11 +143,11 @@ async function syntax_tests() {
 async function simple_math_tests() {
     const [grammar, semantics] = await make_grammar_semantics()
     function test_eval(code,ans) {
-        console.log(`parsing: "${code}"`)
+        // console.log(`parsing: "${code}"`)
         let result = grammar.match(code,'Exp')
         if(!result.succeeded()) throw new Error("failed parsing")
         let ast = semantics(result).ast()
-        console.log("ast",ast)
+        // console.log("ast",ast)
         let res = eval_ast(ast,'')
         // console.log("comparing",res,ans)
         if(!checkEqual(res,ans)) throw new Error("not equal")

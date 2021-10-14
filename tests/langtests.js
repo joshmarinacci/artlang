@@ -48,6 +48,7 @@ async function unit_tests() {
     test_eval('','if true 5',5)
     test_eval('','if (false) { 5 } else { 6 }',6)
 
+    //lists
     test_eval(scope,'List(0,0,0)',new MDList(0,0,0))
     test_eval(scope, '[0,0,0]', new MDList(0,0,0))
     test_eval(scope,'range(3)',new MDList(0,1,2))
@@ -206,6 +207,11 @@ async function unit_tests() {
         // await test_js(scope, `if (not (4+5 == 10)) 4`,4)
         // await test_js(scope, `if not (add(4+5) == 10) 4`,4)
         // if not nth(count,6) grid[0] = 5     cond w/ assignment then clause w/o parens or braces
+
+        await test_js(scope,`{
+        var d1 = [0,0] 
+        if (d1 == [0,1]) { 5 } else { 7 }
+        }`,7)
     }
     //returns
     {

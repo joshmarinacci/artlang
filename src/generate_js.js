@@ -223,7 +223,7 @@ export function ast_to_js(ast) {
         }
         return [
             `let ${retval} = null`,
-            `if(${cond}) {`,
+            `if(_test(${cond})) {`,
                 rest,
                 last,
             '} else {',
