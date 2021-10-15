@@ -11,7 +11,7 @@ import {
     MDArray_fromList,
     MDList,
     makeBinOp,
-    equal, WILDCARD
+    equal, WILDCARD, multiply, add, subtract, divide
 } from '../libs_js/common.js'
 import {checkEqual, copy_file, force_delete, log, test_js, test_raw_py} from '../src/util.js'
 
@@ -22,28 +22,28 @@ function test(res,ans) {
 
 async function list_tests() {
     //the range function
-    test(range(3), new KList(0, 1, 2))
-    test(range(0,3), new KList(0,1,2))
-    test(range(1,3), new KList(1,2))
-    test(range(0,11,5), new KList(0,5,10))
+    test(range(3), new MDList(0, 1, 2))
+    test(range(0,3), new MDList(0,1,2))
+    test(range(1,3), new MDList(1,2))
+    test(range(0,11,5), new MDList(0,5,10))
 
     // add two lists
-    test(add(new KList(0, 1, 2), new KList(5, 6, 7)), new KList(5, 7, 9))
-    test(subtract(new KList(0, 1, 2), new KList(5, 6, 7)), new KList(-5, -5, -5))
-    test(multiply(new KList(0, 1, 2), new KList(5, 6, 7)), new KList(0, 6, 14))
-    test(divide(new KList(0, 1, 2), new KList(5, 6, 7)), new KList(0, 1/6, 2/7))
+    test(add(new MDList(0, 1, 2), new MDList(5, 6, 7)), new MDList(5, 7, 9))
+    test(subtract(new MDList(0, 1, 2), new MDList(5, 6, 7)), new MDList(-5, -5, -5))
+    test(multiply(new MDList(0, 1, 2), new MDList(5, 6, 7)), new MDList(0, 6, 14))
+    test(divide(new MDList(0, 1, 2), new MDList(5, 6, 7)), new MDList(0, 1/6, 2/7))
 
-    test(zip(new KList(0,1,2), new KList(3,2,1)), new KList(new KList(0,3),new KList(1,2),new KList(2,1)))
-    test(zip(new KList(0,1,2), new KList(3,2,1)).map(l=>l.get(0)+l.get(1)), new KList(3,3,3))
+    // test(zip(new MDList(0,1,2), new MDList(3,2,1)), new MDList(new MDList(0,3),new MDList(1,2),new MDList(2,1)))
+    // test(zip(new MDList(0,1,2), new MDList(3,2,1)).map(l=>l.get(0)+l.get(1)), new MDList(3,3,3))
 
     //make our own add and subtract functions that work on anything
     const add_lists = makeBinOp((a,b) => a+b)
     const sub_lists = makeBinOp((a,b) => a-b)
 
-    test(add_lists(new KList(0,1,2), new KList(3,2,1)), new KList(3,3,3))
-    test(sub_lists(new KList(0,1,2), new KList(3,2,1)), new KList(-3,-1,1))
-    test(add_lists(5,new KList(0,1,2)), new KList(5,6,7))
-    test(add_lists(new KList(0,1,2),5), new KList(5,6,7))
+    test(add_lists(new MDList(0,1,2), new MDList(3,2,1)), new MDList(3,3,3))
+    test(sub_lists(new MDList(0,1,2), new MDList(3,2,1)), new MDList(-3,-1,1))
+    test(add_lists(5,new MDList(0,1,2)), new MDList(5,6,7))
+    test(add_lists(new MDList(0,1,2),5), new MDList(5,6,7))
 
 }
 
@@ -176,11 +176,11 @@ function makeBinOpMDAssign(op) {
         return
     }
 }
-const multiply = makeBinOpMD((a,b)=>a*b)
-const divide = makeBinOpMD((a,b)=>a/b)
-const add = makeBinOpMD((a,b)=>a+b)
-const subtract = makeBinOpMD((a,b)=>a-b)
-const incrementMD = makeBinOpMDAssign((a,b)=>a+b)
+// const multiply = makeBinOpMD((a,b)=>a*b)
+// const divide = makeBinOpMD((a,b)=>a/b)
+// const add = makeBinOpMD((a,b)=>a+b)
+// const subtract = makeBinOpMD((a,b)=>a-b)
+// const incrementMD = makeBinOpMDAssign((a,b)=>a+b)
 
 async function mdarray_tests() {
     log("runining mdarray_tests")
@@ -219,8 +219,8 @@ async function mdarray_tests() {
         MDList(0, 1, 2),
     ),MDList(true,true,true))
 
-    // test(zip(new KList(0,1,2), new KList(3,2,1)), new KList(new KList(0,3),new KList(1,2),new KList(2,1)))
-    // test(zip(new KList(0,1,2), new KList(3,2,1)).map(l=>l.get(0)+l.get(1)), new KList(3,3,3))
+    // test(zip(new MDList(0,1,2), new MDList(3,2,1)), new MDList(new MDList(0,3),new MDList(1,2),new MDList(2,1)))
+    // test(zip(new MDList(0,1,2), new MDList(3,2,1)).map(l=>l.get(0)+l.get(1)), new MDList(3,3,3))
     //
     // //make our own add and subtract functions that work on anything
     // const add_lists = makeBinOp((a,b) => a+b)
@@ -313,20 +313,20 @@ async function mdarray_tests() {
         arr.slice([0,WILDCARD]).fill(1)
         test(arr.toJSFlatArray(), [1,0,0, 1,0,0, 1,0,0])
     }
-    {
-        //add and assign to the y component of a list of points as a 2d array
-        let data = [1,2,
-                    3,4,
-                    5,6]
-        let arr = MDArray_fromList(data,[2,3])
-        // console.log('arr is',arr.toJSFlatArray())
-        //move down by four pixels
-        let slice = arr.slice([1,WILDCARD])
-        // console.log("sliceo is",slice,slice.toJSFlatArray())
-        // console.log('element 0 of slice is',slice.get1(0))
-        incrementMD(slice,4)
-        // test(arr.toJSFlatArray(),[1,6, 3,8, 5,10])
-    }
+    // {
+    //     //add and assign to the y component of a list of points as a 2d array
+    //     let data = [1,2,
+    //                 3,4,
+    //                 5,6]
+    //     let arr = MDArray_fromList(data,[2,3])
+    //     // console.log('arr is',arr.toJSFlatArray())
+    //     //move down by four pixels
+    //     let slice = arr.slice([1,WILDCARD])
+    //     // console.log("sliceo is",slice,slice.toJSFlatArray())
+    //     // console.log('element 0 of slice is',slice.get1(0))
+    //     incrementMD(slice,4)
+    //     // test(arr.toJSFlatArray(),[1,6, 3,8, 5,10])
+    // }
 
     {
         //an array of rects
@@ -369,7 +369,7 @@ async function md_image_tests() {
         img.set3(0,0,1, 0)
         img.set3(0,0,2, 0)
         //make canvas demo that can draw md array as image. must be w x h x 3 to draw
-        console.log("src image is",img)
+        // console.log("src image is",img)
         await test_js(STD_SCOPE, `{
 let img = MDArray([4,4,3])
 img.set3(0,0,0, 1.0)
@@ -454,11 +454,11 @@ print(lists.wrap(val,min,max).toString())
 }
 
 Promise.all([
-    // list_tests(),
+    list_tests(),
     // math_tests(),
     mdarray_tests(),
     md_image_tests(),
-    py_lib_tests()
+    // py_lib_tests()
 ])
     .then(()=>console.log("all tests pass"))
     .then(()=> {
