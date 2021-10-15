@@ -26,18 +26,34 @@ syntax:  `foo := [a,b,c]`. You can create 2D arrays by reshaping a list.
 `foo := [a,b,c,d].reshape([2,2])`
 
 
-# Array syntax
+# Syntax Cheet Sheet
 
-* create new list (2x1 array) with `[a,b]`
-* create new 2x2 with `[a,b,c,d].reshape([2,2])`
-* access first element of a 1D array with `array[0]`
-* access last element of a 1D array with `array[-1]`
-* get the first column of a 2D array with `array[0,?]`
-* get the last column of a 2D array `array[-1,?]`
-* get the last element of a 2D array `array[-1,-1]`
+* new list (2x1 array): `[a,b]`
+* new 2x2 array : `[a,b,c,d].reshape([2,2])`
+* first element of a 1D array: `array[0]`
+* last element of a 1D array: `array[-1]`
+  
+* first element of a 1D array: `array.start()`
+* push element to start: `array.push_start(value)`
+* pop element from start: `array.pop_start(value)`
 
+* last element of a 1D array: `array.end()`
+* push element to end: `array.push_end(value)`
+* pop element from end: `array.pop_end(value)`
 
-# All arrays
+* first column of a 2D array with `array[0,?]`
+* last column of a 2D array `array[-1,?]`
+* 3rd column 2nd row of a 2D array: `array[4,3]`
+* last element of a 2D array `array[-1,-1]`
+
+* loop over every element of array: `array.each(@(v) => { print(v) })`
+* loop over every element of array with indexes: `array.each(@(v,i,j) => { print(v) })`
+* loop over every element of array (slim syntax): `array.each(@v => print(v))`
+* map over every element of array: `arr2 := arr1.map(@v => v*v)`
+* choose one element randomly: `array.choose()`
+* only elements that pass a predicate: evens: `arr2 := arr1.filter(@x => x%2==0)` 
+
+# Functions for All Arrays
 
 All functions which take lambdas provide it with the value and a variable number of index values. 
 For example, running each on a list (1D array) will provide the lambda with `(v,i)` whereas 
@@ -78,10 +94,13 @@ value := [1,2,3].find((v,i) => (v%2==0))   //finds the first even value
 index := [1,2,3].find((v,i) => (v%2==0))   //finds the first even value
 //index == 1
 ```
-* *every(@(v,i,j))* returns true if every element passes the predicate
+
+*every(@(v,i,j))* returns true if every element passes the predicate
 ```javascript
-[1,2,3].find(
+[1,2,3].every(2)  == false
 ```
+
+
 * *choose(N)* returns N values from array as a list, using randomly picked indexes
 ```javascript
 

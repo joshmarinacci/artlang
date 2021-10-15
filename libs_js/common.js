@@ -190,8 +190,8 @@ class MDPropView {
     }
 }
 
-export function is_mdarray(def) {
-    if(def && def.rank > 0) return true
+export function is_mdarray(obj) {
+    if(obj && obj.rank > 0) return true
     return false
 }
 
@@ -504,9 +504,9 @@ export class MDArray {
     flatten() {
         let arr = []
         this.data.forEach(el => {
-            if (el.data) {
+            if(is_mdarray(el)) {
                 let data = el.flatten()
-                data.forEach(d => {
+                data.each(d => {
                     arr.push(d)
                 })
             } else {

@@ -26,44 +26,60 @@ export class KCanvas extends KRect {
     }
     setPixel(xy,color) {
         if(isBrowser()) {
-            let ctx = this.canvas.getContext('2d')
-            let x = xy.get(0)
-            let y = xy.get(1)
-            ctx.save()
-            ctx.scale(this.scale,this.scale)
-            ctx.translate(0.5,0.5)
-            // console.log("drawing at",x,y,color)
-            ctx.fillStyle = color.toCSSColor()
-            // console.log("fillstyle is",color.toCSSColor())
-            ctx.fillRect(
-                Math.floor(x),
-                Math.floor(y),
-                1,1
-            )
-            ctx.restore()
+            this.withContext(ctx => {
+                let x = Math.floor(xy.get(0))
+                let y = Math.floor(xy.get(1))
+                ctx.translate(0.5,0.5)
+                ctx.fillStyle = color.toCSSColor()
+                // console.log("fillstyle is",color.toCSSColor())
+                ctx.fillRect(
+                    Math.floor(x),
+                    Math.floor(y),
+                    1,1
+                )
+                // console.log("drawing at",x,y,color)
+            })
         }
     }
     fillRect(rect,color) {
-        // console.log("filling",rect,color)
-        let ctx = this.canvas.getContext('2d')
-        ctx.fillStyle = color.toCSSColor()
-        ctx.fillRect(rect.x,rect.y,rect.w,rect.h)
+        this.withContext(ctx => {
+            ctx.fillStyle = color.toCSSColor()
+            ctx.fillRect(rect.x,rect.y,rect.w,rect.h)
+        })
     }
     strokeRect(rect,color) {
-        let ctx = this.canvas.getContext('2d')
-        ctx.strokeStyle = color.toCSSColor()
-        ctx.strokeRect(rect.x,rect.y,rect.w,rect.h)
+        this.withContext(ctx=> {
+            ctx.strokeStyle = color.toCSSColor()
+            ctx.strokeRect(rect.x,rect.y,rect.w,rect.h)
+        })
     }
-
     fillCircle(circle, color) {
-        let ctx = this.canvas.getContext('2d')
-        ctx.save()
-        ctx.globalAlpha = this.globalAlpha
-        ctx.fillStyle = color.toCSSColor()
-        ctx.beginPath()
-        ctx.arc(circle.x,circle.y,circle.r,0,2*Math.PI)
-        ctx.fill()
-        ctx.restore()
+        this.withContext((ctx)=>{
+            ctx.globalAlpha = this.globalAlpha
+            ctx.fillStyle = color.toCSSColor()
+            ctx.beginPath()
+            ctx.arc(circle.x,circle.y,circle.r,0,2*Math.PI)
+            ctx.fill()
+        })
+    }
+    strokeCircle(circle, color) {
+        this.withContext((ctx)=>{
+            ctx.globalAlpha = this.globalAlpha
+            ctx.strokeStyle = color.toCSSColor()
+            ctx.beginPath()
+            ctx.arc(circle.x,circle.y,circle.r,0,2*Math.PI)
+            ctx.stroke()
+        })
+    }
+    fill(shapes,color) {
+        shapes.each(sh => {
+            console.log("filling shape",sh)
+        })
+    }
+    stroke(shapes,color) {
+        shapes.each(sh => {
+            console.log("stroking shape",sh)
+        })
     }
 
     clear() {
@@ -73,33 +89,23 @@ export class KCanvas extends KRect {
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
         }
     }
-    fill(color) {
-        if(isBrowser()) {
-            let ctx = this.canvas.getContext('2d')
-            ctx.fillStyle = color.toCSSColor()
-            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-        }
-    }
 
-    drawPolyLine(line,color) {
-        let ctx = this.canvas.getContext('2d')
-        ctx.save()
-        ctx.scale(this.scale,this.scale)
-        ctx.translate(0.5,0.5)
-        ctx.strokeStyle = color.toCSSColor()
-        // ctx.strokeStyle = 'black'
-        ctx.lineWidth = 0.1
-        ctx.beginPath()
-        for(let i=0; i<line.length; i++) {
-            let pt = line.get1(i)
-            if(i === 0) {
-                ctx.moveTo(pt.get1(0),pt.get1(1))
-            } else {
-                ctx.lineTo(pt.get1(0),pt.get1(1))
+    strokePolyline(line,color) {
+        this.withContext(ctx => {
+            ctx.strokeStyle = color.toCSSColor()
+            // ctx.strokeStyle = 'black'
+            ctx.lineWidth = 0.1
+            ctx.beginPath()
+            for(let i=0; i<line.length; i++) {
+                let pt = line.get1(i)
+                if(i === 0) {
+                    ctx.moveTo(pt.get1(0),pt.get1(1))
+                } else {
+                    ctx.lineTo(pt.get1(0),pt.get1(1))
+                }
             }
-        }
-        ctx.stroke()
-        ctx.restore()
+            ctx.stroke()
+        })
     }
 
     drawImage(xy,img) {
@@ -134,6 +140,14 @@ export class KCanvas extends KRect {
 
             ctx.restore()
         }
+    }
+
+    withContext(param) {
+        let ctx =  this.canvas.getContext('2d')
+        ctx.save()
+        ctx.scale(this.scale,this.scale)
+        param(ctx)
+        ctx.restore()
     }
 }
 
