@@ -1,4 +1,4 @@
-import {is_mdarray, isBrowser, KRect, MDList} from './common.js'
+import {is_mdarray, isBrowser, KCircle, KRect, MDList} from './common.js'
 
 class Logger {
     constructor() {
@@ -40,7 +40,7 @@ export class KCanvas extends KRect {
         return this.h
     }
     get size() {
-        return [this.w,this.h]
+        return new MDList(this.w,this.h)
     }
     setPixel(xy,color) {
         if(isBrowser()) {
@@ -89,41 +89,6 @@ export class KCanvas extends KRect {
             ctx.stroke()
         })
     }
-    fill(shapes,color) {
-        if(is_mdarray(shapes)){
-            shapes.each(sh => {
-                this.fill(sh,color)
-            })
-        } else {
-            if(shapes instanceof KRect) {
-                return this.fillRect(shapes,color)
-            }
-            l.log("filling unknown shape",shapes)
-            throw new Error("")
-        }
-    }
-    stroke(shapes,color) {
-        if(is_mdarray(shapes)){
-            shapes.each(sh => {
-                this.stroke(sh,color)
-            })
-        } else {
-            if(shapes instanceof KRect) {
-                return this.strokeRect(shapes,color)
-            }
-            l.log("stroking unknown shape",shapes)
-            throw new Error("")
-        }
-    }
-
-    clear() {
-        if(isBrowser()) {
-            let ctx = this.canvas.getContext('2d')
-            ctx.fillStyle = 'black'
-            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-        }
-    }
-
     strokePolyline(line,color) {
         this.withContext(ctx => {
             ctx.strokeStyle = color.toCSSColor()
@@ -141,6 +106,72 @@ export class KCanvas extends KRect {
             ctx.stroke()
         })
     }
+    strokePolygon(line,color) {
+        this.withContext(ctx => {
+            ctx.strokeStyle = color.toCSSColor()
+            // ctx.strokeStyle = 'black'
+            ctx.lineWidth = 0.1
+            ctx.beginPath()
+            for(let i=0; i<line.length; i++) {
+                let pt = line.get1(i)
+                if(i === 0) {
+                    ctx.moveTo(pt.get1(0),pt.get1(1))
+                } else {
+                    ctx.lineTo(pt.get1(0),pt.get1(1))
+                }
+            }
+            ctx.close()
+            ctx.stroke()
+        })
+    }
+    fillPolygon(line,color) {
+        this.withContext(ctx => {
+            ctx.fillStyle = color.toCSSColor()
+            ctx.beginPath()
+            for(let i=0; i<line.length; i++) {
+                let pt = line.get1(i)
+                if(i === 0) {
+                    ctx.moveTo(pt.get1(0),pt.get1(1))
+                } else {
+                    ctx.lineTo(pt.get1(0),pt.get1(1))
+                }
+            }
+            ctx.close()
+            ctx.fill()
+        })
+    }
+
+    fill(shapes,color) {
+        if(is_mdarray(shapes)){
+            shapes.each(sh => this.fill(sh,color))
+        } else {
+            if(shapes instanceof KRect) return this.fillRect(shapes,color)
+            if(shapes instanceof KCircle) return this.fillCircle(shapes,color)
+            l.log("filling unknown shape",shapes)
+            throw new Error("")
+        }
+    }
+    stroke(shapes,color) {
+        if(is_mdarray(shapes)){
+            shapes.each(sh => {
+                this.stroke(sh,color)
+            })
+        } else {
+            if(shapes instanceof KRect) return this.strokeRect(shapes,color)
+            if(shapes instanceof KCircle) return this.strokeCircle(shapes,color)
+            l.log("stroking unknown shape",shapes)
+            throw new Error("")
+        }
+    }
+
+    clear() {
+        if(isBrowser()) {
+            let ctx = this.canvas.getContext('2d')
+            ctx.fillStyle = 'black'
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+        }
+    }
+
 
     drawImage(xy,img) {
         // console.log("drawing image at",xy,img)

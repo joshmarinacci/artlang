@@ -691,11 +691,6 @@ export class KRect {
         )
     }
 }
-
-function hasProp(args,name) {
-    return args.hasOwnProperty(name)
-}
-
 export class KCircle{
     constructor(args) {
         if(hasProp(args,'x')) this.x = args.x
@@ -714,6 +709,11 @@ export class KCircle{
         return this.r
     }
 }
+
+function hasProp(args,name) {
+    return args.hasOwnProperty(name)
+}
+
 
 
 export const add = makeBinOp((a,b)=>a+b)
