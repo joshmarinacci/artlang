@@ -22,17 +22,23 @@ keylang {
     ident = ~keyword valid_ident
     valid_ident = letter (letter | digit | under)* dot_part?
     dot_part = "." ident
+    assign_op = "=" | ":="
 
     comment = space* "//" toEOL
     toEOL = (~"\n" any)* "\n"
 
-    binop = "+" | "-" | "*" | "/" | ">=" | "<=" | "<" | ">" | "==" | "and" | "or" | "mod"
+    compare_op = ">=" | "<=" | "<" | ">" | "==" | "and" | "or" | "mod"
+    op_3  = ">>"
+    op_2  = "*" | "/"
+    op_1  = "+" | "-"
+    binop = "+=" | "-=" | "*=" | "/=" | op_1 | op_2 | op_3 | compare_op
     BinExp = Exp binop Exp
+
     unop = "not"
     UnExp  = unop Exp
     ParenExp = "(" Exp ")"
     VarDec
-        = "var" ident "=" Exp --assign
+        = "var" ident assign_op Exp --assign
         | "var" ident --dec
 
     Deref = Exp "." ident
@@ -56,10 +62,10 @@ keylang {
     ArraySetAccess = ident "[" ListOf<ArrayIndex,","> "]"
     ArrayGetterExp = ArrayAccess
     Assignment
-      = ident "=" Exp         --simple
-      | ArraySetAccess "=" Exp   --array
+      = ident assign_op Exp         --simple
+      | ArraySetAccess assign_op Exp   --array
 
-    SoloExp =  FunctionCall | Return | Lambda | BinExp | ArrayGetterExp | ParenExp | UnExp | Deref | Literal | ident | comment
+    SoloExp =  Assignment | FunctionCall | Return | Lambda | BinExp | ArrayGetterExp | ParenExp | UnExp | Deref | Literal | ident | comment
     Return = "return" SoloExp
     Directive = "@" ident "(" ListOf<Exp,","> ")"
 

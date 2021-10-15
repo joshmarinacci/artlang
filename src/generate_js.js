@@ -45,6 +45,13 @@ const BIN_OPS = {
     }
 }
 
+const ASSIGN_OPS = {
+    '+=':'+',
+    '-=':'-',
+    '*=':'*',
+    '/=':'/',
+}
+
 function lambdawrap(then_clause, ast) {
     if(ast && ast.type === 'body') {
         if(Array.isArray(then_clause)) {
@@ -60,6 +67,36 @@ export function unreturn(str) {
     return str
 }
 
+export function ast_preprocess(ast) {
+    // console.log("checking", ast)
+    if(ast.type === AST_TYPES.fundef) {
+        ast.block = ast_preprocess(ast.block)
+    }
+    if(ast.type === AST_TYPES.body) {
+        ast.body = ast.body.map(a => ast_preprocess(a))
+    }
+    if(ast.type === AST_TYPES.binexp) {
+        if(ast.op === AST_TYPES.pipeline_operator) {
+            // console.log('rewriting pipeline',ast, ast.exp2)
+            ast = {
+                type:AST_TYPES.funcall,
+                name: ast.exp2.name,
+                form: ast.exp2.form,
+                args: [ast.exp1, ast.exp2.args].flat()
+            }
+            // console.log('new ast is',ast)
+        }
+        if(ASSIGN_OPS[ast.op]) {
+            // console.log("rewriting assignments")
+            ast = {
+                type:'assignment',
+                name: ast.exp1,
+                expression: { type:'binexp', op:ASSIGN_OPS[ast.op], exp1: ast.exp1, exp2: ast.exp2  }
+            }
+        }
+    }
+    return ast
+}
 export function ast_to_js(ast) {
     if (ast.type === 'comment') {
         return ""
@@ -186,7 +223,7 @@ export function ast_to_js(ast) {
         }
         return [
             `let ${retval} = null`,
-            `if(${cond}) {`,
+            `if(_test(${cond})) {`,
                 rest,
                 last,
             '} else {',

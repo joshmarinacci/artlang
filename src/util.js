@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import child_process from 'child_process'
 import {promisify} from 'util'
-import {ast_to_js, unreturn} from './generate_js.js'
+import {ast_to_js, unreturn, ast_preprocess} from './generate_js.js'
 import {is_mdarray, STD_SCOPE} from '../libs_js/common.js'
 import {make_grammar_semantics} from './grammar.js'
 
@@ -65,7 +65,8 @@ function mdarray_compare(A, B) {
 }
 
 export function checkEqual(A, B) {
-    if (typeof A !== typeof B) throw new Error("different types", typeof A, "not equal", typeof B)
+    // console.log("comparing",A,B)
+    if (typeof A !== typeof B) throw new Error(`different types ${typeof A} not equal ${typeof B}`)
     // don't compare functions if they already have the same name
     if (typeof A === 'function') return true
     // console.log("testing",A,B, A===B)
@@ -105,7 +106,9 @@ export async function test_js(scope, code, ans) {
     if (!result.succeeded()) throw new Error(`failed parsing: ${code}`)
     await mkdirs("temp")
     let ast = semantics(result).ast()
-    let res = ast_to_js(ast)
+    // console.log("ast is",ast)
+    let ast2 = ast_preprocess(ast)
+    let res = ast_to_js(ast2)
     // console.log("initial res is",res)
     if(Array.isArray(res)) {
         let last = res[res.length-1]

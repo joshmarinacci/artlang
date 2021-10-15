@@ -15,7 +15,10 @@ export const AST_TYPES = {
     binexp: 'binexp',
     array_access: 'arrayaccess',
     array_set_access: 'array-set-access',
-    array_wildcard: 'array-wildcard'
+    array_wildcard: 'array-wildcard',
+    body: 'body',
+    fundef: 'fundef',
+    pipeline_operator: '>>'
 }
 export const FUN_CALL_TYPES = {
     positional: 'positional',
@@ -233,6 +236,7 @@ export function eval_ast(ast,scope) {
         if(ast.op === 'and') return A&&B
         if(ast.op === 'or') return A||B
         if(ast.op === 'mod') return A%B
+        if(ast.op === '==') return A==B
     }
     if(ast.type === 'unexp') {
         let A = eval_ast(ast.exp)
