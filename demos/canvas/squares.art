@@ -4,25 +4,14 @@ var screen = new KCanvas(0,0,500,500, 2)
 
 @type('start',setup)
 fun setup() {
-    Array([20,20])
-  >> map @(i,j) => Rect(
-		x:i*20
-		y:j*20,
-      w:20 + randf(-i,i),
-      h:20 + randf(-j,j),
-  >> draw shapes()
-
-
-    var grid = MDArray([20,20])
-    var shapes = grid.map(@(i,j) => {
-        return Rect(
-            x:i*20,
-            y:j*20,
-            w:20 + randf(-i,i),
-            h:20 + randf(-j,j),
+    var shapes = MDArray([20,20]).map(@(v,i,j) => {
+        Rect(
+	    	x:(i*20),
+		    y:(j*20),
+            w:(15 + randf(0,i)),
+            h:(15 + randf(0,j))
         )
-    }
-    //screen.strokeShapes(shapes)
-    shapes.every(@r => screen.strokeRect(rect,BLACK)
+    })
+    screen.stroke(shapes,BLACK)
 
 }

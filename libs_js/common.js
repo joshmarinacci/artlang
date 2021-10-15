@@ -370,10 +370,18 @@ export class MDArray {
     map(cb) {
         let arr = new MDArray(this.shape)
         if(this.rank === 1) {
-            for(let i=0; i<this.shape[0];i++) {
+            for (let i = 0; i < this.shape[0]; i++) {
                 let r = this.get1(i)
-                let s = cb(r)
-                arr.set1(i,s)
+                let s = cb(r,i)
+                arr.set1(i, s)
+            }
+        } else if(this.rank === 2) {
+            for(let i=0; i<this.shape[0];i++) {
+                for(let j=0; j<this.shape[1];j++) {
+                    let r = this.get2(i,j)
+                    let s = cb(r,i,j)
+                    arr.set2(i, j, s)
+                }
             }
         } else {
             throw new Error(`can't map higher rank arrays ${this.rank}`)

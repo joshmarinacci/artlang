@@ -17,7 +17,7 @@ function strip_directives(ast) {
 async function compile_js(src_file,out_dir) {
     let src = await file_to_string(src_file)
     src = "\n{\n" + src + "\n}\n" //add the implicit block braces
-    let generated_src_prefix = path.basename(src_file,'.key')
+    let generated_src_prefix = calc_basename(src_file)
     let generated_src_out_name = generated_src_prefix + ".js"
     const [grammar, semantics] = await make_grammar_semantics()
     let result = grammar.match(src,'Exp')
@@ -105,12 +105,20 @@ async function prep(outdir) {
     await mkdirs(outdir)
 }
 
+function calc_basename(src) {
+    let n = src.lastIndexOf('.')
+    let ext = ""
+    if(n >0) ext = src.substring(0,n)
+    src = path.basename(src,ext)
+    return src
+}
+
 async function web_template(src, out_dir, board) {
     console.log("doing html template for",board)
     let TEMPLATE_PATH = "templates/web_template.html"
     if(board.javascript.template_path) TEMPLATE_PATH = board.javascript.template_path
     console.log("using template",TEMPLATE_PATH)
-    let name = path.basename(src,'.key')
+    let name = calc_basename(src)
     let templ = await file_to_string(TEMPLATE_PATH)
     templ = templ.replace("${LIB_SRC}","./common.js")
     templ = templ.replace("${APP_SRC}","./"+name+".js")
@@ -129,7 +137,7 @@ async function copy_js_libs(out_dir) {
 }
 
 async function start_webserver(src,outdir) {
-    let basename = path.basename(src,'.key')
+    let basename = calc_basename(src)
     let watchfile = path.join(outdir,basename+".js")
     const PORT = 8080
     let app = express()
@@ -173,7 +181,7 @@ export async function compile_py(opts) {
     console.log("processing",src_path,'to python dir',outdir)
     let src = await file_to_string(src_path)
     src = "\n{\n" + src + "\n}\n" //add the implicit block braces
-    let generated_src_prefix = path.basename(src_path,'.key')
+    let generated_src_prefix = calc_basename(src_path)
     let generated_src_out_name = generated_src_prefix + ".py"
     if(opts.outfile) generated_src_out_name = opts.outfile
     const [grammar, semantics] = await make_grammar_semantics()

@@ -1,5 +1,23 @@
-import {isBrowser, KRect, MDList} from './common.js'
+import {is_mdarray, isBrowser, KRect, MDList} from './common.js'
 
+class Logger {
+    constructor() {
+        this.depth = 0
+        this._tab_char = "  "
+    }
+    log(...args) {
+        console.log(this._tab(),...args)
+    }
+
+    _tab() {
+        let str = ""
+        for(let i=0; i<this.depth; i++) {
+            str += this._tab_char
+        }
+        return str
+    }
+}
+let l = new Logger()
 export class KCanvas extends KRect {
     constructor(x,y,w,h,scale) {
         super(x,y,w,h)
@@ -72,14 +90,30 @@ export class KCanvas extends KRect {
         })
     }
     fill(shapes,color) {
-        shapes.each(sh => {
-            console.log("filling shape",sh)
-        })
+        if(is_mdarray(shapes)){
+            shapes.each(sh => {
+                this.fill(sh,color)
+            })
+        } else {
+            if(shapes instanceof KRect) {
+                return this.fillRect(shapes,color)
+            }
+            l.log("filling unknown shape",shapes)
+            throw new Error("")
+        }
     }
     stroke(shapes,color) {
-        shapes.each(sh => {
-            console.log("stroking shape",sh)
-        })
+        if(is_mdarray(shapes)){
+            shapes.each(sh => {
+                this.stroke(sh,color)
+            })
+        } else {
+            if(shapes instanceof KRect) {
+                return this.strokeRect(shapes,color)
+            }
+            l.log("stroking unknown shape",shapes)
+            throw new Error("")
+        }
     }
 
     clear() {
