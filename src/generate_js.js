@@ -45,6 +45,13 @@ const BIN_OPS = {
     }
 }
 
+const ASSIGN_OPS = {
+    '+=':'+',
+    '-=':'-',
+    '*=':'*',
+    '/=':'/',
+}
+
 function lambdawrap(then_clause, ast) {
     if(ast && ast.type === 'body') {
         if(Array.isArray(then_clause)) {
@@ -60,10 +67,41 @@ export function unreturn(str) {
     return str
 }
 
+export function ast_preprocess(ast) {
+    // console.log("checking", ast)
+    if(ast.type === AST_TYPES.fundef) {
+        ast.block = ast_preprocess(ast.block)
+    }
+    if(ast.type === AST_TYPES.body) {
+        ast.body = ast.body.map(a => ast_preprocess(a))
+    }
+    if(ast.type === AST_TYPES.binexp) {
+        if(ast.op === AST_TYPES.pipeline_operator) {
+            // console.log('rewriting pipeline',ast, ast.exp2)
+            ast = {
+                type:AST_TYPES.funcall,
+                name: ast.exp2.name,
+                form: ast.exp2.form,
+                args: [ast.exp1, ast.exp2.args].flat()
+            }
+            // console.log('new ast is',ast)
+        }
+        if(ASSIGN_OPS[ast.op]) {
+            // console.log("rewriting assignments")
+            ast = {
+                type:'assignment',
+                name: ast.exp1,
+                expression: { type:'binexp', op:ASSIGN_OPS[ast.op], exp1: ast.exp1, exp2: ast.exp2  }
+            }
+        }
+    }
+    return ast
+}
 export function ast_to_js(ast) {
     if (ast.type === 'comment') {
         return ""
     }
+    if (ast.type === AST_TYPES.array_wildcard) return "WILDCARD"
     if (ast.type === 'literal') {
         if (ast.kind === 'integer') return "" + ast.value
         if (ast.kind === 'boolean') return "" + ast.value
@@ -87,10 +125,16 @@ export function ast_to_js(ast) {
             return `${name}(${args.join(",")})`
         }
     }
-    if (ast.type === 'assignment') {
+    if (ast.type === AST_TYPES.assignment) {
         let name = ast_to_js(ast.name)
         let value = ast_to_js(ast.expression)
         return [`${name} = ${value}`]
+    }
+    if (ast.type === AST_TYPES.array_assignment) {
+        let arr = ast_to_js(ast.array)
+        let ex = ast_to_js(ast.expression)
+        let N = arr.args.length
+        return `${arr.name}.set${N}(${arr.args.join(',')},${ex})`
     }
     if (ast.type === AST_TYPES.vardec) {
         let name = ast_to_js(ast.name)
@@ -135,6 +179,25 @@ export function ast_to_js(ast) {
         let after = ast_to_js(ast.after)
         return `${before}.${after}`
     }
+    if (ast.type === AST_TYPES.array_access) {
+        // console.log("doing array access",ast)
+        let args = ast.args.map(a => ast_to_js(a)).flat()
+        // console.log("args len",args, args.length)
+        let n = args.length
+        if(n === 3) return `${ast_to_js(ast.name)}.get3(${args})`
+        if(n === 2) return `${ast_to_js(ast.name)}.get2(${args})`
+        if(n === 1) return `${ast_to_js(ast.name)}.get1(${args})`
+        let str = `${ast_to_js(ast.name)}.get_invalid(${args})`
+        // console.log("generated",str)
+        return str
+    }
+    if (ast.type === AST_TYPES.array_set_access) {
+        let args = ast.args.map(a => ast_to_js(a)).flat()
+        return {
+            name:ast_to_js(ast.name),
+            args:args
+        }
+    }
     if (ast.type === AST_TYPES.binexp) {
         let op = BIN_OPS[ast.op]
         if (op) return `${op.name}(${ast_to_js(ast.exp1)},${ast_to_js(ast.exp2)})`
@@ -160,7 +223,7 @@ export function ast_to_js(ast) {
         }
         return [
             `let ${retval} = null`,
-            `if(${cond}) {`,
+            `if(_test(${cond})) {`,
                 rest,
                 last,
             '} else {',

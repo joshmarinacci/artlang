@@ -1,0 +1,16 @@
+@board("canvas")
+
+var screen = new KCanvas(0,0,1024,768)
+
+@type('start',setup)
+fun setup() {
+//    rangef(0,pi2*4,0.01)
+//      >> map(@th => [sin(th*0.8), cos(th*2)])
+//      >> screen.strokePolyline(color:black)
+    let center = screen.size / 2
+    let points = rangef(0,pi2*4,0.01)
+        .map(@th => [sin(th*0.8), cos(th*2)])
+        .map(@pt => pt + center)
+    screen.strokePolyline(points, black)
+}
+

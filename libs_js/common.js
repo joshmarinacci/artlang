@@ -42,7 +42,7 @@ const undef = (A) => typeof A === 'undefined'
 
 export function makeBinOp(op) {
     return function(arr1, arr2) {
-        // console.log("make bin op md",,'op',arr2.rank)
+        // console.log("make bin op md",arr1.rank,'op',arr2.rank)
         if(typeof arr1 === 'undefined') {
             console.error("arr1 is missing for op",op)
         }
@@ -102,7 +102,7 @@ export function makeBinOp(op) {
         if(arr1.rank !== arr2.rank) {
             throw new Error(`cannot multiply arrays of different ranks ${arr1.rank} !== ${arr2.rank}`)
         }
-        // console.log("arr1 shape is",arr1)
+        // console.log(`op on arrays ${arr1.rank} vs ${arr2.rank}`)
         let arr3 = new MDArray(arr1.shape)
         if(arr1.rank === 1) {
             for(let i=0; i<arr1.shape[0]; i++) {
@@ -112,6 +112,7 @@ export function makeBinOp(op) {
                 // console.log(i, ' ' ,a,b,c)
                 arr3.set1(i,c)
             }
+            // console.log("returning array",arr3)
             return arr3
         }
         if(arr1.rank === 2) {
@@ -189,47 +190,46 @@ class MDPropView {
     }
 }
 
-function is_mdarray(def) {
-    if(def && def.data) return true
+export function is_mdarray(def) {
+    if(def && def.rank > 0) return true
     return false
 }
 
 class MDView {
     constructor(array, def) {
         if(is_mdarray(def)) def = def.data
-        console.log("making a slice view",array,def)
         this.array = array
         this.sliceshape=def
         this.shape = []
         def.forEach((d,i) => {
-            if(d !== null) {
+            if(d !== WILDCARD) {
                 this.shape.push(this.array.shape[i])
             }
         })
-        this.rank = def.filter( t => t !== null).length
+        this.rank = def.filter( t => t !== WILDCARD).length
     }
     get1(n) {
-        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+        if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
             let i = this.sliceshape[0]
             return this.array.get2(i,n)
         }
     }
 
     set1(n,v) {
-        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+        if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
             let i = this.sliceshape[0]
             let j = n
             this.array.set2(i, j, v)
         }
     }
     fill(v) {
-        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+        if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
             let i = this.sliceshape[0]
             for(let j = 0; j<this.array.shape[1]; j++) {
                 this.array.set2(i, j, v)
             }
         }
-        if(this.sliceshape[0]== null && this.sliceshape[1] !== null) {
+        if(this.sliceshape[0]== WILDCARD && this.sliceshape[1] !== WILDCARD) {
             let j = this.sliceshape[1]
             for(let i = 0; i<this.array.shape[0]; i++) {
                 this.array.set2(i,j, v)
@@ -240,13 +240,13 @@ class MDView {
     toJSFlatArray() {
         // console.log("shape is",this.shape)
         let out = []
-        if(this.sliceshape[0]===null && this.sliceshape[1] !== null){
+        if(this.sliceshape[0]===WILDCARD && this.sliceshape[1] !== WILDCARD){
             let i = this.sliceshape[1]
             for(let j=0; j<this.array.shape[0]; j++) {
                 out.push(this.array.get2(i,j))
             }
         }
-        if(this.sliceshape[0]!== null && this.sliceshape[1] === null) {
+        if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
             let i = this.sliceshape[0]
             for(let j=0; j<this.array.shape[1]; j++) {
                 out.push(this.array.get2(i,j))
@@ -279,6 +279,94 @@ export class MDArray {
         if(this.rank === 1) return this.shape[0]
         throw new Error(`cannot get length of a rank ${this.rank} array`)
     }
+    len() {
+        if(this.rank !== 1) throw new Error(`Cannot do "len" on higher rank arrays. ${this.rank}`)
+        return this.shape[0]
+    }
+    sum() {
+        if(this.rank !== 1) throw new Error(`Cannot do "sum" on higher rank arrays. ${this.rank}`)
+        let total = 0
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            total += r
+        }
+        return total
+    }
+    min() {
+        if(this.rank !== 1) throw new Error(`Cannot do "min" on higher rank arrays. ${this.rank}`)
+        let min = Number.MAX_VALUE
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            if(r < min) min = r
+        }
+        return min
+    }
+    empty() {
+        return this.len() === 0
+    }
+    max() {
+        if(this.rank !== 1) throw new Error(`Cannot do "max" on higher rank arrays. ${this.rank}`)
+        let max = Number.MIN_VALUE
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            if(r > max) max = r
+        }
+        return max
+    }
+
+    take(n) {
+        if(this.rank !== 1) throw new Error(`Cannot do "take" on higher rank arrays. ${this.rank}`)
+        let arr = []
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            if(i < n) arr.push(r)
+        }
+        return new MDList(...arr)
+    }
+    drop(n) {
+        if(this.rank !== 1) throw new Error(`Cannot do "take" on higher rank arrays. ${this.rank}`)
+        let arr = []
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            if(i >= n) arr.push(r)
+        }
+        return new MDList(...arr)
+    }
+    partition(n) {
+        console.log("partioning with",n)
+        if(this.rank !== 1) throw new Error(`Cannot do "take" on higher rank arrays. ${this.rank}`)
+        let before = []
+        let after = []
+        let len = this.shape[0]
+        if (n < 0) n = len+n
+        console.log("using",n)
+        for(let i=0; i<len; i++) {
+            let r = this.get1(i)
+            if(i < n) {
+                before.push(r)
+            } else {
+                after.push(r)
+            }
+        }
+        return [before,after]
+    }
+    rotate(n) {
+        if(this.rank !== 1) throw new Error(`Cannot do "take" on higher rank arrays. ${this.rank}`)
+        if(n < 0) {
+            let parts = this.partition(-n)
+            console.log("parts are",parts)
+            let arr = parts[1].concat(parts[0])
+            console.log("new array is",arr)
+            return new MDList(...arr)
+        } else {
+            let parts = this.partition(-n)
+            console.log("parts are",parts)
+            let arr = parts[1].concat(parts[0])
+            console.log("new array is",arr)
+            return new MDList(...arr)
+        }
+    }
+
     map(cb) {
         let arr = new MDArray(this.shape)
         if(this.rank === 1) {
@@ -292,7 +380,35 @@ export class MDArray {
         }
         return arr
     }
-    forEach(cb) {
+    filter(cb) {
+        if(this.rank !== 1) throw new Error(`Cannot do "filter" on higher rank arrays. ${this.rank}`)
+        let arr = []
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            let s = cb(r)
+            if(s) arr.push(r)
+        }
+        return new MDList(...arr)
+    }
+    find(cb) {
+        if(this.rank !== 1) throw new Error(`Cannot do "find" on higher rank arrays. ${this.rank}`)
+        for(let i=0; i<this.len();i++) {
+            let r = this.get1(i)
+            let s = cb(r)
+            if(s) return r
+        }
+        return null
+    }
+    findIndex(cb) {
+        if(this.rank !== 1) throw new Error(`Cannot do "find" on higher rank arrays. ${this.rank}`)
+        for(let i=0; i<this.len();i++) {
+            let r = this.get1(i)
+            let s = cb(r)
+            if(s) return i
+        }
+        return null
+    }
+    each(cb) {
         if(this.rank === 1) {
             for (let i = 0; i < this.shape[0]; i++) {
                 let r = this.get1(i)
@@ -310,10 +426,11 @@ export class MDArray {
             return
         }
         this.data.forEach(cb)
+        return this
     }
-    every(cb) {
-        return this.forEach(cb)
-    }
+    // every(cb) {
+    //     return this.forEach(cb)
+    // }
 
     toJSFlatArray() {
         return this.data.slice()
@@ -343,12 +460,19 @@ export class MDArray {
 
     fill(val) {
         this.data.fill(val)
+        return this
     }
     get(i) { return this.get1(i)}
     get1(i) {
+        if(is_mdarray(i)) {
+            if(i.rank === 1) {
+                return this.get2(... i.data)
+            }
+        }
         return this.data[i]
     }
     get2(i,j) {
+        if(i === WILDCARD || j === WILDCARD) return this.slice([i,j])
         let n = i + j*this.shape[0]
         if(n > this.data.length) throw new Error(`index out of range get2(${i},${j}) in shape ${this.shape}`)
         return this.data[n]
@@ -465,6 +589,7 @@ export class KeyColor {
     }
 }
 
+export const WILDCARD = "WILDCARD"
 export const BLACK = new KeyColor({})
 export const BLUE  = new KeyColor({b:1})
 export const RED   = new KeyColor({r:1})
@@ -771,6 +896,7 @@ export const STD_SCOPE = {
     wrap,
     lerp,
     remap,
+    WILDCARD:WILDCARD,
     floor:Math.floor,
     sleep,
     sine1: (v) => remap(Math.sin(v), -1, 1, 0,1),
@@ -785,6 +911,19 @@ export const STD_SCOPE = {
     MDArray:(...args) => new MDArray(...args),
     NOTHING:Symbol('nothing'),
     RETURN:Symbol('return'),
+    _test:(val) => {
+        if(typeof val === 'boolean') return val
+        // console.log("testing value",val, typeof val)
+        if(is_mdarray(val)) {
+            let good = true
+            val.map((v,i,j)=>{
+                // console.log("checking element",v)
+                if(!v) good = false
+            })
+            return good
+        }
+        return true
+    },
     ifcond:(p,t,e) => {
         if(p) {
             return t()

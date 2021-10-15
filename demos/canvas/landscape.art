@@ -1,0 +1,72 @@
+@board("canvas")
+var screen = new KCanvas(0,0,1000,500)
+
+@type('start',setup)
+fun setup() {
+}
+
+BUILDING_COLORS = [RED,GREEN,BLUE,WHITE,GRAY]
+
+fun MakeBuilding() {
+  return Rect(
+	  w: randi(20,30),
+      h: randi(20,80),
+      color: pick(BUILDING_COLORS)
+	)
+}
+fun MakeStar() {
+	return Circle(
+		x:randi(1000),
+		y:randi(250),
+		color: YELLOW
+	)
+}
+
+let buildings = []
+let stars = []
+let max_len = 0
+@type('setup',setup)
+fun setup() {
+    //buildings = range(30) >> map(@MakeBuilding)
+    // set the Y of all buildings
+    buildings.y = 0
+    // stack them left to right
+    pairwise(buildings, @(a,b) => {b.left = a.right})
+    max_len = buildings.last().right
+    stars = range(40).map(@MakeStar())
+}
+
+
+@type('loop',animate)
+fun animate() {
+    //slide objects to the left
+	rects.x -= 2
+	stars.x -= 1
+	//draw bg
+	canvas.fill_rect(screen.bounds, BLACK)
+	//draw stars
+	canvas.fillAll(stars)
+	//draw buildings
+	canvas.fillAll(buildings)
+	//wait 10th of a second
+	wait(0.1)
+
+    //move buildings off the screen back to the other side
+    buildings.every(@(b) => {
+        if b.right < screen.left {
+            b.left = buildings.last().right
+        }
+    })
+
+    // wrap around
+    find(in:buildings, where:@it.right < 0)
+        >> move_to_end(in:buildings)
+    // wrap around
+    wrap(buildings.left, 0, max_len)
+
+    // wrap around
+    off_screen = (buildings.left < 0) // makes list of T/F
+    mask_out(in:buildings, off_screen)
+    append(in:buildings, off_screen)
+}
+

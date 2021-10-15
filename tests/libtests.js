@@ -11,39 +11,97 @@ import {
     MDArray_fromList,
     MDList,
     makeBinOp,
-    equal
+    equal, WILDCARD, multiply, add, subtract, divide
 } from '../libs_js/common.js'
 import {checkEqual, copy_file, force_delete, log, test_js, test_raw_py} from '../src/util.js'
 
 function test(res,ans) {
-    // console.log("comparing",res,ans)
+    console.log("comparing",res,ans)
     if(!checkEqual(res,ans)) throw new Error("not equal")
 }
 
 async function list_tests() {
     //the range function
-    test(range(3), new KList(0, 1, 2))
-    test(range(0,3), new KList(0,1,2))
-    test(range(1,3), new KList(1,2))
-    test(range(0,11,5), new KList(0,5,10))
+    test(range(3), new MDList(0, 1, 2))
+    test(range(0,3), new MDList(0,1,2))
+    test(range(1,3), new MDList(1,2))
+    test(range(0,11,5), new MDList(0,5,10))
 
     // add two lists
-    test(add(new KList(0, 1, 2), new KList(5, 6, 7)), new KList(5, 7, 9))
-    test(subtract(new KList(0, 1, 2), new KList(5, 6, 7)), new KList(-5, -5, -5))
-    test(multiply(new KList(0, 1, 2), new KList(5, 6, 7)), new KList(0, 6, 14))
-    test(divide(new KList(0, 1, 2), new KList(5, 6, 7)), new KList(0, 1/6, 2/7))
+    test(add(new MDList(0, 1, 2), new MDList(5, 6, 7)), new MDList(5, 7, 9))
+    test(subtract(new MDList(0, 1, 2), new MDList(5, 6, 7)), new MDList(-5, -5, -5))
+    test(multiply(new MDList(0, 1, 2), new MDList(5, 6, 7)), new MDList(0, 6, 14))
+    test(divide(new MDList(0, 1, 2), new MDList(5, 6, 7)), new MDList(0, 1/6, 2/7))
 
-    test(zip(new KList(0,1,2), new KList(3,2,1)), new KList(new KList(0,3),new KList(1,2),new KList(2,1)))
-    test(zip(new KList(0,1,2), new KList(3,2,1)).map(l=>l.get(0)+l.get(1)), new KList(3,3,3))
+    // test(zip(new MDList(0,1,2), new MDList(3,2,1)), new MDList(new MDList(0,3),new MDList(1,2),new MDList(2,1)))
+    // test(zip(new MDList(0,1,2), new MDList(3,2,1)).map(l=>l.get(0)+l.get(1)), new MDList(3,3,3))
 
     //make our own add and subtract functions that work on anything
-    const add_lists = makeBinOp((a,b) => a+b)
-    const sub_lists = makeBinOp((a,b) => a-b)
+    // const add_lists = makeBinOp((a,b) => a+b)
+    // const sub_lists = makeBinOp((a,b) => a-b)
 
-    test(add_lists(new KList(0,1,2), new KList(3,2,1)), new KList(3,3,3))
-    test(sub_lists(new KList(0,1,2), new KList(3,2,1)), new KList(-3,-1,1))
-    test(add_lists(5,new KList(0,1,2)), new KList(5,6,7))
-    test(add_lists(new KList(0,1,2),5), new KList(5,6,7))
+    test(add(new MDList(0,1,2), new MDList(3,2,1)), new MDList(3,3,3))
+    test(subtract(new MDList(0,1,2), new MDList(3,2,1)), new MDList(-3,-1,1))
+    test(add(5,new MDList(0,1,2)), new MDList(5,6,7))
+    test(add(new MDList(0,1,2),5), new MDList(5,6,7))
+
+    //fill()
+    test(new MDArray([3]).fill(88), new MDList(88,88,88))
+
+    //shape()
+    // test(new MDArray([2,2]).fill(88).shape(), new MDList(2,2))
+
+    //reshape()
+    // test(new MDList(0,0,0,0).reshape([2,2]), new MDArray([2,2]).fill(0))
+
+    //each
+    // test(range(3).each((v,i)=>(null)),new MDList(0,1,2))
+
+    console.log('=========== thing is',range(3))
+    //map
+    test(range(3).map((v)=>v*2),new MDList(0,2,4))
+    //reduce
+
+    //filter
+    test(range(3).filter((v)=>(v%2)==0),new MDList(0,2))
+
+    //find
+    test(new MDList(0,1,2,3).find(v => v>1),2)
+    //findIndex
+    test(new MDList(0,1,2,3).findIndex(v => v>1),2)
+    //every
+    // test(new MDList(0,1,2,3).every(2),false)
+    // test(new MDList(2,2,2,2).every(2),true)
+    //choose
+    // test(new MDList(0,1,2,3).choose(1).len(),1)
+    // test(new MDList(0,1,2,3).choose(2).len(),2)
+
+    //sum
+    test(new MDList(0,1,2,3).sum(),6)
+    //min
+    test(new MDList(0,1,2,3).min(),0)
+    //max
+    test(new MDList(0,1,2,3).max(),3)
+    //empty
+    test(new MDList(0,1,2,3).empty(),false)
+    test(new MDList().empty(),true)
+
+    //len
+    test(new MDList(0,1,2,3).len(),4)
+    //take
+    test(new MDList(0,1,2,3).take(2),new MDList(0,1))
+    //drop
+    test(new MDList(0,1,2,3).drop(2),new MDList(2,3))
+
+    //rotate
+    test(new MDList(0,1,2,3).rotate(-1),new MDList(1,2,3,0))
+    test(new MDList(0,1,2,3).rotate(+1),new MDList(3,0,1,2))
+    //sort
+    // test(new MDList(0,1,2,3).sort(),new MDList(0,1,2,3))
+    // test(new MDList(3,2,1,0).sort(),new MDList(0,1,2,3))
+    //reverse
+    // test(new MDList(0,1,2,3).reverse(),new MDList(3,2,1,0))
+
 
 }
 
@@ -54,133 +112,6 @@ async function math_tests() {
     test(sine1(Math.PI/2),1)
     test(sine1(Math.PI),0.5)
 }
-
-function makeBinOpMD(op) {
-    return function(arr1, arr2) {
-        // console.log("make bin op md",arr1.rank,'op',arr2.rank)
-        if(typeof arr1.rank === 'undefined') {
-            if(arr2.rank === 1) {
-                let arr3 = new MDArray(arr2.shape)
-                for(let i=0; i<arr2.shape[0]; i++) {
-                    let a = arr1
-                    let b = arr2.get1(i)
-                    let v = op(a,b)
-                    arr3.set1(i, v)
-                }
-                return arr3
-            }
-            if(arr2.rank === 2) {
-                let arr3 = new MDArray(arr2.shape)
-                for (let i = 0; i < arr2.shape[0]; i++) {
-                    for (let j = 0; j < arr2.shape[1]; j++) {
-                        let a = arr1
-                        let b = arr2.get2(i, j)
-                        let v = op(a, b)
-                        arr3.set2(i, j, v)
-                    }
-                }
-                return arr3
-            }
-        }
-        if(typeof arr2.rank === 'undefined') {
-            if(arr1.rank === 1) {
-                let arr3 = new MDArray(arr1.shape)
-                for (let i = 0; i < arr1.shape[0]; i++) {
-                    let a = arr1.get1(i)
-                    let b = arr2
-                    let v = op(a, b)
-                    arr3.set1(i,v)
-                }
-                return arr3
-            }
-            if(arr1.rank === 2) {
-                // console.log('array vs scalar')
-                let arr3 = new MDArray(arr1.shape)
-                for (let i = 0; i < arr1.shape[0]; i++) {
-                    for (let j = 0; j < arr1.shape[1]; j++) {
-                        let a = arr1.get2(i, j)
-                        let b = arr2
-                        let v = op(a, b)
-                        arr3.set2(i, j, v)
-                    }
-                }
-                return arr3
-            }
-        }
-
-        if(arr1.rank !== arr2.rank) {
-            throw new Error(`cannot multiply arrays of different ranks ${arr1.rank} !== ${arr2.rank}`)
-        }
-        // console.log("arr1 shape is",arr1)
-        let arr3 = new MDArray(arr1.shape)
-        if(arr1.rank === 1) {
-            for(let i=0; i<arr1.shape[0]; i++) {
-                let a = arr1.get1(i)
-                let b = arr2.get1(i)
-                let c= op(a,b)
-                // console.log(i, ' ' ,a,b,c)
-                arr3.set1(i,c)
-            }
-            return arr3
-        }
-        if(arr1.rank === 2) {
-            for (let i = 0; i < arr1.shape[0]; i++) {
-                for (let j = 0; j < arr1.shape[1]; j++) {
-                    let a = arr1.get2(i, j)
-                    let b = arr2.get2(i, j)
-                    let v = op(a, b)
-                    arr3.set2(i, j, v)
-                }
-            }
-        }
-        return arr3
-    }
-}
-function makeBinOpMDAssign(op) {
-    return function(arr1, arr2) {
-        if(typeof arr2.rank === 'undefined') {
-            if(arr1.rank === 1) {
-                for(let i=0; i<arr1.shape[0]; i++) {
-                    let a = arr1.get1(i)
-                    let b = arr2
-                    let c= op(a,b)
-                    // console.log(i, ' ' ,a,b,c)
-                    arr1.set1(i,c)
-                }
-                return
-            }
-            for(let i=0; i<arr1.shape[0]; i++) {
-                for (let j = 0; j < arr1.shape[1]; j++) {
-                    let a = arr1.get2(i, j)
-                    let b = arr2
-                    let v = op(a,b)
-                    // console(i,j, ' ' , a,b,v)
-                    arr1.set2(i, j, v)
-                }
-            }
-            return
-        }
-
-        if(arr1.rank !== arr2.rank) {
-            throw new Error(`cannot multiply arrays of different ranks ${arr1.rank} !== ${arr2.rank}`)
-        }
-
-        for(let i=0; i<arr1.shape[0]; i++) {
-            for(let j=0; j<arr1.shape[1]; j++) {
-                let a = arr1.get2(i,j)
-                let b = arr2.get2(i,j)
-                let v = op(a,b)
-                arr2.set2(i,j,v)
-            }
-        }
-        return
-    }
-}
-const multiply = makeBinOpMD((a,b)=>a*b)
-const divide = makeBinOpMD((a,b)=>a/b)
-const add = makeBinOpMD((a,b)=>a+b)
-const subtract = makeBinOpMD((a,b)=>a-b)
-const incrementMD = makeBinOpMDAssign((a,b)=>a+b)
 
 async function mdarray_tests() {
     log("runining mdarray_tests")
@@ -217,10 +148,10 @@ async function mdarray_tests() {
     test(equal(
         MDList(0, 1, 2),
         MDList(0, 1, 2),
-    ),true)
+    ),MDList(true,true,true))
 
-    // test(zip(new KList(0,1,2), new KList(3,2,1)), new KList(new KList(0,3),new KList(1,2),new KList(2,1)))
-    // test(zip(new KList(0,1,2), new KList(3,2,1)).map(l=>l.get(0)+l.get(1)), new KList(3,3,3))
+    // test(zip(new MDList(0,1,2), new MDList(3,2,1)), new MDList(new MDList(0,3),new MDList(1,2),new MDList(2,1)))
+    // test(zip(new MDList(0,1,2), new MDList(3,2,1)).map(l=>l.get(0)+l.get(1)), new MDList(3,3,3))
     //
     // //make our own add and subtract functions that work on anything
     // const add_lists = makeBinOp((a,b) => a+b)
@@ -263,15 +194,15 @@ async function mdarray_tests() {
         let arr1 = new MDArray([4,4])
         arr1.fillWith((i,j)=>i*j)
         //look at the first row
-        test(arr1.slice([null,0]).toJSFlatArray(), [0,0,0,0])
+        test(arr1.slice([WILDCARD,0]).toJSFlatArray(), [0,0,0,0])
         //first column
-        test(arr1.slice([0,null]).toJSFlatArray(), [0,0,0,0])
+        test(arr1.slice([0,WILDCARD]).toJSFlatArray(), [0,0,0,0])
         //look at the second row
-        test(arr1.slice([null,1]).toJSFlatArray(), [0,1,2,3])
+        test(arr1.slice([WILDCARD,1]).toJSFlatArray(), [0,1,2,3])
         //third row
-        test(arr1.slice([null,2]).toJSFlatArray(), [0,2,4,6])
+        test(arr1.slice([WILDCARD,2]).toJSFlatArray(), [0,2,4,6])
         //fourth row
-        test(arr1.slice([null,3]).toJSFlatArray(), [0,3,6,9])
+        test(arr1.slice([WILDCARD,3]).toJSFlatArray(), [0,3,6,9])
     }
     {
         //scalar times 2d
@@ -285,7 +216,7 @@ async function mdarray_tests() {
         let mat = new MDArray([3,3])
         mat.fillWith((x,y) => x*y)
         // console.log('mat is',mat, mat.toJSFlatArray())
-        let slice = mat.slice([1,null])
+        let slice = mat.slice([1,WILDCARD])
         // console.log("slice is",slice, slice.toJSFlatArray())
         let vec = new MDArray([3])
         vec.fill(3)
@@ -310,23 +241,23 @@ async function mdarray_tests() {
         let arr = new MDArray([3,3])
         arr.fill(0)
         test(arr.toJSFlatArray(), [0,0,0, 0,0,0, 0,0,0])
-        arr.slice([0,null]).fill(1)
+        arr.slice([0,WILDCARD]).fill(1)
         test(arr.toJSFlatArray(), [1,0,0, 1,0,0, 1,0,0])
     }
-    {
-        //add and assign to the y component of a list of points as a 2d array
-        let data = [1,2,
-                    3,4,
-                    5,6]
-        let arr = MDArray_fromList(data,[2,3])
-        // console.log('arr is',arr.toJSFlatArray())
-        //move down by four pixels
-        let slice = arr.slice([1,null])
-        // console.log("sliceo is",slice,slice.toJSFlatArray())
-        // console.log('element 0 of slice is',slice.get1(0))
-        incrementMD(slice,4)
-        // test(arr.toJSFlatArray(),[1,6, 3,8, 5,10])
-    }
+    // {
+    //     //add and assign to the y component of a list of points as a 2d array
+    //     let data = [1,2,
+    //                 3,4,
+    //                 5,6]
+    //     let arr = MDArray_fromList(data,[2,3])
+    //     // console.log('arr is',arr.toJSFlatArray())
+    //     //move down by four pixels
+    //     let slice = arr.slice([1,WILDCARD])
+    //     // console.log("sliceo is",slice,slice.toJSFlatArray())
+    //     // console.log('element 0 of slice is',slice.get1(0))
+    //     incrementMD(slice,4)
+    //     // test(arr.toJSFlatArray(),[1,6, 3,8, 5,10])
+    // }
 
     {
         //an array of rects
@@ -369,7 +300,7 @@ async function md_image_tests() {
         img.set3(0,0,1, 0)
         img.set3(0,0,2, 0)
         //make canvas demo that can draw md array as image. must be w x h x 3 to draw
-        console.log("src image is",img)
+        // console.log("src image is",img)
         await test_js(STD_SCOPE, `{
 let img = MDArray([4,4,3])
 img.set3(0,0,0, 1.0)
@@ -454,11 +385,11 @@ print(lists.wrap(val,min,max).toString())
 }
 
 Promise.all([
-    // list_tests(),
+    list_tests(),
     // math_tests(),
-    mdarray_tests(),
-    md_image_tests(),
-    py_lib_tests()
+    // mdarray_tests(),
+    // md_image_tests(),
+    // py_lib_tests()
 ])
     .then(()=>console.log("all tests pass"))
     .then(()=> {
