@@ -39,7 +39,9 @@ syntax:  `foo := [a,b,c]`. You can create 2D arrays by reshaping a list.
 
 # All arrays
 
-All functions which take lambdas provide it with the value and a variable number of index values. For example. running each on a list (1D array) will provide the lambda with `(v,i)` whereas running `each` on a 3D array will provide it with `(v,i,j,k)`
+All functions which take lambdas provide it with the value and a variable number of index values. 
+For example, running each on a list (1D array) will provide the lambda with `(v,i)` whereas 
+running `each` on a 3D array will provide it with `(v,i,j,k)`
 
 * *fill(value):void* fill every element with the value provided
 * *shape():List* returns list of dimension sizes.

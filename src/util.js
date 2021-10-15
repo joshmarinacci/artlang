@@ -66,7 +66,7 @@ function mdarray_compare(A, B) {
 
 export function checkEqual(A, B) {
     // console.log("comparing",A,B)
-    if (typeof A !== typeof B) throw new Error(`different types ${typeof A} not equal ${typeof B}`)
+    if (typeof A !== typeof B) throw new Error(`different types "${typeof A}" not equal "${typeof B}"`)
     // don't compare functions if they already have the same name
     if (typeof A === 'function') return true
     // console.log("testing",A,B, A===B)

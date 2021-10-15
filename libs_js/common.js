@@ -279,6 +279,94 @@ export class MDArray {
         if(this.rank === 1) return this.shape[0]
         throw new Error(`cannot get length of a rank ${this.rank} array`)
     }
+    len() {
+        if(this.rank !== 1) throw new Error(`Cannot do "len" on higher rank arrays. ${this.rank}`)
+        return this.shape[0]
+    }
+    sum() {
+        if(this.rank !== 1) throw new Error(`Cannot do "sum" on higher rank arrays. ${this.rank}`)
+        let total = 0
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            total += r
+        }
+        return total
+    }
+    min() {
+        if(this.rank !== 1) throw new Error(`Cannot do "min" on higher rank arrays. ${this.rank}`)
+        let min = Number.MAX_VALUE
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            if(r < min) min = r
+        }
+        return min
+    }
+    empty() {
+        return this.len() === 0
+    }
+    max() {
+        if(this.rank !== 1) throw new Error(`Cannot do "max" on higher rank arrays. ${this.rank}`)
+        let max = Number.MIN_VALUE
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            if(r > max) max = r
+        }
+        return max
+    }
+
+    take(n) {
+        if(this.rank !== 1) throw new Error(`Cannot do "take" on higher rank arrays. ${this.rank}`)
+        let arr = []
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            if(i < n) arr.push(r)
+        }
+        return new MDList(...arr)
+    }
+    drop(n) {
+        if(this.rank !== 1) throw new Error(`Cannot do "take" on higher rank arrays. ${this.rank}`)
+        let arr = []
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            if(i >= n) arr.push(r)
+        }
+        return new MDList(...arr)
+    }
+    partition(n) {
+        console.log("partioning with",n)
+        if(this.rank !== 1) throw new Error(`Cannot do "take" on higher rank arrays. ${this.rank}`)
+        let before = []
+        let after = []
+        let len = this.shape[0]
+        if (n < 0) n = len+n
+        console.log("using",n)
+        for(let i=0; i<len; i++) {
+            let r = this.get1(i)
+            if(i < n) {
+                before.push(r)
+            } else {
+                after.push(r)
+            }
+        }
+        return [before,after]
+    }
+    rotate(n) {
+        if(this.rank !== 1) throw new Error(`Cannot do "take" on higher rank arrays. ${this.rank}`)
+        if(n < 0) {
+            let parts = this.partition(-n)
+            console.log("parts are",parts)
+            let arr = parts[1].concat(parts[0])
+            console.log("new array is",arr)
+            return new MDList(...arr)
+        } else {
+            let parts = this.partition(-n)
+            console.log("parts are",parts)
+            let arr = parts[1].concat(parts[0])
+            console.log("new array is",arr)
+            return new MDList(...arr)
+        }
+    }
+
     map(cb) {
         let arr = new MDArray(this.shape)
         if(this.rank === 1) {
@@ -292,7 +380,35 @@ export class MDArray {
         }
         return arr
     }
-    forEach(cb) {
+    filter(cb) {
+        if(this.rank !== 1) throw new Error(`Cannot do "filter" on higher rank arrays. ${this.rank}`)
+        let arr = []
+        for(let i=0; i<this.shape[0];i++) {
+            let r = this.get1(i)
+            let s = cb(r)
+            if(s) arr.push(r)
+        }
+        return new MDList(...arr)
+    }
+    find(cb) {
+        if(this.rank !== 1) throw new Error(`Cannot do "find" on higher rank arrays. ${this.rank}`)
+        for(let i=0; i<this.len();i++) {
+            let r = this.get1(i)
+            let s = cb(r)
+            if(s) return r
+        }
+        return null
+    }
+    findIndex(cb) {
+        if(this.rank !== 1) throw new Error(`Cannot do "find" on higher rank arrays. ${this.rank}`)
+        for(let i=0; i<this.len();i++) {
+            let r = this.get1(i)
+            let s = cb(r)
+            if(s) return i
+        }
+        return null
+    }
+    each(cb) {
         if(this.rank === 1) {
             for (let i = 0; i < this.shape[0]; i++) {
                 let r = this.get1(i)
@@ -310,10 +426,11 @@ export class MDArray {
             return
         }
         this.data.forEach(cb)
+        return this
     }
-    every(cb) {
-        return this.forEach(cb)
-    }
+    // every(cb) {
+    //     return this.forEach(cb)
+    // }
 
     toJSFlatArray() {
         return this.data.slice()
