@@ -4,7 +4,7 @@ import express from "express"
 import {copy_file, file_exists, file_to_string, genid, mkdirs, write_to_file} from './util.js'
 import {make_grammar_semantics} from './grammar.js'
 import {STD_SCOPE} from '../libs_js/common.js'
-import {ast_to_js} from './generate_js.js'
+import {ast_preprocess, ast_to_js} from './generate_js.js'
 import {ast_to_py, PyOutput} from './generate_py.js'
 import {BOARDS} from './boards.js'
 
@@ -26,7 +26,7 @@ async function compile_js(src_file,out_dir) {
         console.log(result.message)
         return
     }
-    let ast = semantics(result).ast()
+    let ast = ast_preprocess(semantics(result).ast())
     let directives = strip_directives(ast)
 
     let before = []

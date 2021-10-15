@@ -15,17 +15,20 @@ from common import System
 from common import WHITE, BLACK, RED, GREEN, BLUE
 from lists import equals
 from pygamer import Canvas, DPadWrapper
+import terminalio
+from adafruit_display_text import label
+
 
 
 # pygamer already has variables for joystick_x, joystick_y, and buttons
 # pygamer already has a pixels variable
-
 joystick_x = analogio.AnalogIn(board.JOYSTICK_X)
 joystick_y = analogio.AnalogIn(board.JOYSTICK_Y)
 
 dpad = DPadWrapper(joystick_x, joystick_y)
 
 pixels = neopixel.NeoPixel(board.NEOPIXEL, 5, auto_write=False)
+display = board.DISPLAY
 
 buttons = keypad.ShiftRegisterKeys(
     clock = board.BUTTON_CLOCK,
