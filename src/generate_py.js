@@ -199,6 +199,18 @@ export function ast_to_py(ast, out) {
         }
         return `${before}.${after}`
     }
+    if (ast.type === AST_TYPES.array_access) {
+        let args = ast.args.map(a => ast_to_py(a,out)).flat()
+        let n = args.length
+        let name = ast_to_py(ast.name,out)
+        if(n === 3) return `${name}.get3(${args})`
+        if(n === 2) return `${name}.get2(${args})`
+        if(n === 1) return `${name}.get1(${args})`
+        let str = `${name}.get_invalid(${args})`
+        // console.log("generated",str)
+        return str
+    }
+
     if (ast.type === 'literal') {
         if (ast.kind === 'integer') return ast.value + ""
         if (ast.kind === 'float') return ast.value + ""
@@ -234,11 +246,17 @@ export function ast_to_py(ast, out) {
         }
         return
     }
-    if (ast.type === 'assignment') {
+    if (ast.type === AST_TYPES.assignment) {
         let name = ast_to_py(ast.name, out)
         out.add_variable_reference(name)
         out.line(`${name} = ${ast_to_py(ast.expression, out)}`)
         return
+    }
+    if (ast.type === AST_TYPES.array_assignment) {
+        let arr = ast_to_py(ast.array,out)
+        let ex = ast_to_py(ast.expression,out)
+        let N = arr.args.length
+        return `${arr.name}.set${N}(${arr.args.join(',')},${ex})`
     }
     if (ast.type === 'body') {
         ast.body.map(chunk => {
