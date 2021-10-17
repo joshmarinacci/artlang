@@ -13,6 +13,10 @@ def greaterthanorequals(a,b):
     return binop(a,b, lambda a,b:a>=b)
 def greaterthan(a,b):
     return binop(a,b, lambda a,b:a>b)
+def equals(a,b):
+    return binop(a,b, lambda a,b:a==b)
+def _and(a,b):
+    return binop(a,b, lambda a,b:(a and b))
 
 def binop(a,b,op):
     if isinstance(a,List) and isinstance(b,List):
@@ -57,10 +61,19 @@ class List:
             data.append(lam(val))
         return data
 
-    def every(self, lam):
-#         print("dots every count",len(self.data))
+    def each(self, lam):
         for val in self.data:
             lam(val)
+    def __iter__(self):
+        self.count = 0
+        self.max = len(self.data)
+        return self
+    def __next__(self):
+        if self.count >= self.max:
+            raise StopIteration
+        datum = self.data[self.count]
+        self.count = self.count + 1
+        return datum
     def dump(self):
         print("List is",self.data)
     def toString(self):

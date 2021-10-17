@@ -5,7 +5,7 @@ import {copy_file, file_exists, file_to_string, genid, mkdirs, write_to_file} fr
 import {make_grammar_semantics} from './grammar.js'
 import {STD_SCOPE} from '../libs_js/common.js'
 import {ast_preprocess, ast_to_js} from './generate_js.js'
-import {ast_to_py, PyOutput} from './generate_py.js'
+import {ast_preprocess_py, ast_to_py, PyOutput} from './generate_py.js'
 import {BOARDS} from './boards.js'
 
 function strip_directives(ast) {
@@ -193,6 +193,7 @@ export async function compile_py(opts) {
     }
     let board = null
     let ast = semantics(result).ast()
+    ast = ast_preprocess_py(ast)
     let directives = strip_directives(ast)
     directives.forEach(dir => {
         // console.log(dir)

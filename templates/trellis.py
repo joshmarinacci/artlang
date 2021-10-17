@@ -12,6 +12,7 @@ import adafruit_trellism4
 from tasks import TaskMaster
 from common import System
 from common import WHITE, BLACK, RED, GREEN, BLUE
+from lists import equals, _and
 from trellis import TrellisWrapper
 
 ${BOARD_IMPORTS}
@@ -26,7 +27,6 @@ canvas = TrellisWrapper(trellis)
 
 ${USER_VARIABLES}
 ${USER_FUNCTIONS}
-
 
 tm.start()
 while True:

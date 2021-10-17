@@ -10,7 +10,7 @@ const PY_BIN_OPS = {
     '>': {symbol: '>', name: 'greaterthan', fun:'greaterthan'},
     '>=': {symbol: '>=', name: 'greaterthanorequals',fun:'greaterthanorequals'},
     "or": {symbol: 'or', name:' or'},
-    "and": {symbol: 'and', name:' and'},
+    "and": {symbol: 'and', name:'and', fun:'_and'},
 }
 const PY_UN_OPS = {
     'not': {symbol: 'not', name:'not'}
@@ -162,6 +162,32 @@ function forever_loop(ast, out) {
     // out.after(`tm.register('${wrapper_name}',${wrapper_name},'loop')`)
 }
 
+export function ast_preprocess_py(ast) {
+    if(ast.type === AST_TYPES.fundef) {
+        ast.block = ast_preprocess_py(ast.block)
+    }
+    if(ast.type === AST_TYPES.body) {
+        ast.body = ast.body.map(a => ast_preprocess_py(a))
+    }
+    if(ast.type === AST_TYPES.funcall) {
+        if(ast.name.type === 'identifier' && ast.name.name.endsWith(".each")) {
+            console.log("it's an each construct",ast)
+            console.log("lambda",ast.args[0])
+            //    for pos in canvas.pressed_list:
+            // contents of the lambda
+            let name = ast.name.name
+            name = name.substring(0,name.length-".each".length)
+            return {
+                type:'forloop',
+                iter:ast.args[0].args[0],
+                source: name,
+                body:ast.args[0].body
+            }
+        }
+    }
+    return ast
+}
+
 export function ast_to_py(ast, out) {
     // console.log("doing",ast.type,'depth',out.depth)
     if (ast.type === 'identifier') return ast.name
@@ -267,6 +293,14 @@ export function ast_to_py(ast, out) {
             ast_to_py(ast.else_block, out)
             out.outdent()
         }
+        return
+    }
+    if (ast.type === 'forloop') {
+        console.log("generating a for loop",ast)
+        out.line(`for ${ast_to_py(ast.iter,out)} in ${ast.source}:`)
+        out.indent()
+        ast_to_py(ast.body,out)
+        out.outdent()
         return
     }
     if (ast.type === 'return') {
