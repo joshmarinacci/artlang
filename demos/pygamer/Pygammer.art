@@ -1,0 +1,51 @@
+@board("pygamer")
+font = terminalio.FONT
+color = BLUE   
+color2 = BLUE
+text2 = "PYGAMMER"
+text_area2 = label.Label(font:font, text:text2, color:color2)
+display.show(text_area2)
+text_area2.x = 60
+text_area2.y = 60
+time.sleep(5)
+print("color starting")
+screen.fill(BLUE)
+pixels.fill(BLUE)
+pixels.show()
+
+
+@type("start",setup)
+fun setup() {
+    print("Seting up")
+}
+
+@type("event",buttons,check)
+fun check(event) {
+    if (event.key_number == 0) {
+        print("TESTING")
+        screen.fill(BLUE)
+        pixels.fill(BLUE)
+        pixels.show()
+    }
+    if (event.key_number == 1) {
+        screen.fill(GREEN)
+        pixels.fill(GREEN)
+        pixels.show()
+    }
+    if (event.key_number == 2) {
+        screen.fill(RED)
+        pixels.fill(RED)
+        pixels.show()
+    } 
+
+    if (event.key_number == 3){
+        screen.fill(WHITE)
+        pixels.fill(WHITE)
+        pixels.show()
+    }
+}
+@type("loop",joystick_test)
+fun joystick_test() {
+    print("dpad",dpad.xv, dpad.yv)
+}
+
