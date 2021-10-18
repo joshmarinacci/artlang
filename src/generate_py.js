@@ -8,6 +8,7 @@ const PY_BIN_OPS = {
     '/':{symbol:'/',name:"divide",fun:'divide'},
     '==': {symbol: '==', name: 'equals', fun:'equals'},
     '>': {symbol: '>', name: 'greaterthan', fun:'greaterthan'},
+    '<': {symbol: '<', name: 'lessthan', fun:'lessthan'},
     '>=': {symbol: '>=', name: 'greaterthanorequals',fun:'greaterthanorequals'},
     "or": {symbol: 'or', name:' or'},
     "and": {symbol: 'and', name:'and', fun:'_and'},

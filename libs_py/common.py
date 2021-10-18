@@ -8,6 +8,7 @@ RED     = 0xff0000
 GREEN   = 0x00ff00
 BLUE    = 0x0000ff
 GRAY    = 0x454545
+YELLOW  = 0xFFFF00
 # YELLOW  = (255, 255,   0)
 # MAGENTA = (255,   0, 255)
 # CYAN    = (  0, 255, 255)

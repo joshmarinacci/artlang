@@ -11,8 +11,8 @@ import adafruit_trellism4
 
 from tasks import TaskMaster
 from common import System
-from common import WHITE, BLACK, RED, GREEN, BLUE
-from lists import equals, _and
+from common import WHITE, BLACK, RED, GREEN, BLUE, YELLOW
+from lists import equals, _and, add, subtract, lessthan, greaterthan, listrange
 from trellis import TrellisDevice
 
 ${BOARD_IMPORTS}

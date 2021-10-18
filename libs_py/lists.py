@@ -13,6 +13,8 @@ def greaterthanorequals(a,b):
     return binop(a,b, lambda a,b:a>=b)
 def greaterthan(a,b):
     return binop(a,b, lambda a,b:a>b)
+def lessthan(a,b):
+    return binop(a,b, lambda a,b:a<b)
 def equals(a,b):
     return binop(a,b, lambda a,b:a==b)
 def _and(a,b):
