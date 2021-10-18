@@ -9,7 +9,8 @@
     "test-lang": "node tests/langtests.js",
     "test-gen": "node tests/gentests.js",
     "test-syntax": "node tests/syntax_tests.js",
-    "trellis-1": "node src/build.js --src demos/trellis/macropad.key --target py --outdir /Volumes/CIRCUITPY --outfile code.py"
+    "trellis-1": "node src/build.js --src demos/trellis/macropad.key --target py --outdir /Volumes/CIRCUITPY --outfile code.py",
+    "trinkey-1": "node src/build.js --src demos/trinkey/mouse_afk.key --target py"
   },
   "author": "",
   "license": "ISC",
