@@ -62,6 +62,7 @@ from lists import List
             libs:[
                 'common',
                 'tasks',
+                'trinkey',
             ],
             imports:`
             `,

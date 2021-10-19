@@ -1,5 +1,10 @@
-from lists import List
 import usb_hid
+import neopixel
+import usb_hid
+import touchio
+
+from adafruit_debouncer import Debouncer
+from digitalio import DigitalInOut, Pull
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 from adafruit_hid.mouse import Mouse
@@ -12,6 +17,7 @@ class TrinkeyDevice():
         self.pin = DigitalInOut(board.SWITCH)
         self.pin.pull = Pull.DOWN
         self.button = Debouncer(self.pin)
+        print("setup trinkey")
 
     def update(self):
         self.button.update()
