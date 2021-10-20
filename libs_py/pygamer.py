@@ -1,8 +1,17 @@
+import math
+import displayio
+import neopixel
+import analogio
+from adafruit_hid.keyboard import Keyboard
+from adafruit_hid.keycode import Keycode
+from adafruit_debouncer import Debouncer
+import adafruit_fancyled.adafruit_fancyled as fancy
+from adafruit_hid.mouse import Mouse
+import usb_hid
+import keypad
+
 from common import BLACK, WHITE, RED, BLUE, GREEN, GRAY
 from lists import List
-import displayio
-import math
-import adafruit_fancyled.adafruit_fancyled as fancy
 
 class Canvas(displayio.TileGrid):
     w = 10
@@ -90,3 +99,50 @@ class DPadWrapper:
         self.yv = round(((self.y.value * 10 / 65536) - 5)/5)
 
 
+
+class ButtonsWrapper():
+    current_press = set()
+    pressed = set()
+    pressed_list = List()
+
+    def __init__(self, board):
+        self.buttons = keypad.ShiftRegisterKeys(
+            clock = board.BUTTON_CLOCK,
+            data  = board.BUTTON_OUT,
+            latch = board.BUTTON_LATCH,
+            key_count = 4,
+            value_when_pressed = True,
+            )
+
+    def update(self):
+        self.pressed_list = List()
+        event = self.buttons.events.get()
+        if event:
+            self.pressed_list.append(event.key_number)
+        #                 event = self.buttons.events.get()
+        #                 if event:
+        #                     print("event happened", event.key_number, event.pressed, event.released)
+#         for item in just_pressed:
+#             self.pressed_list.append(List(item[0],item[1]))
+
+class PygamerDevice():
+    def __init__(self, board):
+        self.board = board
+        joystick_x = analogio.AnalogIn(board.JOYSTICK_X)
+        joystick_y = analogio.AnalogIn(board.JOYSTICK_Y)
+        self.dpad = DPadWrapper(joystick_x, joystick_y)
+        self.pixels = neopixel.NeoPixel(board.NEOPIXEL, 5, auto_write=False)
+        self.display = board.DISPLAY
+        self.mouse = Mouse(usb_hid.devices)
+        self.keyboard = Keyboard(usb_hid.devices)
+        print("width is",board.DISPLAY.width)
+        print("width is",board.DISPLAY.height)
+        self.g = displayio.Group()
+        self.screen = Canvas(0,0,160,128)
+        self.g.append(self.screen)
+        self.buttons = ButtonsWrapper(board)
+
+    def update(self):
+        self.buttons.update()
+        self.dpad.update()
+        self.board.DISPLAY.show(self.g)

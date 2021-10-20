@@ -11,7 +11,9 @@
     "test-syntax": "node tests/syntax_tests.js",
     "trellis-1": "node src/build.js --src demos/trellis/macropad.key --target py --outdir /Volumes/CIRCUITPY --outfile code.py",
     "trinkey-test": "node src/build.js --src demos/trinkey/mouse_afk.key --target py",
-    "trinkey-live": "node src/build.js --src demos/trinkey/mouse_afk.key --target py --outdir /Volumes/CIRCUITPY --outfile code.py"
+    "trinkey-live": "node src/build.js --src demos/trinkey/mouse_afk.key --target py --outdir /Volumes/CIRCUITPY --outfile code.py",
+    "pygamer-test": "node src/build.js --src demos/pygamer/colors.key --target py",
+    "pygamer-live": "node src/build.js --src demos/pygamer/colors.key --target py --outdir /Volumes/CIRCUITPY --outfile code.py"
   },
   "author": "",
   "license": "ISC",
