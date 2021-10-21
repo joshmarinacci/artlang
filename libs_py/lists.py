@@ -20,6 +20,8 @@ def equals(a,b):
 def _and(a,b):
     return binop(a,b, lambda a,b:(a and b))
 
+WILDCARD = "WILDCARD"
+
 def binop(a,b,op):
     if isinstance(a,List) and isinstance(b,List):
         out = List()
@@ -56,6 +58,8 @@ class List:
         return self.data[n]
     def set1(self, n, v):
         self.data[n] = v
+    def push_end(self, v):
+        self.data.append(v)
 
     def map(self, lam):
         data = List()
@@ -99,14 +103,30 @@ class MDArray:
     def fromIndex(self, n):
         return (n%self.shape.get1(0), floor(n/self.shape.get1(0)))
     def set2(self, x,y,v):
+        if(x == WILDCARD or y == WILDCARD):
+            return this.slice([x,y])
         self.data[self.index(x,y)] = v
     def get2(self, x,y):
+        if(x == WILDCARD or y == WILDCARD):
+            return self.slice([x,y])
         return self.data[self.index(x,y)]
     def every(self, lam):
         for n in range(self.length):
             (x,y) = self.fromIndex(n)
             v = self.data[n]
             lam(v,x,y)
+    def slice(self, shape):
+        return MDView(self, shape)
+
+class MDView():
+    def __init__(self, array, shape):
+        self.array = array
+        self.sliceshape = shape
+        self.shape = []
+        for d,i in shape:
+            if d != WILDCARD:
+                self.shape.push(self.array.shape[i])
+        self.rank = len(self.shape)
 
 
 def listrange(min, max=None, step=1):
