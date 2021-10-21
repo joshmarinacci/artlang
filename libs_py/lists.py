@@ -88,11 +88,12 @@ class List:
 class MDArray:
     def __init__(self, shape):
         self.shape = shape
+        self.rank = shape.length
         w = shape.get1(0)
         h = shape.get1(1)
         self.length = w * h
-        print("making MD array of shape",w,h, self.length)
-        self.data = bytearray()
+        #print("making MD array of shape",w,h, self.length)
+        self.data = []#bytearray()
         for n in range(self.length):
             self.data.append(0)
     def fill(self, val):
@@ -117,16 +118,61 @@ class MDArray:
             lam(v,x,y)
     def slice(self, shape):
         return MDView(self, shape)
+    def toString(self):
+        converted_list = [str(element) for element in self.data]
+        return ','.join(converted_list)
 
 class MDView():
     def __init__(self, array, shape):
+        if isinstance(shape,List):
+            shape = shape.data
         self.array = array
         self.sliceshape = shape
         self.shape = []
-        for d,i in shape:
+        c = 0
+        for d in shape:
             if d != WILDCARD:
-                self.shape.push(self.array.shape[i])
-        self.rank = len(self.shape)
+                self.shape.append(self.array.shape.get1(c))
+            c += 1
+        self.rank = len(shape)
+    def fill(self, val):
+        if self.sliceshape[0] != WILDCARD and self.sliceshape[1] == WILDCARD:
+            i = self.sliceshape[0]
+            for j in range(self.array.shape.get1(1)):
+                self.array.set2(i,j,val)
+        if self.sliceshape[0] == WILDCARD and self.sliceshape[1] != WILDCARD:
+            j = self.sliceshape[1]
+            for i in range(self.array.shape.get1(0)):
+                self.array.set2(i,j,val)
+
+    def get1(self, n):
+        if self.sliceshape[0] != WILDCARD and self.sliceshape[1] == WILDCARD:
+            i = self.sliceshape[0]
+            j = n
+            return self.array.get2(i,j)
+        if self.sliceshape[0] == WILDCARD and self.sliceshape[1] != WILDCARD:
+            j = self.sliceshape[1]
+            i = n
+            return self.array.get2(i,j)
+
+    def set1(self, n, val):
+        if self.sliceshape[0] != WILDCARD and self.sliceshape[1] == WILDCARD:
+            i = self.sliceshape[0]
+            j = n
+            self.array.set2(i,j,val)
+        if self.sliceshape[0] == WILDCARD and self.sliceshape[1] != WILDCARD:
+            j = self.sliceshape[1]
+            i = n
+            self.array.set2(i,j,val)
+
+    def toString(self):
+        out = []
+        if self.sliceshape[0] != WILDCARD and self.sliceshape[1] == WILDCARD:
+            i = self.sliceshape[0]
+            for j in range(self.array.shape.get1(1)):
+                out.append(str(self.array.get2(i,j)))
+        return ','.join(out)
+
 
 
 def listrange(min, max=None, step=1):

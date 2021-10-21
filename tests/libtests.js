@@ -401,26 +401,87 @@ async function py_array_tests() {
     // make a 2d array fill with 0->5 left to right, same every row
     // confirm shape
     // confirm rank
-    // get a 1d row slice of 2d array
-    // confirm shape and rank
-    // confirm contents are correct
-    // set single value to slice
-    // confirm in main array
-    // set value to whole slice
-    // confirm in main array
-    // get a 1d column slice of 2d array, left and right columns
-    // set to same value
-    // confirm in main array
-
-//try wrapping a list
     await test_raw_py(`
 import common
 import lists
-val = lists.List(-3,13)
-min = lists.List(0,0)
-max = lists.List(10,10)
-print(lists.wrap(val,min,max).toString())    
-    `,'7,3')
+val = lists.MDArray(lists.List(2,2))
+print('shape',val.shape.toString(),
+    'rank', val.rank)
+    `,'shape 2,2 rank 2')
+
+    //fill with a number
+    await test_raw_py(`
+import common
+import lists
+val = lists.MDArray(lists.List(2,2))
+val.fill(88)
+print(val.toString())
+    `,'88,88,88,88')
+
+    // get a 1d row slice of 2d array
+    // confirm shape and rank
+    // confirm contents are correct
+    // set value to whole slice
+    // confirm in main array
+    await test_raw_py(`
+import common
+import lists
+val = lists.MDArray(lists.List(2,2))
+val.fill(88)
+sl = val.slice(lists.List(0,lists.WILDCARD))
+sl.fill(44)
+print('shape',sl.shape)
+print('rank',sl.rank)
+print(sl.toString())
+    `,'shape [2]\nrank 2\n44,44')
+
+
+    // set single value to slice
+    // confirm in main array
+    await test_raw_py(`
+import common
+import lists
+val = lists.MDArray(lists.List(2,2))
+val.fill(88)
+sl = val.slice(lists.List(0,lists.WILDCARD))
+sl.set1(1,44)
+print(sl.toString())
+print(val.toString())
+    `,'88,44\n88,88,44,88 ')
+
+    // get a 1d column slice of 2d array, left and right columns
+    // set to same value
+    // confirm in main array
+    await test_raw_py(`
+import common
+import lists
+val = lists.MDArray(lists.List(2,2))
+val.fill(88)
+sl1 = val.slice(lists.List(0,lists.WILDCARD))
+sl1.fill(44)
+sl2 = val.slice(lists.List(1,lists.WILDCARD))
+sl2.fill(44)
+#print(sl.toString())
+print(val.toString())
+    `,'44,44,44,44 ')
+
+
+    // get a 1d column slice of 2d array, top and bottom rows
+    // set to same value
+    // confirm in main array
+    await test_raw_py(`
+import common
+import lists
+val = lists.MDArray(lists.List(2,2))
+val.fill(88)
+sl1 = val.slice(lists.List(lists.WILDCARD,0))
+sl1.fill(44)
+sl1.set1(0,33)
+sl2 = val.slice(lists.List(lists.WILDCARD,1))
+sl2.fill(44)
+print(val.toString())
+    `,'33,44,44,44 ')
+
 }
 
 Promise.all([
