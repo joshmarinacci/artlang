@@ -5,6 +5,7 @@ const INDENT = "    "
 const PY_BIN_OPS = {
     '+':{symbol:'+',name:'add', fun:'add'},
     '-':{symbol:'-',name:'subtract', fun:'subtract'},
+    '*':{symbol:'*',name:'multiply', fun:'multiply'},
     '/':{symbol:'/',name:"divide",fun:'divide'},
     '==': {symbol: '==', name: 'equals', fun:'equals'},
     '>': {symbol: '>', name: 'greaterthan', fun:'greaterthan'},
@@ -12,9 +13,16 @@ const PY_BIN_OPS = {
     '>=': {symbol: '>=', name: 'greaterthanorequals',fun:'greaterthanorequals'},
     "or": {symbol: 'or', name:' or'},
     "and": {symbol: 'and', name:'and', fun:'_and'},
+    "mod": {symbol:'mod', name:'mod', fun:"_mod"}
 }
 const PY_UN_OPS = {
     'not': {symbol: 'not', name:'not'}
+}
+const ASSIGN_OPS = {
+    '+=':'+',
+    '-=':'-',
+    '*=':'*',
+    '/=':'/',
 }
 
 export class PyOutput {
@@ -186,12 +194,22 @@ export function ast_preprocess_py(ast) {
             }
         }
     }
+    if(ast.type === AST_TYPES.binexp) {
+        if (ASSIGN_OPS[ast.op]) {
+            ast = {
+                type: 'assignment',
+                name: ast.exp1,
+                expression: {type: 'binexp', op: ASSIGN_OPS[ast.op], exp1: ast.exp1, exp2: ast.exp2}
+            }
+        }
+    }
     return ast
 }
 
 export function ast_to_py(ast, out) {
     // console.log("doing",ast.type,'depth',out.depth)
     if (ast.type === 'identifier') return ast.name
+    if (ast.type === AST_TYPES.array_wildcard) return "WILDCARD"
     if (ast.type === AST_TYPES.deref) {
         let before = ast_to_py(ast.before,out)
         let after = ast_to_py(ast.after,out)
@@ -210,6 +228,13 @@ export function ast_to_py(ast, out) {
         let str = `${name}.get_invalid(${args})`
         // console.log("generated",str)
         return str
+    }
+    if (ast.type === AST_TYPES.array_set_access) {
+        let args = ast.args.map(a => ast_to_py(a,out)).flat()
+        return {
+            name:ast_to_py(ast.name,out),
+            args:args
+        }
     }
 
     if (ast.type === 'literal') {

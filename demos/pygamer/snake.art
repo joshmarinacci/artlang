@@ -1,0 +1,64 @@
+@board("pygamer")
+
+//var screen = new KCanvas(0,0,200,200,4)
+//var dpad = new DPadWrapper()
+
+var grid = MDArray([20,20])
+grid.fill(0)
+var dir = [1,0]
+var pos = [10,10]
+var tail = []
+tail.push_end(pos)
+var PALETTE = [RED,GREEN,BLUE]
+var count = 0
+
+//TODO: i shouldn't need the return here
+fun nth(a,b) { return (a mod b) == 0 }
+
+@type('start',setup)
+fun setup() {
+    reset()
+}
+fun reset() {
+    pos = [10,10]
+    tail = []
+    //clear the grid
+    grid.fill(0)
+    //get slices of the four edges, then fill them
+    var bounds = [  grid[0,?], grid[19,?], grid[?,0], grid[?,19] ]
+    bounds.each(@(b) => {
+        b.fill(1)
+        return 0
+    })
+}
+
+
+@type('loop',forever)
+fun forever() {
+    var newdir = dpad.current() // turns [-1,-1] to [1,1]
+    if (not((newdir[0] == 0) and (newdir[1] == 0))) {
+        dir = newdir
+    }
+    //if dpad.current() != [0,0] dir = dpad.current()
+
+    //TODO: implement +=
+	pos += dir
+
+	//grid[pos] is the same as grid[pos[0],pos[1]], or etc.
+    if grid[pos] > 0 return reset()
+
+    tail.push_end(pos)
+    grid[pos] = 2
+	grid.each(@(v,x,y)=> {
+	    screen.fillRect(Rect(x:x*10, y:y*10, w:10, h:10),PALETTE[v])
+    })
+    tail.each(@(v,i) => {
+	    screen.fillRect(Rect(x:v[0]*10, y:v[1]*10, w:10, h:10),PALETTE[2])
+    })
+    if (not nth(count,6)) {
+        grid[tail.pop_start()] = 0
+    }
+
+    count += 1
+    wait(0.2)
+}
