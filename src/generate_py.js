@@ -180,15 +180,16 @@ export function ast_preprocess_py(ast) {
     }
     if(ast.type === AST_TYPES.funcall) {
         if(ast.name.type === 'identifier' && ast.name.name.endsWith(".each")) {
-            console.log("it's an each construct",ast)
-            console.log("lambda",ast.args[0])
-            //    for pos in canvas.pressed_list:
+            // console.log("it's an each construct",ast)
+            let lam = ast.args[0]
+            // console.log("lambda",lam)
+            //    for v,i,j in canvas.pressed_list:
             // contents of the lambda
             let name = ast.name.name
             name = name.substring(0,name.length-".each".length)
             return {
                 type:'forloop',
-                iter:ast.args[0].args[0],
+                iter:lam.args,
                 source: name,
                 body:ast.args[0].body
             }
@@ -341,7 +342,8 @@ export function ast_to_py(ast, out) {
     }
     if (ast.type === 'forloop') {
         console.log("generating a for loop",ast)
-        out.line(`for ${ast_to_py(ast.iter,out)} in ${ast.source}:`)
+        let args = ast.iter.map(a => ast_to_py(a,out))
+        out.line(`for ${args.join(",")} in ${ast.source}:`)
         out.indent()
         ast_to_py(ast.body,out)
         out.outdent()

@@ -19,6 +19,8 @@ def equals(a,b):
     return binop(a,b, lambda a,b:a==b)
 def _and(a,b):
     return binop(a,b, lambda a,b:(a and b))
+def _mod(a,b):
+    return binop(a,b, lambda a,b:(a % b))
 
 WILDCARD = "WILDCARD"
 
@@ -60,6 +62,8 @@ class List:
         self.data[n] = v
     def push_end(self, v):
         self.data.append(v)
+    def pop_start(self):
+        return self.data.pop(0)
 
     def map(self, lam):
         data = List()
@@ -71,22 +75,32 @@ class List:
         for val in self.data:
             lam(val)
     def __iter__(self):
-        self.count = 0
-        self.max = len(self.data)
-        return self
-    def __next__(self):
-        if self.count >= self.max:
-            raise StopIteration
-        datum = self.data[self.count]
-        self.count = self.count + 1
-        return datum
+        return ListLooper(self)
     def dump(self):
         print("List is",self.data)
     def toString(self):
         return ','.join(str(e) for e in self.data)
 
+class ListLooper():
+    def __init__(self,array):
+        self.array = array
+        self.count = 0
+        self.max = array.length
+    def __next__(self):
+        if self.count >= self.max:
+            raise StopIteration
+        v = self.array.data[self.count]
+        self.count = self.count + 1
+        return (v,self.count)
+
+def is_mdarray(arr):
+    return isinstance(arr, MDArray)
+def is_mdlist(arr):
+    return isinstance(arr, List)
+
 class MDArray:
     def __init__(self, shape):
+        self.type = "MDArray"
         self.shape = shape
         self.rank = shape.length
         w = shape.get1(0)
@@ -103,14 +117,33 @@ class MDArray:
         return x + y*self.shape.get1(0)
     def fromIndex(self, n):
         return (n%self.shape.get1(0), floor(n/self.shape.get1(0)))
-    def set2(self, x,y,v):
-        if(x == WILDCARD or y == WILDCARD):
-            return this.slice([x,y])
-        self.data[self.index(x,y)] = v
+    def get1(self, i):
+        if is_mdarray(i):
+            if i.rank == 1:
+                return self.get2(i.data[0],i.data[1])
+        if is_mdlist(i):
+            return self.get2(i.data[0],i.data[1])
+
+        return self.data[i]
+    def set1(self, i, v):
+        if is_mdarray(i):
+            if i.rank == 1:
+                self.set2(i.data[0],i.data[1],v)
+                return 0
+        if is_mdlist(i):
+            self.set2(i.data[0],i.data[1],v)
+            return 0
+        self.data[i] = v
+        return 0
+
     def get2(self, x,y):
         if(x == WILDCARD or y == WILDCARD):
             return self.slice([x,y])
         return self.data[self.index(x,y)]
+    def set2(self, x,y,v):
+        if(x == WILDCARD or y == WILDCARD):
+            return this.slice([x,y])
+        self.data[self.index(x,y)] = v
     def every(self, lam):
         for n in range(self.length):
             (x,y) = self.fromIndex(n)
@@ -121,6 +154,20 @@ class MDArray:
     def toString(self):
         converted_list = [str(element) for element in self.data]
         return ','.join(converted_list)
+    def __iter__(self):
+        return MDArrayLooper(self)
+class MDArrayLooper():
+    def __init__(self,array):
+        self.array = array
+        self.count = 0
+        self.max = array.length
+    def __next__(self):
+        if self.count >= self.max:
+            raise StopIteration
+        (x,y) = self.array.fromIndex(self.count)
+        v = self.array.data[self.count]
+        self.count = self.count + 1
+        return (v,x,y)
 
 class MDView():
     def __init__(self, array, shape):
@@ -188,41 +235,26 @@ def listrange(min, max=None, step=1):
     return data
 
 
-# class Rect:
-#     def __init__(self, x1, y1, x2, y2):
-#         self.x1 = floor(x1)
-#         self.y1 = floor(y1)
-#         self.x2 = floor(x2)
-#         self.y2 = floor(y2)
-#         self.width = self.x2 - self.x1
-#         self.height = self.y2 - self.y1
-#
-#     def split(self, dir, amount):
-#         print("splitting",dir,amount)
-#         if dir == 'h':
-#             return [
-#                 Rect(
-#                     self.x1, self.y1,
-#                     lerp(amount, self.x1, self.x2), self.y2,
-#                     ),
-#                 Rect(
-#                     lerp(amount, self.x1, self.x2),self.y1,
-#                     self.x2, self.y2,
-#                     ),
-#             ]
-#         if dir == 'v':
-#             return [
-#                 Rect(
-#                     self.x1, self.y1,
-#                     self.x2, lerp(amount, self.y1, self.y2),
-#                     ),
-#                 Rect(
-#                     self.x1, lerp(amount, self.y1, self.y2),
-#                     self.x2, self.y2,
-#                     ),
-#             ]
-#
-#
+class Rect:
+    def __init__(self, x=0, y=0, w=10, h=10):
+        self.x = floor(x)
+        self.y = floor(y)
+        self.w = floor(w)
+        self.h = floor(h)
+    def get_x1(self):
+        return self.x
+    x1 = property(get_x1)
+    def get_y1(self):
+        return self.y
+    y1 = property(get_y1)
+    def get_x2(self):
+        return self.x + self.w
+    x2 = property(get_x2)
+    def get_y2(self):
+        return self.y + self.h
+    y2 = property(get_y2)
+
+
 def wrapop(val,min,max):
     if val < min:
         return val + (max-min)

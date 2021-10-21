@@ -5,7 +5,7 @@ from digitalio import DigitalInOut, Pull
 from tasks import TaskMaster
 from common import System
 from common import WHITE, BLACK, RED, GREEN, BLUE
-from lists import equals, MDArray, List, WILDCARD
+from lists import equals, greaterthan, multiply, _and, _mod, MDArray, List, Rect, WILDCARD
 from pygamer import Canvas, DPadWrapper
 import terminalio
 from adafruit_display_text import label

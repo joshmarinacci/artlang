@@ -79,8 +79,15 @@ class Canvas(displayio.TileGrid):
         x2 = math.floor(rect.x2)
         y1 = math.floor(rect.y1)
         y2 = math.floor(rect.y2)
-        bitmaptools.fill_region(self._bitmap, x1, x2, y2,y2, c)
+        bitmaptools.fill_region(self._bitmap, x1, y1, x2, y2, c)
 
+    def fillRect_fast(self,x,y,w,h,col):
+        c = self.pal.index(col)
+        x1 = math.floor(x)
+        x2 = math.floor(x+w)
+        y1 = math.floor(y)
+        y2 = math.floor(y+h)
+        bitmaptools.fill_region(self._bitmap, x1, y1, x2, y2, c)
 
 
 class DPadWrapper:
@@ -95,6 +102,8 @@ class DPadWrapper:
     def update(self):
         self.xv = round(((self.x.value * 10 / 65536) - 5)/5)
         self.yv = round(((self.y.value * 10 / 65536) - 5)/5)
+    def current(self):
+        return List(self.xv,self.yv)
 
 
 
