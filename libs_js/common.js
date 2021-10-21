@@ -208,6 +208,13 @@ class MDView {
         })
         this.rank = def.filter( t => t !== WILDCARD).length
     }
+    toJSON() {
+        return {
+            shape:this.shape,
+            rank:this.rank,
+            data:this.toJSFlatArray(),
+        }
+    }
     get1(n) {
         if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
             let i = this.sliceshape[0]
@@ -533,6 +540,13 @@ export class MDArray {
         let val = this.data.shift()
         this.shape[0] -= 1
         return val
+    }
+    toJSON() {
+        return {
+            shape:this.shape,
+            rank:this.rank,
+            data:this.toJSFlatArray(),
+        }
     }
 }
 export function MDArray_fromList(data, shape) {

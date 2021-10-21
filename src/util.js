@@ -127,17 +127,18 @@ export async function test_js(scope, code, ans) {
 export function doit() {
     ${res}
 }
-//console.log("running the generated module")
-doit()
+console.log(JSON.stringify(doit(),null,'  '))
         `
     // console.log("generated code", res)
     let pth = `temp/generated_${Math.floor(Math.random()*10000)}.js`
     await write_to_file(pth, res)
     try {
-        let mod = await import("../"+pth)
-        let fres = mod.doit()
-        // console.log("comparing", fres, ans)
-        if (!checkEqual(fres, ans)) throw new Error(`not equal in file ${pth}`)
+        console.log("going to run the node code",pth)
+        let {stdout, stderr}  = await exec(`node ${pth}`)
+        let ans_str = JSON.stringify(ans,null,'  ')
+        stdout = stdout.trim().trim()
+        console.log(`comparing ${stdout}`,stderr,'vs answer',ans_str)
+        if (!checkEqual(stdout, ans_str)) throw new Error("not equal")
     } catch (e) {
         console.log("error happened",e)
         console.log('file://'+path.resolve(pth))

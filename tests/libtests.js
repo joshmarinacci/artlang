@@ -13,7 +13,15 @@ import {
     makeBinOp,
     equal, WILDCARD, multiply, add, subtract, divide
 } from '../libs_js/common.js'
-import {checkEqual, copy_file, force_delete, log, test_js, test_raw_py} from '../src/util.js'
+import {
+    checkEqual,
+    copy_file,
+    force_delete,
+    log,
+    mkdirs,
+    test_js,
+    test_raw_py
+} from '../src/util.js'
 
 function test(res,ans) {
     console.log("comparing",res,ans)
@@ -312,6 +320,7 @@ img
 }
 
 async function py_lib_tests() {
+    await mkdirs('temp')
     await copy_file('libs_py/common.py','temp/common.py')
     await copy_file('libs_py/lists.py','temp/lists.py')
     await test_raw_py(`print(42)`, '42')
@@ -384,12 +393,43 @@ print(lists.wrap(val,min,max).toString())
 
 }
 
+async function py_array_tests() {
+    await mkdirs('temp')
+    await copy_file('libs_py/common.py','temp/common.py')
+    await copy_file('libs_py/lists.py','temp/lists.py')
+
+    // make a 2d array fill with 0->5 left to right, same every row
+    // confirm shape
+    // confirm rank
+    // get a 1d row slice of 2d array
+    // confirm shape and rank
+    // confirm contents are correct
+    // set single value to slice
+    // confirm in main array
+    // set value to whole slice
+    // confirm in main array
+    // get a 1d column slice of 2d array, left and right columns
+    // set to same value
+    // confirm in main array
+
+//try wrapping a list
+    await test_raw_py(`
+import common
+import lists
+val = lists.List(-3,13)
+min = lists.List(0,0)
+max = lists.List(10,10)
+print(lists.wrap(val,min,max).toString())    
+    `,'7,3')
+}
+
 Promise.all([
     list_tests(),
     // math_tests(),
-    // mdarray_tests(),
+    mdarray_tests(),
     // md_image_tests(),
-    // py_lib_tests()
+    py_lib_tests(),
+    py_array_tests()
 ])
     .then(()=>console.log("all tests pass"))
     .then(()=> {
