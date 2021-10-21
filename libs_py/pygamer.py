@@ -1,7 +1,9 @@
 import math
+import time
 import displayio
 import neopixel
 import analogio
+import bitmaptools
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 from adafruit_debouncer import Debouncer
@@ -63,9 +65,7 @@ class Canvas(displayio.TileGrid):
 
     def fill(self, col):
         c = self.pal.index(col)
-        for i in range(0, self.w):   # draw the center chunk
-            for j in range(0, self.h):   # draw the center chunk
-                self._bitmap[i, j] = c
+        bitmaptools.fill_region(self._bitmap, 0, 0, self.w,self.h, c)
 
     def setPixel(self, xy, col):
         c = self.pal.index(col)
@@ -79,9 +79,7 @@ class Canvas(displayio.TileGrid):
         x2 = math.floor(rect.x2)
         y1 = math.floor(rect.y1)
         y2 = math.floor(rect.y2)
-        for i in range(x1,x2):   # draw the center chunk
-            for j in range(y1,y2):   # draw the center chunk
-                self._bitmap[i, j] = c
+        bitmaptools.fill_region(self._bitmap, x1, x2, y2,y2, c)
 
 
 
@@ -117,7 +115,7 @@ class ButtonsWrapper():
     def update(self):
         self.pressed_list = List()
         event = self.buttons.events.get()
-        if event:
+        if event and event.pressed:
             self.pressed_list.append(event.key_number)
         #                 event = self.buttons.events.get()
         #                 if event:
@@ -135,14 +133,12 @@ class PygamerDevice():
         self.display = board.DISPLAY
         self.mouse = Mouse(usb_hid.devices)
         self.keyboard = Keyboard(usb_hid.devices)
-        print("width is",board.DISPLAY.width)
-        print("width is",board.DISPLAY.height)
         self.g = displayio.Group()
         self.screen = Canvas(0,0,160,128)
         self.g.append(self.screen)
         self.buttons = ButtonsWrapper(board)
+        self.display.show(self.g)
 
     def update(self):
         self.buttons.update()
         self.dpad.update()
-        self.board.DISPLAY.show(self.g)

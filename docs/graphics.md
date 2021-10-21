@@ -41,3 +41,15 @@ Looking at the other geometric primitvies shows that they tend to set their inte
 time and never modify it again except when changing colors.
 
 
+* make sure [auto-refresh](https://circuitpython.readthedocs.io/en/latest/shared-bindings/displayio/index.html#displayio.Display.auto_refresh) is disabled.
+* use manual 'refresh' call. is using 'show' the problem?
+* use these [bitmap tools util functions](https://circuitpython.readthedocs.io/en/latest/shared-bindings/bitmaptools/index.html) to speed things up
+* look at the source for [vectorio](https://circuitpython.readthedocs.io/en/latest/shared-bindings/vectorio/index.html)
+
+
+
+~0.3 seconds in 
+import bitmap tools. use it to fill and measure the speed difference.
+
+
+used bitmap tools. went from 0.3s to 0.009s to fill the entire screen. avoiding python to C calls is the key
