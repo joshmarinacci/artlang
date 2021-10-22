@@ -1,37 +1,45 @@
 var UNKNOWN = 0
-//YES = 1
-//NO  = 2
-//image = load_array_from_image('bw_sprite.bmp')
+var YES = 1
+var NO  = 2
+var PAL = [WHITE, BLACK, BLUE]
+
 var screen = new KCanvas(0,0,200,200,4)
 var image = [0,1,1,
              0,1,0,
              1,1,1].reshape([3,3])
 //every value in the image will be 0 for empty or 1 for pixel is there.
-var board = MDArray(image.shape)
-board.fill(UNKNOWN)
+var board = []
 
 @type('start',setup)
 fun setup() {
     print("doing setup")
     screen.fillRect(Rect(w:3*20, h:3*20),RED)
     draw_board()
+    setup_input()
 }
+
+//click rect to cycle it through ?, x, o:  don't know, marked filled, marked empty
+//this implies we need a scenegraph of rects. make board be an array of objects with state
+//plus rects at the right places, then just draw them with a single call
 
 fun draw_board() {
     var s = 20
     var off = [0,0]
-    image.each(@(v,i,j)=>{
-        print("",v,i,j)
-        var color = KeyColor(hue:0.2, sat:0.9, lit:0.4)
-        if (v == 1) {
-            color = KeyColor(hue:0.8, sat:0.8, lit:0.1)
-        }
-        if (v == 0) {
-            color = KeyColor(hue:0.8, sat:0.8, lit:0.8)
-        }
-        screen.fillRect(Rect(x:(i*s) + off[0] + 1, y:(j*s) + off[1] + 1, w:s-2, h:s-2),color)
+    board = image.map(@(v,i,j) => {
+        var cell = Obj()
+        cell.state = YES
+        cell.rect = Rect(x:(i*s) + off[0] + 1, y:(j*s) + off[1] + 1, w:s-2, h:s-2)
+        return cell
     })
-    print('shape is',image.shape)
+//    board.each(@(v,i,j)=>{
+//        var color = KeyColor(hue:0.2, sat:0.9, lit:0.4)
+//        if v == 1 color = KeyColor(hue:0.8, sat:0.8, lit:0.1)
+//        if v == 0 color = KeyColor(hue:0.8, sat:0.8, lit:0.8)
+//        screen.fillRect(Rect(x:(i*s) + off[0] + 1, y:(j*s) + off[1] + 1, w:s-2, h:s-2),color)
+//    })
+    board.each(@(cell)=>{
+        screen.fill(cell.rect,PAL[cell.state])
+    })
 
     // make clues for the rows
     range(3).map(@(j) => {
@@ -77,3 +85,10 @@ fun draw_board() {
 //   if board >= image dialog("You win")
 //})
 
+
+fun setup_input() {
+    print("setting up the input")
+    //screen.on('click',@(shape) => {
+    //    print("clicked on a shape")
+    //})
+}
