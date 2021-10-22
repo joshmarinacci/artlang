@@ -236,12 +236,29 @@ class MDView {
                 this.array.set2(i, j, v)
             }
         }
-        if(this.sliceshape[0]== WILDCARD && this.sliceshape[1] !== WILDCARD) {
+        if(this.sliceshape[0]=== WILDCARD && this.sliceshape[1] !== WILDCARD) {
             let j = this.sliceshape[1]
             for(let i = 0; i<this.array.shape[0]; i++) {
                 this.array.set2(i,j, v)
             }
         }
+    }
+    each(cb) {
+        if(this.sliceshape[0]!== WILDCARD && this.sliceshape[1] === WILDCARD) {
+            let i = this.sliceshape[0]
+            for(let j = 0; j<this.array.shape[1]; j++) {
+                let r = this.array.get2(i,j)
+                cb(r,j)
+            }
+        }
+        if(this.sliceshape[0]=== WILDCARD && this.sliceshape[1] !== WILDCARD) {
+            let j = this.sliceshape[1]
+            for(let i = 0; i<this.array.shape[0]; i++) {
+                let r = this.array.get2(i,j)
+                cb(r,i)
+            }
+        }
+        return this
     }
 
     toJSFlatArray() {
@@ -290,6 +307,17 @@ export class MDArray {
         if(this.rank !== 1) throw new Error(`Cannot do "len" on higher rank arrays. ${this.rank}`)
         return this.shape[0]
     }
+    reshape(shape) {
+        let s1 = this.shape.reduce((acc,v)=>{return v*acc},1)
+        let s2 = shape.data.reduce((acc,v)=>{return v*acc},1)
+        if(s1 === s2) {
+            let arr = new MDArray(shape)
+            arr.data = this.data
+            return arr
+        }
+    }
+
+
     sum() {
         if(this.rank !== 1) throw new Error(`Cannot do "sum" on higher rank arrays. ${this.rank}`)
         let total = 0
@@ -534,6 +562,12 @@ export class MDArray {
         if(this.rank !== 1) throw new Error(`can't push into array of rank ${this.rank}`)
         this.data.push(v)
         this.shape[0] += 1
+    }
+    pop_end() {
+        if(this.rank !== 1) throw new Error(`can't push into array of rank ${this.rank}`)
+        let v = this.data.pop()
+        this.shape[0] -= 1
+        return v
     }
     pop_start() {
         if(this.rank !== 1) throw new Error(`can't pop into array of rank ${this.rank}`)
@@ -924,7 +958,7 @@ export const STD_SCOPE = {
     sine1: (v) => remap(Math.sin(v), -1, 1, 0,1),
     Color:(...args) => new KeyColor(...args),
     KeyColor:(...args) => new KeyColor(...args),
-    Canvas:(...args) => new KCanvas(...args),
+    // Canvas:(...args) => new KCanvas(...args),
     Obj:(...args) => new KObj(...args),
     Point:(...args) => new KPoint(...args),
     Vector:(...args) => new KVector(...args),

@@ -140,6 +140,12 @@ export class KCanvas extends KRect {
             ctx.fill()
         })
     }
+    fillText(xy,str,color){
+        this.withContext(ctx => {
+            ctx.fillStyle = color.toCSSColor()
+            ctx.fillText(str, xy.get(0),xy.get(1))
+        })
+    }
 
     fill(shapes,color) {
         if(is_mdarray(shapes)){

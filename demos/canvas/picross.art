@@ -1,0 +1,79 @@
+var UNKNOWN = 0
+//YES = 1
+//NO  = 2
+//image = load_array_from_image('bw_sprite.bmp')
+var screen = new KCanvas(0,0,200,200,4)
+var image = [0,1,1,
+             0,1,0,
+             1,1,1].reshape([3,3])
+//every value in the image will be 0 for empty or 1 for pixel is there.
+var board = MDArray(image.shape)
+board.fill(UNKNOWN)
+
+@type('start',setup)
+fun setup() {
+    print("doing setup")
+    screen.fillRect(Rect(w:3*20, h:3*20),RED)
+    draw_board()
+}
+
+fun draw_board() {
+    var s = 20
+    var off = [0,0]
+    image.each(@(v,i,j)=>{
+        print("",v,i,j)
+        var color = KeyColor(hue:0.2, sat:0.9, lit:0.4)
+        if (v == 1) {
+            color = KeyColor(hue:0.8, sat:0.8, lit:0.1)
+        }
+        if (v == 0) {
+            color = KeyColor(hue:0.8, sat:0.8, lit:0.8)
+        }
+        screen.fillRect(Rect(x:(i*s) + off[0] + 1, y:(j*s) + off[1] + 1, w:s-2, h:s-2),color)
+    })
+    print('shape is',image.shape)
+
+    // make clues for the rows
+    range(3).map(@(j) => {
+        let row = image[?,j]
+        let clues = [0]
+        row.each(@(v,i) => {
+            if v == 0 clues.push_end(0)
+            if v == 1 clues.push_end(clues.pop_end()+1)
+        })
+        clues = clues.filter(@v => not (v == 0))
+        var pos = [65,15]
+        clues.each(@(v,i) => {
+            screen.fillText(pos+[i,j]*s,v, BLACK)
+        })
+    })
+    // make clues for the columns
+    range(3).map(@(i) => {
+        let col = image[i,?]
+        let clues = [0]
+        col.each(@(v,i) => {
+            if v == 0 clues.push_end(0)
+            if v == 1 clues.push_end(clues.pop_end()+1)
+        })
+        clues = clues.filter(@v => not (v == 0))
+        print(clues)
+        var pos = [5,70]
+        clues.each(@(v,j) => {
+            screen.fillText(pos+[i,j]*s,v,BLACK)
+        })
+    })
+}
+
+//on(board,'click',@(v,i,j) => {
+//  match v {
+//    v == UNKNOWN => { board[i,j] = YES }
+//    v == YES     => { board[i,j] = NO }
+//    v == NO      => { board[i,j] = UNKNOWN }
+//  }
+//  redraw()
+//})
+
+//non(check_button,'click', @=>{
+//   if board >= image dialog("You win")
+//})
+

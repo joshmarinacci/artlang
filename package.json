@@ -22,7 +22,11 @@
     "ohm-js": "^15.5.0"
   },
   "dependencies": {
+    "@codemirror/basic-setup": "^0.19.0",
+    "@codemirror/lang-javascript": "^0.19.2",
+    "@rollup/plugin-node-resolve": "^13.0.5",
     "chalk": "^4.1.2",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "rollup": "^2.58.0"
   }
 }
