@@ -76,10 +76,13 @@ fun setup_board() {
 
 fun setup_input() {
     print("setting up the input")
-    screen.on('click',@(shape) => {
-        print("clicked on a shape",shape)
+    screen.on('click',@(shapes) => {
+        print("clicked on a shape",shapes)
+        if shapes.length > 0 and shapes.pop_end()
         if(shape.type == 'cell') {
             print("need to cycle the cell")
+            shape.state = YES
+            shape.color = PAL[shape.state]
         }
 
     })

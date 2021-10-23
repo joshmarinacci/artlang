@@ -222,6 +222,60 @@ export class KCanvas extends KRect {
     }
 }
 
+export class KSceneGraph {
+    constructor(opts) {
+        this.x = opts.x || 0
+        this.y = opts.y || 0
+        this.w = opts.w || 100
+        this.h = opts.h || 100
+        this.scale = opts.scale || 1
+        this.shapes = new MDList()
+        this.listeners = new MDList()
+        if(isBrowser()) {
+            this.canvas = document.createElement('canvas')
+            this.canvas.width = this.w*this.scale
+            this.canvas.height = this.h*this.scale
+            this.canvas.style.width = `${this.w*this.scale/window.devicePixelRatio}px`
+            this.canvas.style.height = `${this.h*this.scale/window.devicePixelRatio}px`
+            document.body.append(this.canvas)
+            this.canvas.addEventListener('click',e => {
+                let shapes = this.pick_shapes(e.clientX, e.clientY)
+                if(shapes.length > 0) this.listeners.each(l => l(shapes))
+            })
+        }
+    }
+
+    redraw() {
+        let ctx = this.canvas.getContext('2d')
+        this.shapes.each((shape)=>{
+            this.drawShape(ctx,shape)
+        })
+    }
+    drawShape(ctx,shape) {
+        if(shape instanceof KRect) {
+            ctx.fillStyle = shape.color.toCSSColor()
+            ctx.fillRect(shape.x,shape.y,shape.w,shape.h)
+        }
+        if(shape instanceof Label) {
+            ctx.fillStyle = shape.color.toCSSColor()
+            ctx.fillText(shape.text, shape.x, shape.y)
+        }
+    }
+
+    pick_shapes(x,y) {
+        let picked = this.shapes.map(shape => {
+            if(shape instanceof KRect && shape.contains(x,y)) {
+                return true
+            }
+            return false
+        })
+        return picked
+    }
+
+    onClick(cb) {
+        this.listeners.push_end(cb)
+    }
+}
 
 export class DPadWrapper {
     constructor() {
