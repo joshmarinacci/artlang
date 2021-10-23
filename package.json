@@ -13,7 +13,8 @@
     "trinkey-test": "node src/build.js --src demos/trinkey/mouse_afk.key --target py",
     "trinkey-live": "node src/build.js --src demos/trinkey/mouse_afk.key --target py --outdir /Volumes/CIRCUITPY --outfile code.py",
     "pygamer-test": "node src/build.js --src demos/pygamer/snake.art --target py",
-    "pygamer-live": "node src/build.js --src demos/pygamer/snake.art --target py --outdir /Volumes/CIRCUITPY --outfile code.py"
+    "pygamer-live": "node src/build.js --src demos/pygamer/snake.art --target py --outdir /Volumes/CIRCUITPY --outfile code.py",
+    "canvas-scenegraph": "node src/build.js --src demos/canvas/picross.art --target js --browser"
   },
   "author": "",
   "license": "ISC",

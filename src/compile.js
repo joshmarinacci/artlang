@@ -73,7 +73,7 @@ async function compile_js(src_file,out_dir) {
     }).join("\n")
 
     before.push(imports)
-    before.push(`import {GREEN, RED, BLACK, WHITE, BLUE, GRAY, isHeadless, TaskManager, print, makeRandom} from './common.js'`)
+    before.push(`import {GREEN, RED, BLACK, WHITE, BLUE, GRAY, YELLOW, isHeadless, TaskManager, print, makeRandom} from './common.js'`)
     if(board.javascript.before) before.push(board.javascript.before)
     before.push("const tm = new TaskManager()")
     before.push(`let system = {

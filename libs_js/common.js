@@ -563,6 +563,11 @@ export class MDArray {
         this.data.push(v)
         this.shape[0] += 1
     }
+    push_end_all(arr) {
+        for(let i=0; i<arr.data.length; i++) {
+            this.push_end(arr.data[i])
+        }
+    }
     pop_end() {
         if(this.rank !== 1) throw new Error(`can't push into array of rank ${this.rank}`)
         let v = this.data.pop()
@@ -651,6 +656,7 @@ export const BLUE  = new KeyColor({b:1})
 export const RED   = new KeyColor({r:1})
 export const GREEN = new KeyColor({g:1})
 export const WHITE = new KeyColor({r:1, g:1, b:1})
+export const YELLOW = new KeyColor({r:1, g:1})
 export const GRAY = new KeyColor({r:0.5, g:0.5, b:0.5})
 export const PI = Math.PI
 
@@ -738,6 +744,13 @@ export class KRect {
                 w:this.x2, h:this.y2})
         )
     }
+    contains(pos) {
+        if(pos.get(0)<this.x) return false
+        if(pos.get(1)<this.y) return false
+        if(pos.get(0)>this.x2) return false
+        if(pos.get(1) > this.y2) return false
+        return true
+    }
 }
 export class KCircle{
     constructor(args) {
@@ -757,8 +770,20 @@ export class KCircle{
         return this.r
     }
 }
+export class KLabel {
+    constructor(opts) {
+        this.xy = new MDList(0,0)
+        this.text = "-???-"
+        this.color = BLACK
+        if(hasProp(opts,'xy')) this.xy = opts.xy
+        if(hasProp(opts,'x')) this.xy.set1(0,opts.x)
+        if(hasProp(opts,'y')) this.xy.set1(1,opts.y)
+        if(hasProp(opts,'text')) this.text = opts.text
+        if(hasProp(opts,'color')) this.color = opts.color
+    }
+}
 
-function hasProp(args,name) {
+export function hasProp(args,name) {
     return args.hasOwnProperty(name)
 }
 
@@ -964,6 +989,7 @@ export const STD_SCOPE = {
     Vector:(...args) => new KVector(...args),
     Rect:(...args) => new KRect(...args),
     Circle:(...args) => new KCircle(...args),
+    Label:(...args) => new KLabel(...args),
     MDArray:(...args) => new MDArray(...args),
     NOTHING:Symbol('nothing'),
     RETURN:Symbol('return'),

@@ -1,4 +1,4 @@
-import {is_mdarray, isBrowser, KCircle, KRect, MDList} from './common.js'
+import {BLACK, hasProp, is_mdarray, isBrowser, KCircle, KLabel, KRect, MDList} from './common.js'
 
 class Logger {
     constructor() {
@@ -239,7 +239,8 @@ export class KSceneGraph {
             this.canvas.style.height = `${this.h*this.scale/window.devicePixelRatio}px`
             document.body.append(this.canvas)
             this.canvas.addEventListener('click',e => {
-                let shapes = this.pick_shapes(e.clientX, e.clientY)
+                let r = e.target.getBoundingClientRect()
+                let shapes = this.pick_shapes(e.clientX-r.x, e.clientY-r.y)
                 if(shapes.length > 0) this.listeners.each(l => l(shapes))
             })
         }
@@ -247,24 +248,31 @@ export class KSceneGraph {
 
     redraw() {
         let ctx = this.canvas.getContext('2d')
+        ctx.fillStyle = 'white'
+        ctx.fillRect(0,0,this.canvas.width,this.canvas.height)
+        ctx.save()
+        ctx.scale(this.scale,this.scale)
         this.shapes.each((shape)=>{
             this.drawShape(ctx,shape)
         })
+        ctx.restore()
     }
     drawShape(ctx,shape) {
         if(shape instanceof KRect) {
             ctx.fillStyle = shape.color.toCSSColor()
             ctx.fillRect(shape.x,shape.y,shape.w,shape.h)
         }
-        if(shape instanceof Label) {
+        if(shape instanceof KLabel) {
             ctx.fillStyle = shape.color.toCSSColor()
-            ctx.fillText(shape.text, shape.x, shape.y)
+            ctx.font = '8pt serif'
+            ctx.fillText(shape.text, shape.xy.get(0), shape.xy.get(1))
         }
     }
 
     pick_shapes(x,y) {
-        let picked = this.shapes.map(shape => {
-            if(shape instanceof KRect && shape.contains(x,y)) {
+        let xy = new MDList(x/this.scale*window.devicePixelRatio,y/this.scale*window.devicePixelRatio)
+        let picked = this.shapes.filter(shape => {
+            if(shape instanceof KRect && shape.contains(xy)) {
                 return true
             }
             return false

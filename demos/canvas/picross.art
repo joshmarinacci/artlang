@@ -1,15 +1,15 @@
-var UNKNOWN = 0
+var NO  = 0
 var YES = 1
-var NO  = 2
-var PAL = [WHITE, BLACK, BLUE]
+var UNKNOWN = 2
+var PAL = [WHITE, BLACK, GREEN]
 
-//var screen = new KCanvas(0,0,200,200,4)
-var screen = new KSceneGraph(0,0,200,200,4)
+var screen = new KSceneGraph(w:100, h:100, scale:5)
 var image = [0,1,1,
              0,1,0,
              1,1,1].reshape([3,3])
 //every value in the image will be 0 for empty or 1 for pixel is there.
 var board = []
+var game_text = Label(x:50, y:90, text:"correct 0", color:BLACK)
 
 @type('start',setup)
 fun setup() {
@@ -23,15 +23,23 @@ fun setup() {
 //plus rects at the right places, then just draw them with a single call
 
 fun setup_board() {
-    var s = 20
+    var s = 10
     var off = [0,0]
     board = image.map(@(v,i,j) => {
-        cell = Rect(x:(i*s) + off[0] + 1, y:(j*s) + off[1] + 1, w:s-2, h:s-2, color: PAL[cell.state])
+        var cell = Rect(x:(i*s) + off[0] + 1, y:(j*s) + off[1] + 1, w:s-2, h:s-2, color: PAL[0])
         cell.state = UNKNOWN
+        cell.color = PAL[cell.state]
         cell.type = 'cell'
         return cell
     })
     screen.shapes.push_end_all(board)
+
+    var check_button = Rect(x:0,y:80, w:40, h:20)
+    check_button.color = RED
+    check_button.type = 'button'
+    var check_text = Label(x:5, y:90, text:"check", color:BLACK)
+    screen.shapes.push_end(check_button)
+    screen.shapes.push_end(check_text)
 
     // make clues for the rows
     range(3).map(@(j) => {
@@ -42,8 +50,11 @@ fun setup_board() {
             if v == 1 clues.push_end(clues.pop_end()+1)
         })
         clues = clues.filter(@v => not (v == 0))
-        var pos = [65,15]
-        clues.map(@(v,j) => Label(xy:pos+[i,j]*s, text:v, color:BLACK)) >> screen.shapes.push_end_all()
+        var pos = [35,10]
+        var labs = clues.map(@(v,i) => {
+            Label(xy:pos+([i,j]*s), text:v, color:BLACK)
+        })
+        screen.shapes.push_end_all(labs)
     })
     // make clues for the columns
     range(3).map(@(i) => {
@@ -54,36 +65,43 @@ fun setup_board() {
             if v == 1 clues.push_end(clues.pop_end()+1)
         })
         clues = clues.filter(@v => not (v == 0))
-        var pos = [5,70]
-        clues.map(@(v,j) => Label(xy:pos+[i,j]*s, text:v, color:BLACK)) >> screen.shapes.push_end_all()
+        var pos = [2,40]
+        var labs = clues.map(@(v,j) => {
+            Label(xy:pos+[i,j]*s, text:v, color:BLACK)
+        })
+        screen.shapes.push_end_all(labs)
     })
-    board.redraw()
+    screen.shapes.push_end(game_text)
+    screen.redraw()
 }
 
-//on(board,'click',@(v,i,j) => {
-//  match v {
-//    v == UNKNOWN => { board[i,j] = YES }
-//    v == YES     => { board[i,j] = NO }
-//    v == NO      => { board[i,j] = UNKNOWN }
-//  }
-//  redraw()
-//})
-
-//non(check_button,'click', @=>{
-//   if board >= image dialog("You win")
-//})
-
-
 fun setup_input() {
-    print("setting up the input")
-    screen.on('click',@(shapes) => {
-        print("clicked on a shape",shapes)
-        if shapes.length > 0 and shapes.pop_end()
-        if(shape.type == 'cell') {
-            print("need to cycle the cell")
-            shape.state = YES
-            shape.color = PAL[shape.state]
+    screen.onClick(@(shapes) => {
+        if(shapes.length > 0) {
+            print("shapes",shapes)
+            var sh = shapes[0]
+            if(sh.type == 'cell') {
+                sh.state = (sh.state-1)
+                if(sh.state < 0) sh.state = UNKNOWN
+                sh.color = PAL[sh.state]
+                screen.redraw()
+            }
+            if(sh.type == 'button') {
+                print('checking for the win')
+                var correct = 0
+                var wrong = 0
+                board.each(@(cell,i,j) => {
+                    print("checking",cell.state, image[i,j])
+                    if(cell.state == image[i,j]) {
+                        correct = correct+1
+                    } else {
+                        wrong = wrong + 1
+                    }
+                })
+                print("got right",correct,"wrong",wrong)
+                game_text.text = ("correct " + correct)
+                screen.redraw()
+            }
         }
-
     })
 }

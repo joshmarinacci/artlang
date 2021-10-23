@@ -2,7 +2,7 @@ export const BOARDS = {
     "canvas":{
         name:"canvas",
         javascript:{
-            before:`import {KCanvas, DPadWrapper} from './canvas.js'`,
+            before:`import {KCanvas, KSceneGraph, DPadWrapper} from './canvas.js'`,
             standard_cycle:true,
             template_path: 'templates/canvas.html'
         },
