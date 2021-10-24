@@ -19,10 +19,9 @@ class Logger {
 }
 let l = new Logger()
 export class KCanvas extends KRect {
-    constructor(x,y,w,h,scale) {
-        super(x,y,w,h)
-        this.scale = 1
-        if(typeof scale === 'number') this.scale = scale
+    constructor(opts) {
+        super(opts)
+        this.scale = opts.scale || 1
         if(isBrowser()) {
             this.canvas = document.createElement('canvas')
             this.canvas.width = this.w*this.scale
@@ -47,15 +46,13 @@ export class KCanvas extends KRect {
             this.withContext(ctx => {
                 let x = Math.floor(xy.get(0))
                 let y = Math.floor(xy.get(1))
-                ctx.translate(0.5,0.5)
+                //ctx.translate(0.5,0.5)
                 ctx.fillStyle = color.toCSSColor()
-                // console.log("fillstyle is",color.toCSSColor())
                 ctx.fillRect(
                     Math.floor(x),
                     Math.floor(y),
                     1,1
                 )
-                // console.log("drawing at",x,y,color)
             })
         }
     }

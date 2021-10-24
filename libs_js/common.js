@@ -676,12 +676,14 @@ export class KVector extends MDList{
 }
 export class KRect {
     constructor(x,y,w,h) {
+        this.color = RED
         if(typeof x === 'object') {
             let opts = x
             this.x = opts.x || 0
             this.y = opts.y || 0
             this._w = opts.w || 10
             this._h = opts.h || 10
+            if(hasProp(opts,'color')) this.color = opts.color
         } else {
             this.x = x
             this.y = y

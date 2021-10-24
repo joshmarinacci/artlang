@@ -53,6 +53,7 @@ keylang {
 
     Lambda
        =  "@" "(" ListOf<ident,","> ")" "=>" Block   --full
+       |  "@" "(" ListOf<ident,","> ")" "=>" SoloExp --thin
        |  "@" ident "=>" SoloExp                     --slim
        |  "@" SoloExp                                --superslim
 

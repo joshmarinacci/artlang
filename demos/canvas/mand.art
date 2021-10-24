@@ -1,29 +1,32 @@
 @board("canvas")
-var screen = new KCanvas(0,0,500,500, 2)
+var screen = new KCanvas(w:500, h:500, scale:1)
 
+var palette = [BLACK,RED,GREEN,BLUE,WHITE]
 @type('start',setup)
 fun setup() {
-    var grid = MDArray([32,32])
+    var grid = MDArray([500,500])
     grid.fill(0)
-    var pixels = grid.map(@(v,x,y) => mand(remap(x,0,32,-1,1), remap(y,0,32,-1,1)))
+    var pixels = grid.map(@(v,x,y) => mand(remap(x,0,500,-4,4), remap(y,0,500,-4,4)))
     var colors = pixels.map(@px => palette[px mod palette.length])
-    colors.every(@(c,x,y) => screen.setPixel(x,y,c))
-)
+    colors.each(@(c,x,y) => screen.setPixel([x,y],c))
+}
 
 fun mand(cx, cy) {
     //`z = z*z + c`
-    let iter = 0
-    let maxiter = 50
-    let c = [cx,cy]
-    let z0 = [0,0]
+    var iter = 0
+    var maxiter = 50
+    var c = [cx,cy]
+    var z0 = [0,0]
     //do z' = z^2 +c  until abs(z)>2 or max of 50 times
-    forever {
-        z1 = cadd(cmul(z0,z0), c)
-        iter += 1
-        if cabs2(z1) > (2*2) return iter
-        if iter > maxiter return iter
+    var done = false
+    range(maxiter).each(@()=> {
+        if done return false
+        let z1 = cadd(cmul(z0,z0), c)
+        iter = iter + 1
+        if cabs(z1) > (2) done := true
+        if iter > maxiter done := true
         z0 = z1
-    }
+    })
     return iter
 }
 
@@ -31,7 +34,7 @@ fun cadd(A,B) {
     return [ A[0] + B[0], A[1] + B[1] ]
 }
 fun cabs(A) {
-    return sqrt((A[0] * A[0]) + (A[1] * A[1]))
+    return Math.sqrt((A[0] * A[0]) + (A[1] * A[1]))
 }
 fun cmul(x,y) {
     return [

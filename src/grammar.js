@@ -159,6 +159,13 @@ export async function make_grammar_semantics() {
                 body:body.ast()
             }
         },
+        Lambda_thin:(at,p1, args, p2, arrow, exp) => {
+            return {
+                type:'lambda',
+                args:args.asIteration().children.map(arg => arg.ast()),
+                body:exp.ast()
+            }
+        },
         Lambda_slim:(at, arg, arrow, exp) => {
             return {
                 type:'lambda',

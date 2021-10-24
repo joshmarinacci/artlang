@@ -63,6 +63,7 @@ function lambdawrap(then_clause, ast) {
 }
 
 export function unreturn(str) {
+    if(Array.isArray(str) && str.length === 1) str = str[0]
     if(str.startsWith('return')) return str.substring('return'.length)
     return str
 }
