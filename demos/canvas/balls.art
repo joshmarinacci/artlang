@@ -12,7 +12,7 @@ fun setup() {
             y:randi(0,screen.height),
             r:1)
         dot.v = [randf(-0.4,0.4),0]
-        return dot
+        ^ dot
     }
     dots = range(100).map(@MakeDot())
     screen.globalAlpha = 0.1

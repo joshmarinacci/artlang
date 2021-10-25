@@ -1,6 +1,6 @@
 @board("canvas")
 
-var screen = new KCanvas(0,0,25,25,30)
+var screen = new KCanvas(w:25,h:25,scale:30)
 
 @type('start',setup)
 fun setup() {

@@ -29,7 +29,7 @@ async function run_demo(src_path) {
 }
 
 async function run_all_demos() {
-    await run_demo("demos/falling_dots.key")
+    await run_demo("demos/falling_dots.art")
     await run_demo("demos/split_rects.key")
     await run_demo("demos/mouse_afk.key")
     await run_demo("demos/test_led_button.key")

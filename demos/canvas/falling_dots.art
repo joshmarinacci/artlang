@@ -1,19 +1,19 @@
 @board("canvas")
 
-let palette = [BLACK, RED, GREEN, BLUE]
-let dots
-let sorigin = [0,0]
-screen = new KCanvas(0,0,64,32,8)
+var palette = [BLACK, RED, GREEN, BLUE]
+var dots
+var sorigin = [0,0]
+var screen = new KCanvas(w:64,h:32,scale:16)
 
 //call this once at app start
 @type("start",setup)
 fun setup() {
     fun MakeDot() {
-        let dot = Obj()
+        var dot = Obj()
         dot.xy = [randi(0,screen.width), randi(0,1)]
         dot.v =  [randf(-0.1,0.1), randf(0.5,1.0)]
         dot.color = choose(palette)
-        return dot
+        ^ dot
     }
     dots = range(20).map(@MakeDot())
 }
