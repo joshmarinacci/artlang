@@ -18,7 +18,8 @@ export const AST_TYPES = {
     array_wildcard: 'array-wildcard',
     body: 'body',
     fundef: 'fundef',
-    pipeline_operator: '>>'
+    pipeline_operator: '>>',
+    lambda: 'lambda'
 }
 export const FUN_CALL_TYPES = {
     positional: 'positional',

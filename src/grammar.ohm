@@ -67,7 +67,8 @@ keylang {
       | ArraySetAccess assign_op Exp   --array
 
     SoloExp =  Assignment | FunctionCall | Return | Lambda | BinExp | ArrayGetterExp | ParenExp | UnExp | Deref | Literal | ident | comment
-    Return = "return" SoloExp
+    return_op = "return" | "^"
+    Return = return_op SoloExp
     Directive = "@" ident "(" ListOf<Exp,","> ")"
 
     Block = "{" Exp* "}"
