@@ -28,6 +28,9 @@ const BIN_OPS = {
     '==': {
         name: 'equal'
     },
+    '!=': {
+        name: 'notequal'
+    },
     '<=': {
         name:'lessthanorequal'
     },
