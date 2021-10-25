@@ -403,25 +403,7 @@ export class MDArray {
     }
 
     map(cb) {
-        let arr = new MDArray(this.shape)
-        if(this.rank === 1) {
-            for (let i = 0; i < this.shape[0]; i++) {
-                let r = this.get1(i)
-                let s = cb(r,i)
-                arr.set1(i, s)
-            }
-        } else if(this.rank === 2) {
-            for(let i=0; i<this.shape[0];i++) {
-                for(let j=0; j<this.shape[1];j++) {
-                    let r = this.get2(i,j)
-                    let s = cb(r,i,j)
-                    arr.set2(i, j, s)
-                }
-            }
-        } else {
-            throw new Error(`can't map higher rank arrays ${this.rank}`)
-        }
-        return arr
+        return this._iter(cb)
     }
     filter(cb) {
         if(this.rank !== 1) throw new Error(`Cannot do "filter" on higher rank arrays. ${this.rank}`)
@@ -451,74 +433,75 @@ export class MDArray {
         }
         return null
     }
-    each(cb) {
+    _iter(cb) {
         if(this.rank === 1) {
+            let arr = new MDArray(this.shape)
             for (let i = 0; i < this.shape[0]; i++) {
                 let r = this.get1(i)
-                cb(r,i)
+                let s = cb(r,i)
+                arr.set1(i,s)
             }
-            return
+            return arr
         }
         if(this.rank === 2) {
-            for (let i = 0; i < this.shape[0]; i++) {
-                for(let j=0; j<this.shape[1]; j++) {
+            let arr = new MDArray(this.shape)
+            for(let j=0; j<this.shape[1]; j++) {
+                for (let i = 0; i < this.shape[0]; i++) {
                     let r = this.get2(i,j)
-                    cb(r,i,j)
+                    let s = cb(r,i,j)
+                    arr.set2(i,j,s)
                 }
             }
-            return
+            return arr
         }
-        this.data.forEach(cb)
-        return this
+        throw new Error(`can't map higher rank arrays ${this.rank}`)
     }
-    // every(cb) {
-    //     return this.forEach(cb)
-    // }
+    each(cb) {
+        this._iter(cb)
+    }
 
     toJSFlatArray() {
         return this.data.slice()
     }
 
-    set1(i, v) {
-        this.data[i] = v
-    }
-    set2(i,j, v) {
-        let n = i + j*this.shape[0]
-        if(n > this.data.length) throw new Error(`index out of range set2(${i},${j}) in shape ${this.shape}`)
-        this.data[n] = v
-    }
-    set3(i,j,k, v) {
-        let n = i + j*this.shape[0] + k*this.shape[1]
-        this.data[n] = v
-    }
-    get3(i,j,k) {
-        let n = this.index(i,j,k)
-        return this.data[n]
-    }
+    get(i) { return this.get1(i)}
     index(i,j,k) {
         if(this.rank === 1) return i
         if(this.rank === 2) return i + j*this.shape[0]
         return i + j*this.shape[0] + k*this.shape[1]
     }
+    _get_value(n) {
+        if(n > this.data.length) throw new Error(`index out of range get2(${i},${j}) in shape ${this.shape}`)
+        return this.data[n]
+    }
+    _set_value(n,v) {
+        if(n > this.data.length) throw new Error(`index out of range get2(${i},${j}) in shape ${this.shape}`)
+        this.data[n] = v
+    }
+    get1(i) {
+        if(is_mdarray(i) && i.rank === 1) return this.get2(... i.data)
+        return this._get_value(this.index(i))
+    }
+    set1(i, v) {
+        return this._set_value(this.index(i),v)
+    }
+    get2(i,j) {
+        if(i === WILDCARD || j === WILDCARD) return this.slice([i,j])
+        return this._get_value(this.index(i,j))
+    }
+    set2(i,j, v) {
+        return this._set_value(this.index(i,j),v)
+    }
+    get3(i,j,k) {
+        return this._get_value(this.index(i,j,k))
+    }
+    set3(i,j,k, v) {
+        return this._set_value(this.index(i,j,k),v)
+    }
 
     fill(val) {
         this.data.fill(val)
         return this
-    }
-    get(i) { return this.get1(i)}
-    get1(i) {
-        if(is_mdarray(i)) {
-            if(i.rank === 1) {
-                return this.get2(... i.data)
-            }
-        }
-        return this.data[i]
-    }
-    get2(i,j) {
-        if(i === WILDCARD || j === WILDCARD) return this.slice([i,j])
-        let n = i + j*this.shape[0]
-        if(n > this.data.length) throw new Error(`index out of range get2(${i},${j}) in shape ${this.shape}`)
-        return this.data[n]
     }
 
     fillWith(cb) {
@@ -564,6 +547,7 @@ export class MDArray {
         this.shape[0] += 1
     }
     push_end_all(arr) {
+        if(this.rank !== 1) throw new Error(`can't push into array of rank ${this.rank}`)
         for(let i=0; i<arr.data.length; i++) {
             this.push_end(arr.data[i])
         }
