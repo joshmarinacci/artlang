@@ -252,6 +252,15 @@ async function mdarray_tests() {
         arr.slice([0,WILDCARD]).fill(1)
         test(arr.toJSFlatArray(), [1,0,0, 1,0,0, 1,0,0])
     }
+
+    {
+        // map a 2d array
+        let arr1 = new MDArray([3,3])
+        arr1.fill(1)
+        let arr2 = arr1.map((v,i,j) => v*2)
+        test(arr1.toJSFlatArray(),[1,1,1, 1,1,1, 1,1,1])
+        test(arr2.toJSFlatArray(),[2,2,2, 2,2,2, 2,2,2])
+    }
     // {
     //     //add and assign to the y component of a list of points as a 2d array
     //     let data = [1,2,

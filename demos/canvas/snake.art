@@ -1,6 +1,6 @@
 @board("canvas")
 
-var screen = new KCanvas(0,0,200,200,4)
+var screen = new KCanvas(w:200,h:200,scale:4)
 var dpad = new DPadWrapper()
 var grid = MDArray([20,20])
 grid.fill(0)
@@ -12,7 +12,7 @@ var PALETTE = [RED,GREEN,BLUE]
 var count = 0
 
 //TODO: i shouldn't need the return here
-fun nth(a,b) { return (a mod b) == 0 }
+fun nth(a,b) ^ (a mod b) == 0
 
 @type('start',setup)
 fun setup() {
@@ -36,24 +36,16 @@ fun forever() {
         dir = newdir
     }
     //if dpad.current() != [0,0] dir = dpad.current()
-
-    //TODO: implement +=
 	pos += dir
 
-	//grid[pos] is the same as grid[pos[0],pos[1]], or etc.
     if grid[pos] > 0 return reset()
 
     tail.push_end(pos)
     grid[pos] = 2
-	grid.each(@(v,x,y)=> {
-	    screen.fillRect(Rect(x:x*10, y:y*10, w:10, h:10),PALETTE[v])
-    })
-    tail.each(@(v,i) => {
-	    screen.fillRect(Rect(x:v[0]*10, y:v[1]*10, w:10, h:10),PALETTE[2])
-    })
-    if (not nth(count,6)) {
-        grid[tail.pop_start()] = 0
-    }
+	grid.each(@(v,x,y)=> screen.fillRect(Rect(x:x*10, y:y*10, w:10, h:10),PALETTE[v]))
+    tail.each(@(v,i) =>  screen.fillRect(Rect(x:v[0]*10, y:v[1]*10, w:10, h:10),PALETTE[2]))
+
+    if not nth(count,6) grid[tail.pop_start()] = 0
 
     count += 1
     return wait(0.2)

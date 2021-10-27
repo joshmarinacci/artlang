@@ -28,6 +28,9 @@ const BIN_OPS = {
     '==': {
         name: 'equal'
     },
+    '!=': {
+        name: 'notequal'
+    },
     '<=': {
         name:'lessthanorequal'
     },
@@ -75,6 +78,16 @@ export function ast_preprocess(ast) {
     }
     if(ast.type === AST_TYPES.body) {
         ast.body = ast.body.map(a => ast_preprocess(a))
+    }
+    if(ast.type === AST_TYPES.funcall) {
+        ast.args = ast.args.map(a => ast_preprocess(a))
+    }
+    if(ast.type === AST_TYPES.lambda) {
+        ast.body = ast_preprocess(ast.body)
+    }
+    if(ast.type === AST_TYPES.conditional) {
+        ast.then_block = ast_preprocess(ast.then_block)
+        if(ast.has_else) ast.else_block = ast_preprocess(ast.else_block)
     }
     if(ast.type === AST_TYPES.binexp) {
         if(ast.op === AST_TYPES.pipeline_operator) {

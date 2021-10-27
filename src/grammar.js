@@ -18,7 +18,8 @@ export const AST_TYPES = {
     array_wildcard: 'array-wildcard',
     body: 'body',
     fundef: 'fundef',
-    pipeline_operator: '>>'
+    pipeline_operator: '>>',
+    lambda: 'lambda'
 }
 export const FUN_CALL_TYPES = {
     positional: 'positional',
@@ -125,11 +126,20 @@ export async function make_grammar_semantics() {
             exp:exp.ast(),
         }),
         ParenExp: (p1, exp, p2) => exp.ast(),
-        FunctionDef:(fun,name,p1,args,p2,block) => ({
+        FunctionDef_full:(fun,name,p1,args,p2,block) => ({
             type:"fundef",
             name:name.ast(),
             args: args.asIteration().children.map(arg => arg.ast()),
             block:block.ast(),
+        }),
+        FunctionDef_slim:(fun,name,p1,args,p2,exp) => ({
+            type:"fundef",
+            name:name.ast(),
+            args: args.asIteration().children.map(arg => arg.ast()),
+            block: {
+                type:'body',
+                body:[exp.ast()],
+            }
         }),
         Deref:(before,dot,after) => {
             return {

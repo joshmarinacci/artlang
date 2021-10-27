@@ -27,7 +27,7 @@ keylang {
     comment = space* "//" toEOL
     toEOL = (~"\n" any)* "\n"
 
-    compare_op = ">=" | "<=" | "<" | ">" | "==" | "and" | "or" | "mod"
+    compare_op = ">=" | "<=" | "<" | ">" | "==" | "!=" | "and" | "or" | "mod"
     op_3  = ">>"
     op_2  = "*" | "/"
     op_1  = "+" | "-"
@@ -46,7 +46,9 @@ keylang {
     KeywordArg = ident ":" Exp
     KeywordFunCall = Exp "(" ListOf<KeywordArg,","> ")"
     FunctionCall = PositionalFunCall | KeywordFunCall
-    FunctionDef  = "fun" ident "(" ListOf<ident,","> ")" Block
+    FunctionDef
+        = "fun" ident "(" ListOf<ident,","> ")" SoloExp --slim
+        | "fun" ident "(" ListOf<ident,","> ")" Block   --full
     CondExp
         = "if" SoloExp SoloExp --slim
         | "if" ParenExp Block ("else" Block)? --full
@@ -67,7 +69,8 @@ keylang {
       | ArraySetAccess assign_op Exp   --array
 
     SoloExp =  Assignment | FunctionCall | Return | Lambda | BinExp | ArrayGetterExp | ParenExp | UnExp | Deref | Literal | ident | comment
-    Return = "return" SoloExp
+    return_op = "return" | "^"
+    Return = return_op SoloExp
     Directive = "@" ident "(" ListOf<Exp,","> ")"
 
     Block = "{" Exp* "}"

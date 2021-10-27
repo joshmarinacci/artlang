@@ -66,9 +66,9 @@ fun setup_board() {
         })
         clues = clues.filter(@v => not (v == 0))
         var pos = [2,40]
-        var labs = clues.map(@(v,j) => {
-            Label(xy:pos+[i,j]*s, text:v, color:BLACK)
-        })
+        var labs = clues.map(@(v,j) => Label(xy:pos+[i,j]*s,
+                                           text:v,
+                                          color:BLACK))
         screen.shapes.push_end_all(labs)
     })
     screen.shapes.push_end(game_text)
@@ -78,27 +78,23 @@ fun setup_board() {
 fun setup_input() {
     screen.onClick(@(shapes) => {
         if(shapes.length > 0) {
-            print("shapes",shapes)
             var sh = shapes[0]
             if(sh.type == 'cell') {
                 sh.state = (sh.state-1)
-                if(sh.state < 0) sh.state = UNKNOWN
+                if sh.state < 0 sh.state = UNKNOWN
                 sh.color = PAL[sh.state]
                 screen.redraw()
             }
             if(sh.type == 'button') {
-                print('checking for the win')
                 var correct = 0
                 var wrong = 0
                 board.each(@(cell,i,j) => {
-                    print("checking",cell.state, image[i,j])
                     if(cell.state == image[i,j]) {
                         correct = correct+1
                     } else {
                         wrong = wrong + 1
                     }
                 })
-                print("got right",correct,"wrong",wrong)
                 game_text.text = ("correct " + correct)
                 screen.redraw()
             }
