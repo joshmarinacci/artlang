@@ -21,7 +21,7 @@ async function unit_tests() {
     function test_eval(scope,code,ans) {
         // console.log(`parsing: "${code}"`)
         let result = grammar.match(code,'Exp')
-        if(!result.succeeded()) throw new Error("failed parsing")
+        if(!result.succeeded()) throw new Error(`failed parsing ${code}`)
         let ast = semantics(result).ast()
         let res = eval_ast(ast,scope)
         // console.log("comparing",res,ans)
@@ -201,7 +201,7 @@ async function unit_tests() {
         // await test_js(scope, '4+5 == 10',false)
         await test_js(scope,`if true 4`,4)
         await test_js(scope,`if not false 4`,4)
-        await test_js(scope, `if add(4,5) == 9 4`,4)
+        await test_js(scope, `if (add(4,5) == 9) 4`,4)
         await test_js(scope, `if not (4 == 5) 4`,4)
         await test_js(scope, `if (4+5 == 9) 4`,4)
         // await test_js(scope, `if (not (4+5 == 10)) 4`,4)

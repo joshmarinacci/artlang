@@ -3,7 +3,7 @@ import {checkEqual, test_js} from '../src/util.js'
 
 async function syntax_tests() {
     const [grammar, semantics] = await make_grammar_semantics()
-    function test_parse(code,res) {
+    function test_parse(code) {
         // console.log(`parsing: "${code}"`)
         let result = grammar.match(code,'Exp')
         if(!result.succeeded()) throw new Error(`failed parsing ${code} ${result}`)
@@ -57,6 +57,12 @@ async function syntax_tests() {
     test_parse(`foo(y:'foo', x:5)`)
     test_parse(`foo(x:5,y:"foo")`)
 
+
+    //group with parens
+    test_parse( '(4+5) == 9')
+    test_parse( '9 == (4+5)')
+
+
     //property access
     test_parse("GET_PROP(dots,'length')")
     test_parse('fun foo() { }')
@@ -79,7 +85,7 @@ async function syntax_tests() {
 
 
 
-    //conditonals
+    //conditionals
     test_parse(`if(true){}`)
     test_parse('a or b')
     test_parse('a and b')
@@ -87,12 +93,14 @@ async function syntax_tests() {
     test_parse('a and not b')
     test_parse('a or not b')
     test_parse('if(a){b}')
-    // test_parse('if a {b}')
+    //test_parse('if a {b}')
     test_parse('if a b')
     test_parse(`if a a==false`)
-    test_parse(`{var a = 4 if (true) { a = 5}}`,5)
-    test_parse(`{var a = 4 if true a = 5}`,5)
-    test_parse(`if [0,0] == [0,0] 5`,5)
+    test_parse('if (true) { a = 5}')
+    test_parse(`{var a = 4 if (true) { a = 5}}`)
+    test_parse(`{var a = 4 if true a = 5}`)
+    test_parse(`if [0,0] == [0,0] 5`)
+    test_parse(`if (add(4,5) == 9) 4`)
 
 
     // list literals
@@ -115,6 +123,7 @@ async function syntax_tests() {
     test_parse(`foo[bar]=5`)
     test_parse(`foo[bar]==5`)
     test_parse(`foo[?]`)
+    test_parse(`foo[?]=5`)
 
     test_parse(`foo.bar()`)
     // test_parse(`foo[0].bar()`)
@@ -138,6 +147,11 @@ async function syntax_tests() {
     test_parse('(4)/2')
     test_parse('(screen.width - r.w)/2')
     test_parse('r.x = (screen.width - r.w)/2')
+
+
+    //return expressions
+    test_parse('return 5')
+    test_parse('return foo()')
 }
 
 async function simple_math_tests() {
