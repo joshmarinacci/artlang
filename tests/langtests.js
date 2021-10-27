@@ -262,8 +262,33 @@ async function demo_tests() {
 
 }
 
+async function operation_tests() {
+    // operation ordering
+    await test_js(scope, '4+4',13)
+    // await test_js(scope, '(4+4) < 5',false)
+    await test_js(scope, '4+5*6',34)
+    // await test_js(scope, '5*6+4',34)
+    await test_js(scope, '(6/2)+3',6)
+    // await test_js(scope, '6/2+3',6)
+    await test_js(scope, '(4+5) == 9',true)
+    // await test_js(scope, '4+5 == 9',true)
+    await test_js(scope, '{var foo = 4+5 foo}',9)
+    await test_js(scope, '{ fun foo(x) {return x*2} foo(5) } ',10)
+
+    // await test_js(scope, '{ fun foo(x) x*2 foo(5) } ', 10)
+    // await test_js(scope, '{ fun foo(x) ^x*2 foo(5) } ',10)
+    // await test_js(scope,`if true 4 else 5`,4)
+    // await test_js(scope,`{foo := if true 4 else 5 foo}`,4)
+    // await test_js(scope,`{ if true 4 else 5 >> foo }`,4)
+    // await test_js(scope,`+2`,2)
+    // await test_js(scope,`2**+2`,4)
+    // await test_js(scope,`2**-2`,0.25)//1/2/2)
+    // await test_js(scope,`2**(1/2)`,Math.sqrt(2))
+}
+
 async function all_tests() {
     await unit_tests()
+    await operation_tests()
     // await demo_tests()
 }
 
