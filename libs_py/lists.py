@@ -81,6 +81,14 @@ class List:
     def toString(self):
         return ','.join(str(e) for e in self.data)
 
+def is_true(arg):
+    if arg.data:
+        for val in arg.data:
+            if val == False:
+                return False
+        return True
+    return False
+
 class ListLooper():
     def __init__(self,array):
         self.array = array

@@ -1,0 +1,26 @@
+@board("trellis")
+
+@type("start",setup)
+fun setup() {
+    print("doing the setup")
+    device.leds.fill(BLACK)
+    wait(0.2)
+    device.leds.fill(RED)
+    wait(0.2)
+    device.leds.fill(BLACK)
+
+    device.leds.set([0,0],YELLOW)
+    device.leds.set([1,0],YELLOW)
+    device.leds.set([2,0],YELLOW)
+    device.leds.set([3,0],YELLOW)
+}
+
+@type("loop",loop)
+fun loop() {
+    device.buttons.pressed_list.each(@(pos,i) => {
+        if is_true(pos == [0,0])   device.keyboard.send(Keycode.CONTROL, Keycode.OPTION, Keycode.D)
+        if is_true(pos == [1,0])   device.keyboard.send(Keycode.CONTROL, Keycode.OPTION, Keycode.E)
+        if is_true(pos == [2,0])   device.keyboard.send(Keycode.CONTROL, Keycode.OPTION, Keycode.T)
+        if is_true(pos == [3,0])   device.keyboard.send(Keycode.CONTROL, Keycode.OPTION, Keycode.G)
+    })
+}
