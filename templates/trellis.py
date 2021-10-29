@@ -8,6 +8,7 @@ from digitalio import DigitalInOut, Pull
 from adafruit_hid.mouse import Mouse
 import usb_hid
 import adafruit_trellism4
+from adafruit_hid.consumer_control_code import ConsumerControlCode
 
 from tasks import TaskMaster
 from common import System

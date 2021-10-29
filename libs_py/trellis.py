@@ -3,6 +3,18 @@ import usb_hid
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 from adafruit_hid.mouse import Mouse
+from adafruit_hid.consumer_control import ConsumerControl
+from adafruit_hid.consumer_control_code import ConsumerControlCode
+import adafruit_fancyled.adafruit_fancyled as fancy
+
+def KeyColor(r=0.0, g=0.0, b=0.0, hue=0.0, sat=0.0, lit=0.0):
+    print("using",r,g,b)
+    if r>0 or b>0 or g>0:
+        return fancy.CRGB(float(r), float(g), float(b)).pack()
+    if hue>0 or sat>0 or lit>0:
+        return fancy.CHSV(hue, sat,lit).pack()
+    print("didn't specify correct values")
+    return 0xFF8800
 
 class LEDsWrapper():
     trellis = 0
@@ -44,5 +56,6 @@ class TrellisDevice():
         self.buttons = ButtonsWrapper(trellis)
         self.mouse = Mouse(usb_hid.devices)
         self.keyboard = Keyboard(usb_hid.devices)
+        self.cc = ConsumerControl(usb_hid.devices)
     def update(self):
         self.buttons.update()

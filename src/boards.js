@@ -46,6 +46,7 @@ export const BOARDS = {
             ],
             imports:`
 from lists import List
+from trellis import KeyColor
             `,
             template_path:'templates/trellis.py'
         }
