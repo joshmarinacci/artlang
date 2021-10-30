@@ -1,4 +1,4 @@
-import {BLACK, hasProp, is_mdarray, isBrowser, KCircle, KLabel, KRect, MDList} from './common.js'
+import {BLACK, hasProp, is_mdarray, isBrowser, KCircle, KLine, KLabel, KRect, MDList} from './common.js'
 
 class Logger {
     constructor() {
@@ -86,6 +86,20 @@ export class KCanvas extends KRect {
             ctx.stroke()
         })
     }
+    fillLine(line, color) {
+        return this.strokeLine(line,color)
+    }
+    strokeLine(line, color) {
+        this.withContext((ctx)=>{
+            ctx.globalAlpha = this.globalAlpha
+            ctx.strokeStyle = color.toCSSColor()
+            ctx.beginPath()
+            ctx.moveTo(line.x1, line.y1)
+            ctx.lineTo(line.x2,line.y2)
+            ctx.stroke()
+        })
+    }
+
     strokePolyline(line,color) {
         this.withContext(ctx => {
             ctx.strokeStyle = color.toCSSColor()
@@ -150,6 +164,7 @@ export class KCanvas extends KRect {
         } else {
             if(shapes instanceof KRect) return this.fillRect(shapes,color)
             if(shapes instanceof KCircle) return this.fillCircle(shapes,color)
+            if(shapes instanceof KLine) return this.fillLine(shapes,color)
             l.log("filling unknown shape",shapes)
             throw new Error("")
         }
@@ -162,6 +177,7 @@ export class KCanvas extends KRect {
         } else {
             if(shapes instanceof KRect) return this.strokeRect(shapes,color)
             if(shapes instanceof KCircle) return this.strokeCircle(shapes,color)
+            if(shapes instanceof KLine) return this.strokeLine(shapes,color)
             l.log("stroking unknown shape",shapes)
             throw new Error("")
         }
@@ -263,6 +279,15 @@ export class KSceneGraph {
             ctx.fillStyle = shape.color.toCSSColor()
             ctx.font = '8pt serif'
             ctx.fillText(shape.text, shape.xy.get(0), shape.xy.get(1))
+        }
+        if(shape instanceof KLine) {
+            let line = shape
+            ctx.strokeStyle = shape.color.toCSSColor()
+            ctx.beginPath()
+            ctx.moveTo(line.x1, line.y1)
+            ctx.lineTo(line.x2,line.y2)
+            ctx.lineWidth = line.lineWidth
+            ctx.stroke()
         }
     }
 

@@ -321,7 +321,19 @@ export class MDArray {
             return arr
         }
     }
-
+    shuffle() {
+        if(this.rank !== 1) throw new Error(`Cannot do "shuffle" on higher rank arrays. ${this.rank}`)
+        let arr1 = this.data.slice()
+        let arr2 = []
+        while(arr1.length > 0) {
+            let n = Math.floor(Math.random() * arr1.length)
+            arr2.push(arr1[n])
+            arr1.splice(n,1)
+        }
+        let list = new MDList(...arr2)
+        // console.log("shuffled",this.toJSFlatArray(),'to',list.toJSFlatArray())
+        return list
+    }
 
     sum() {
         if(this.rank !== 1) throw new Error(`Cannot do "sum" on higher rank arrays. ${this.rank}`)
@@ -747,6 +759,20 @@ export class KRect {
         return true
     }
 }
+export class KLine {
+    constructor(args) {
+        if(hasProp(args,'x')) this.x1 = args.x
+        if(hasProp(args,'y')) this.y1 = args.y
+        if(hasProp(args,'x1')) this.x1 = args.x1
+        if(hasProp(args,'y1')) this.y1 = args.y1
+        if(hasProp(args,'x2')) this.x2 = args.x2
+        if(hasProp(args,'y2')) this.y2 = args.y2
+        this.lineWidth = 1
+        if(hasProp(args,'lineWidth')) this.lineWidth = args.lineWidth
+        this.color = RED
+        if(hasProp(args,'color')) this.color = args.color
+    }
+}
 export class KCircle{
     constructor(args) {
         if(hasProp(args,'x')) this.x = args.x
@@ -986,6 +1012,7 @@ export const STD_SCOPE = {
     Vector:(...args) => new KVector(...args),
     Rect:(...args) => new KRect(...args),
     Circle:(...args) => new KCircle(...args),
+    Line:(...args) => new KLine(...args),
     Label:(...args) => new KLabel(...args),
     MDArray:(...args) => new MDArray(...args),
     NOTHING:Symbol('nothing'),

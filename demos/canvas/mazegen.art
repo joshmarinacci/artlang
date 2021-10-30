@@ -1,40 +1,107 @@
 @board("canvas")
-var screen = new KCanvas(w:20, h:20, scale:10)
+var screen = new KSceneGraph(w:200, h:200, scale:4)
+var pos
+var grid
+
+//directions up, right, down, left
+var directions = [ 0,-1,
+                   1, 0,
+                   0, 1,
+                  -1, 0].reshape([2,4])
+var W = 20
+var H = 20
+var S = 10
+var MAX_CYCLES = 1500
+
+var count = 0
+var depth = 0
+
+fun connectCells(start,end) {
+    //print('connecting',start.toJSFlatArray(), "to", end.toJSFlatArray())
+    var gap = S/2
+    var x1 = (start[0]*S) + gap
+    var x2 =   (end[0]*S) + gap
+    var y1 = (start[1]*S) + gap
+    var y2 =   (end[1]*S) + gap
+    var line = Line(x1:x1,y1:y1,x2:x2,y2:y2, color:GREEN, lineWidth:5)
+    screen.shapes.push_end(line)
+    screen.redraw()
+}
+
+
+fun randDFS(pos) {
+    depth = depth + 1
+    //print("depth = ", depth)
+    markVisited(pos)
+    var next := randomUnvisitedNeighbor(pos)
+    while (true) {
+        count += 1
+        if count > MAX_CYCLES return 0
+        if (next == [-1,-1]) {
+            //print("backing up")
+            depth = depth - 1
+            return 0
+        }
+        connectCells(pos,next)
+        redraw()
+        randDFS(next)
+        next := randomUnvisitedNeighbor(pos)
+    }
+    depth = depth - 1
+}
+
+fun markVisited(pos) {
+    grid[pos] = 1
+}
+
+// make list of directions
+// pop one off
+// if valid return it
+// else pop another
+// if none left return null
+
+fun is_valid_index(pos) {
+    //print("is valid", pos, W, H)
+    if pos[0] < 0 return false
+    if pos[1] < 0 return false
+    if pos[0] >= W return false
+    if pos[1] >= H return false
+    return true
+}
+
+fun randomUnvisitedNeighbor(pos) {
+    var directions = [ [0,-1],
+                       [1, 0],
+                       [0, 1],
+                      [-1, 0]]
+    directions = directions.shuffle()
+    while(directions.length > 0) {
+        var dir = directions.pop_end()
+        var pos2 = pos + dir
+        //print('checking',pos2.toJSFlatArray())
+        if(is_valid_index(pos2)) {
+            if(grid[pos2] == 0) {
+                return pos2
+            }
+        }
+    }
+    return [-1,-1]
+}
 
 @type('start',setup)
 fun setup() {
-    var grid = MDArray([20,20])
+    grid = MDArray([W,H])
     grid.fill(0)
-    pos = [randi(0,20), randi(0,20)]
-
-    directions = reshape([ 0,-1,
-                           1, 0,
-                           0, 1,
-                          -1, 0], [2,4]) //directions up, right, down, left
-
-    trail = []
-    while(true) {
-        print("at point",pos)
-        grid[pos] += 1
-        trail.push(pos)
-
-        pos2 = pos
-        dir = directions[randi(4),?]
-        print("direction",dir)
-        pos += dir
-        var pos2 = pos
-        if(pos2[0] <  0)  pos = trail.pop()
-        if(pos2[1] <  0)  pos = trail.pop()
-        if(pos2[0] >= 20) pos = trail.pop()
-        if(pos2[1] >= 20) pos = trail.pop()
-        pos = pos2
-        //how do we handle when all directions are invalid? we have to back up further?
-        redraw()
-        wait(1)
-    }
+    var pos = [randi(W), randi(H)]
+    randDFS(pos)
 }
 
 fun redraw() {
-    let PALETTE = range(0,1,0.01).map(@v => Color(r:v,g:v,b:v))
-    grid.each(@(v,x,y) => {canvas.setPixel(x,y,PALETTE[v])})
+    //let PALETTE = range(0,1,0.01).map(@v => Color(r:v,g:v,b:v))
+    screen.redraw()
+//    grid.each(@(v,x,y) => {
+//        if (v > 0) {
+//            canvas.setPixel([x,y],RED)
+//        }
+//    })
 }
