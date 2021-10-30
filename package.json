@@ -16,6 +16,7 @@
     "pygamer-test": "node src/build.js --src demos/pygamer/snake.art --target py",
     "pygamer-live": "node src/build.js --src demos/pygamer/snake.art --target py --outdir /Volumes/CIRCUITPY --outfile code.py",
     "canvas-picross": "node src/build.js --src demos/canvas/picross.art --target js --browser",
+    "canvas-maze": "node src/build.js --src demos/canvas/mazegen.art --target js --browser",
     "canvas-mand": "node src/build.js --src demos/canvas/mand.art --target js --browser"
   },
   "author": "",

@@ -20,7 +20,10 @@ export const AST_TYPES = {
     fundef: 'fundef',
     pipeline_operator: '>>',
     lambda: 'lambda',
-    while: 'while-loop'
+    while: 'while-loop',
+    literal: 'literal',
+    integer: 'integer',
+    identifier: 'identifier'
 }
 export const FUN_CALL_TYPES = {
     positional: 'positional',

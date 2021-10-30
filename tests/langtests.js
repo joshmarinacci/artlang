@@ -182,6 +182,12 @@ async function unit_tests() {
             var pos = [2,2]
             return l2[pos]
         }`,88)
+
+        await test_js(scope, `{
+            var ar = [0,0,0]
+            ar[0] += 1
+            return ar[0]
+        }`,1)
     }
     // conditionals
     {

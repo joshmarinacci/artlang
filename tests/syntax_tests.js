@@ -1,5 +1,6 @@
-import {eval_ast, make_grammar_semantics} from '../src/grammar.js'
+import {AST_TYPES, eval_ast, make_grammar_semantics} from '../src/grammar.js'
 import {checkEqual, test_js} from '../src/util.js'
+import {ast_preprocess} from '../src/generate_js.js'
 
 async function syntax_tests() {
     const [grammar, semantics] = await make_grammar_semantics()
@@ -180,9 +181,112 @@ async function simple_math_tests() {
 
 }
 
+async function parse_tree_tests() {
+    const [grammar, semantics] = await make_grammar_semantics()
+    function test_parse(code, ans) {
+        // console.log(`parsing: "${code}"`)
+        let result = grammar.match(code,'Exp')
+        if(!result.succeeded()) throw new Error(`failed parsing ${code} ${result}`)
+        let ast = semantics(result).ast()
+        ast = ast_preprocess(ast)
+
+        function dump(ast) {
+            return JSON.stringify(ast,null,'   ')
+        }
+
+        console.log('result is',dump(ast))
+        console.log("ans is",dump(ans))
+        checkEqual(ast,ans)
+    }
+    test_parse('5',{type:AST_TYPES.literal, kind:AST_TYPES.integer, value:5})
+    test_parse('bar = foo+5',{
+        type:AST_TYPES.assignment,
+        name:{type:AST_TYPES.identifier, name:'bar'},
+        expression: {
+            type: AST_TYPES.binexp,
+            op:"+",
+            exp1:{type: AST_TYPES.identifier, name: 'foo'},
+            exp2:{type: AST_TYPES.literal, kind:AST_TYPES.integer, value:5}
+        }
+    })
+    test_parse('bar += 5',{
+        type:AST_TYPES.assignment,
+        name:{type:AST_TYPES.identifier, name:'bar'},
+        expression: {
+            type: AST_TYPES.binexp,
+            op:"+",
+            exp1:{type: AST_TYPES.identifier, name: 'bar'},
+            exp2:{type: AST_TYPES.literal, kind:AST_TYPES.integer, value:5}
+        }
+    })
+    test_parse('foo[0]',{
+        type:AST_TYPES.array_access,
+        name: {type:AST_TYPES.identifier, name:'foo'},
+        args:[{type:AST_TYPES.literal, kind:AST_TYPES.integer, value:0}]
+    })
+    test_parse('bar = foo[0]',{
+        type:AST_TYPES.assignment,
+        name:{type:AST_TYPES.identifier, name:'bar'},
+        expression: {
+            type: AST_TYPES.array_access,
+            name: {type: AST_TYPES.identifier, name: 'foo'},
+            args: [{type: AST_TYPES.literal, kind: AST_TYPES.integer, value: 0}]
+        }
+    })
+    test_parse('foo[0] = bar',{
+        type:AST_TYPES.array_assignment,
+        array:{
+            type:AST_TYPES.array_set_access,
+            name:{type:AST_TYPES.identifier, name:'foo'},
+            args:[{ type:AST_TYPES.literal, kind:AST_TYPES.integer, value:0 }],
+        },
+        expression: {type: AST_TYPES.identifier, name: 'bar'}
+    })
+
+
+    test_parse(`foo[0] := foo[0] + 1`,{
+        type:AST_TYPES.array_assignment,
+        array:{
+            type:AST_TYPES.array_set_access,
+            name:{type:AST_TYPES.identifier, name:'foo'},
+            args:[{ type:AST_TYPES.literal, kind:AST_TYPES.integer, value:0 }],
+        },
+        expression: {
+            type: AST_TYPES.binexp,
+            op:"+",
+            exp1: {
+                type: AST_TYPES.array_access,
+                name: {type: AST_TYPES.identifier, name: 'foo'},
+                args: [{type: AST_TYPES.literal, kind: AST_TYPES.integer, value: 0}],
+            },
+            exp2:{type: AST_TYPES.literal, kind:AST_TYPES.integer, value:1},
+        }
+    })
+
+    test_parse(`foo[0] += 1`,{
+        type:AST_TYPES.array_assignment,
+        array:{
+            type:AST_TYPES.array_set_access,
+            name:{type:AST_TYPES.identifier, name:'foo'},
+            args:[{ type:AST_TYPES.literal, kind:AST_TYPES.integer, value:0 }],
+        },
+        expression: {
+            type: AST_TYPES.binexp,
+            op:"+",
+            exp1: {
+                type: AST_TYPES.array_access,
+                name: {type: AST_TYPES.identifier, name: 'foo'},
+                args: [{type: AST_TYPES.literal, kind: AST_TYPES.integer, value: 0}],
+            },
+            exp2:{type: AST_TYPES.literal, kind:AST_TYPES.integer, value:1},
+        }
+    })
+}
+
 async function all_tests() {
     await syntax_tests()
     await simple_math_tests()
+    await parse_tree_tests()
 }
 
 all_tests().then(()=>console.log("all tests pass"))

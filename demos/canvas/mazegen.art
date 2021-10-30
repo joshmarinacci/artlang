@@ -1,6 +1,5 @@
-
 @board("canvas")
-var screen = new KCanvas(0,0,20,20, scale:10)
+var screen = new KCanvas(w:20, h:20, scale:10)
 
 @type('start',setup)
 fun setup() {
@@ -8,7 +7,10 @@ fun setup() {
     grid.fill(0)
     pos = [randi(0,20), randi(0,20)]
 
-    directions = reshape([ 0,-1,  1,0, 0,1, -1,0], [4,2]) //directions up, right, down, left
+    directions = reshape([ 0,-1,
+                           1, 0,
+                           0, 1,
+                          -1, 0], [2,4]) //directions up, right, down, left
 
     trail = []
     while(true) {
@@ -34,5 +36,5 @@ fun setup() {
 
 fun redraw() {
     let PALETTE = range(0,1,0.01).map(@v => Color(r:v,g:v,b:v))
-    grid.every(@(v,x,y) => canvas.setPixel(x,y,PALETTE[v])
+    grid.each(@(v,x,y) => {canvas.setPixel(x,y,PALETTE[v])})
 }

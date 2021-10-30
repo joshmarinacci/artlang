@@ -104,11 +104,32 @@ export function ast_preprocess(ast) {
             // console.log('new ast is',ast)
         }
         if(ASSIGN_OPS[ast.op]) {
-            // console.log("rewriting assignments")
-            ast = {
-                type:'assignment',
-                name: ast.exp1,
-                expression: { type:'binexp', op:ASSIGN_OPS[ast.op], exp1: ast.exp1, exp2: ast.exp2  }
+            if(ast.exp1.type === AST_TYPES.array_access) {
+                ast = {
+                    type:AST_TYPES.array_assignment,
+                    array:{
+                        type:AST_TYPES.array_set_access,
+                        name:{type:AST_TYPES.identifier, name:ast.exp1.name.name},
+                        args:[{ type:AST_TYPES.literal, kind:AST_TYPES.integer, value:0 }],
+                    },
+                    expression: {
+                        type: AST_TYPES.binexp,
+                        op: ASSIGN_OPS[ast.op],
+                        exp1: ast.exp1,
+                        exp2: ast.exp2
+                    }
+                }
+            } else {
+                ast = {
+                    type: AST_TYPES.assignment,
+                    name: ast.exp1,
+                    expression: {
+                        type: AST_TYPES.binexp,
+                        op: ASSIGN_OPS[ast.op],
+                        exp1: ast.exp1,
+                        exp2: ast.exp2
+                    }
+                }
             }
         }
     }
@@ -252,7 +273,7 @@ export function ast_to_js(ast) {
     if (ast.type === AST_TYPES.while) {
         return [
             `while(${ast_to_js(ast.condition)}) {`,
-                    ast_to_js(ast.block),
+                    ast_to_js(ast.block).join("\n"),
             `}`,
         ]
     }
