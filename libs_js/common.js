@@ -220,6 +220,11 @@ class MDView {
             let i = this.sliceshape[0]
             return this.array.get2(i,n)
         }
+        if(this.sliceshape[0]=== WILDCARD && this.sliceshape[1] !== WILDCARD) {
+            let i = this.sliceshape[1]
+            return this.array.get2(n,i)
+        }
+        throw new Error(`unsupported sliceshape ${this.sliceshape}`)
     }
 
     set1(n,v) {
@@ -461,7 +466,10 @@ export class MDArray {
     }
 
     toJSFlatArray() {
-        return this.data.slice()
+        return this.data.map(v => {
+            if(is_mdarray(v)) return v.toJSFlatArray()
+            return v
+        })
     }
 
     get(i) { return this.get1(i)}
@@ -483,6 +491,7 @@ export class MDArray {
         return this._get_value(this.index(i))
     }
     set1(i, v) {
+        if(is_mdarray(i) && i.rank === 1) return this.set2(...i.data,v)
         return this._set_value(this.index(i),v)
     }
     get2(i,j) {
