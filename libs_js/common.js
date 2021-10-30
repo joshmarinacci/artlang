@@ -761,6 +761,10 @@ export class KRect {
 }
 export class KLine {
     constructor(args) {
+        this.x1 = 0
+        this.y1 = 0
+        this.x2 = 0
+        this.y2 = 0
         if(hasProp(args,'x')) this.x1 = args.x
         if(hasProp(args,'y')) this.y1 = args.y
         if(hasProp(args,'x1')) this.x1 = args.x1
@@ -771,6 +775,15 @@ export class KLine {
         if(hasProp(args,'lineWidth')) this.lineWidth = args.lineWidth
         this.color = RED
         if(hasProp(args,'color')) this.color = args.color
+
+        if(hasProp(args,'start')) {
+            this.x1 = args.start.get1(0)
+            this.y1 = args.start.get1(1)
+        }
+        if(hasProp(args,'end')) {
+            this.x2 = args.end.get1(0)
+            this.y2 = args.end.get1(1)
+        }
     }
 }
 export class KCircle{
