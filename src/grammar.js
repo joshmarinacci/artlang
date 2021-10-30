@@ -19,7 +19,8 @@ export const AST_TYPES = {
     body: 'body',
     fundef: 'fundef',
     pipeline_operator: '>>',
-    lambda: 'lambda'
+    lambda: 'lambda',
+    while: 'while-loop'
 }
 export const FUN_CALL_TYPES = {
     positional: 'positional',
@@ -114,8 +115,13 @@ export async function make_grammar_semantics() {
             type:"return",
             exp: exp.ast()
         }),
+        WhileLoop:(_w, exp, block) => ({
+            type:AST_TYPES.while,
+            condition:exp.ast(),
+            block:block.ast(),
+        }),
         BinExp: (exp1, op, exp2) => ({
-            type:"binexp",
+            type:AST_TYPES.binexp,
             op:op.sourceString,
             exp1:exp1.ast(),
             exp2:exp2.ast(),

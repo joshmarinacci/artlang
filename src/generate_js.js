@@ -89,6 +89,9 @@ export function ast_preprocess(ast) {
         ast.then_block = ast_preprocess(ast.then_block)
         if(ast.has_else) ast.else_block = ast_preprocess(ast.else_block)
     }
+    if(ast.type === AST_TYPES.while) {
+        ast.block = ast_preprocess(ast.block)
+    }
     if(ast.type === AST_TYPES.binexp) {
         if(ast.op === AST_TYPES.pipeline_operator) {
             // console.log('rewriting pipeline',ast, ast.exp2)
@@ -244,6 +247,13 @@ export function ast_to_js(ast) {
                 `${retval} = ${else_clause}`,
             '}',
             retval
+        ]
+    }
+    if (ast.type === AST_TYPES.while) {
+        return [
+            `while(${ast_to_js(ast.condition)}) {`,
+                    ast_to_js(ast.block),
+            `}`,
         ]
     }
     if (ast.type === 'return') return `return ${unreturn(ast_to_js(ast.exp))}`

@@ -264,7 +264,7 @@ async function demo_tests() {
 
 async function operation_tests() {
     // operation ordering
-    await test_js(scope, '4+4',13)
+    await test_js(scope, '4+4',8)
     // await test_js(scope, '(4+4) < 5',false)
     await test_js(scope, '4+5*6',34)
     // await test_js(scope, '5*6+4',34)
@@ -286,8 +286,15 @@ async function operation_tests() {
     // await test_js(scope,`2**(1/2)`,Math.sqrt(2))
 }
 
+async function loop_tests() {
+    await test_js(scope,`{ while(false) { } 5 }`,5)
+    await test_js(scope, `{ var go = true while(go) { go = false } 5}`,5)
+    await test_js(scope, `{ var count = 0 while(count < 5) { count += 1 } count }`,5)
+}
+
 async function all_tests() {
     await unit_tests()
+    await loop_tests()
     await operation_tests()
     // await demo_tests()
 }

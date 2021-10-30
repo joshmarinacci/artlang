@@ -72,7 +72,8 @@ keylang {
     return_op = "return" | "^"
     Return = return_op SoloExp
     Directive = "@" ident "(" ListOf<Exp,","> ")"
+    WhileLoop = "while" ParenExp Block
 
     Block = "{" Exp* "}"
-    Exp = Directive | FunctionDef | VarDec | CondExp | Assignment | SoloExp | Block
+    Exp = Directive | FunctionDef | WhileLoop | VarDec | CondExp | Assignment | SoloExp | Block
 }

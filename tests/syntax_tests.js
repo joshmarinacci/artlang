@@ -138,6 +138,10 @@ async function syntax_tests() {
     test_parse('var foo = @print(it)')
 
 
+    //while loop syntax
+    test_parse('while (true) { v = v+1 }')
+
+
     //pipeline syntax
     test_parse('bar(foo())')
     test_parse('foo() >> bar()')
