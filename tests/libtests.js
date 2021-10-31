@@ -11,7 +11,7 @@ import {
     MDArray_fromList,
     MDList,
     makeBinOp,
-    equal, WILDCARD, multiply, add, subtract, divide
+    equal, WILDCARD, multiply, add, subtract, divide, randi, randf, deal, choose
 } from '../libs_js/common.js'
 import {
     checkEqual,
@@ -308,6 +308,39 @@ async function mdarray_tests() {
     }
 */
 }
+async function random_tests() {
+    //random int
+    test(Number.isInteger(randi(5)), true)
+    //random float
+    test(Number.isInteger(randf(5)),false)
+    //random int in range
+    test(randi(5,10) >= 5, true)
+    //random float in range
+    test(randf(5,10) >= 5, true)
+    //deal 10 numbers in range 0 to 100
+    test(deal(10,100).length,10)
+    //verify they are lower than 100
+    test(deal(10,100).max() < 100,true)
+    //deal 10 numbers in range of 100,200
+    test(deal(10,100,200).length,10)
+    //verify they are between 100 and 200
+    test(deal(10,100,200).min() >= 100,true)
+    test(deal(10,100,200).max() <= 200,true)
+    //make 10 numbers with no range
+    test(deal(10).max() < 1,true)
+
+    //make 4x4 grid of random numbers
+    test(deal(16).reshape(MDList(4,4)).shape,[4,4])
+
+    //choose one element from a list
+    test(choose(range(0,10))>=0,true)
+    test(choose(range(0,10))<10,true)
+    test(choose(range(10,20))>=10,true)
+    test(choose(range(10,20))<20,true)
+
+    //shuffle list
+    test(range(3).shuffle().length,3)
+}
 
 async function md_image_tests() {
     log("running md_image_tests")
@@ -497,6 +530,7 @@ Promise.all([
     list_tests(),
     // math_tests(),
     mdarray_tests(),
+    random_tests(),
     // md_image_tests(),
     py_lib_tests(),
     py_array_tests()

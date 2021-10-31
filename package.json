@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node tests/syntax_tests && node tests/langtests.js && node tests/libtests.js && node tests/gentests.js",
     "test-lang": "node tests/langtests.js",
+    "test-libs": "node tests/libtests.js",
     "test-gen": "node tests/gentests.js",
     "test-syntax": "node tests/syntax_tests.js",
     "trellis-1": "node src/build.js --src demos/trellis/macropad.key --target py --outdir /Volumes/CIRCUITPY --outfile code.py",

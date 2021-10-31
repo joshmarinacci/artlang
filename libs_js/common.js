@@ -317,7 +317,7 @@ export class MDArray {
         let s2 = shape.data.reduce((acc,v)=>{return v*acc},1)
         if(s1 === s2) {
             let arr = new MDArray(shape)
-            arr.data = this.data
+            arr.data = this.data.slice()
             return arr
         }
     }
@@ -897,6 +897,15 @@ export function range(min,max,step) {
         arr.push(i)
     }
     return new MDList(...arr)
+}
+export function deal(N,min,max) {
+    if(is_mdarray(min)) return min.shuffle().take(N)
+    if(Number.isInteger(max)) return range(N).map(() => randi(min,max))
+    if(max && !Number.isNaN(max)) return range(N).map(() => randf(min,max))
+    if(Number.isInteger(min)) return range(N).map(() => randi(min))
+    if(min && !Number.isNaN(min)) return range(N).map(() => randf(min))
+    if(N && !min && !max) return range(N).map(()=>randf())
+    throw new Error(`can't run deal(${N},${min},${max}). min or max is bad`)
 }
 export function wait(time) {
     // console.log('waiting for time',time)
