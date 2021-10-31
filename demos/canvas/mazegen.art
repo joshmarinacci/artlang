@@ -1,53 +1,39 @@
 @board("canvas")
-var screen = new KSceneGraph(w:200, h:200, scale:4)
-var grid
+var W = 20 //width
+var H = 20 //height
+var S = 10 //scale
+var gap = S/2 // offset from the grid for drawing
+var NONE = [-1,-1] // marker for when we need to be done
 
 //directions up, right, down, left
 var directions = [ [0,-1],
                    [1, 0],
                    [0, 1],
                   [-1, 0]]
-var W = 20
-var H = 20
-var S = 10
-var gap = S/2
-var MAX_CYCLES = 1500
 
-var count = 0
+var screen = new KSceneGraph(w:W*S, h:H*S, scale:4)
+var grid = MDArray([W,H]) // make empty grid
+grid.fill(0)
 
-fun connectCells(start,end) {
-    screen.shapes.push_end(Line(start: (start*S) +gap, end: (end*S) + gap, color:GREEN,  lineWidth:5))
-    screen.redraw()
-}
-
-var NONE = [-1,-1]
 fun rand_search(pos) {
-    grid[pos] := 1
-    var next := find_adjacent(pos)
+    grid[pos] := 1  // mark cell as used
     while (true) {
-        count += 1
-        if count > MAX_CYCLES return NONE
-        if next == NONE return NONE
-        connectCells(pos,next)
+        //find valid and empty adjacent cell, or return
+        var cells = directions.shuffle()
+            .map(@dir => dir+pos)
+            .filter(@pos => grid.is_valid_index(pos))
+            .filter(@pos => grid[pos] == 0)
+        if cells.length < 1 return NONE
+        var next = cells.pop_end()
+        screen.shapes.push_end(Line(start: (pos*S) +gap, end: (next*S) + gap, color:GREEN,  lineWidth:5))
+        screen.redraw(0)
         rand_search(next)
-        next := find_adjacent(pos)
+        pos = next
     }
-}
-
-// find adjacent cell that is not off the grid and has a current value of 0
-fun find_adjacent(pos) {
-    var dirs4 = directions.shuffle()
-        .map(@dir => dir+pos)
-        .filter(@pos => grid.is_valid_index(pos))
-        .filter(@pos => grid[pos] == 0)
-    if dirs4.length > 0 return dirs4.pop_end()
-    return NONE
 }
 
 @type('start',setup)
 fun setup() {
-    grid = MDArray([W,H])
-    grid.fill(0)
     rand_search([randi(W), randi(H)])
 }
 
