@@ -10,25 +10,19 @@ var directions = [ [0,-1],
 var W = 20
 var H = 20
 var S = 10
+var gap = S/2
 var MAX_CYCLES = 1500
 
 var count = 0
 
 fun connectCells(start,end) {
-    var gap = S/2
-    var line = Line(
-        start: (start*S) +gap,
-        end:   (end*S)   + gap,
-        color:GREEN,
-        lineWidth:5)
-    screen.shapes.push_end(line)
+    screen.shapes.push_end(Line(start: (start*S) +gap, end: (end*S) + gap, color:GREEN,  lineWidth:5))
     screen.redraw()
 }
 
-
 var NONE = [-1,-1]
 fun rand_search(pos) {
-    grid[pos] = 1
+    grid[pos] := 1
     var next := find_adjacent(pos)
     while (true) {
         count += 1
@@ -40,25 +34,13 @@ fun rand_search(pos) {
     }
 }
 
-fun is_valid_index(pos) {
-    if pos[0] < 0 return false
-    if pos[1] < 0 return false
-    if pos[0] >= W return false
-    if pos[1] >= H return false
-    return true
-}
-
+// find adjacent cell that is not off the grid and has a current value of 0
 fun find_adjacent(pos) {
-    var dirs = directions.shuffle()
-    while(dirs.length > 0) {
-        var dir = dirs.pop_end()
-        var pos2 = pos + dir
-        if(is_valid_index(pos2)) {
-            if(grid[pos2] == 0) {
-                return pos2
-            }
-        }
-    }
+    var dirs4 = directions.shuffle()
+        .map(@dir => dir+pos)
+        .filter(@pos => grid.is_valid_index(pos))
+        .filter(@pos => grid[pos] == 0)
+    if dirs4.length > 0 return dirs4.pop_end()
     return NONE
 }
 

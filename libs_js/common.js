@@ -485,6 +485,23 @@ export class MDArray {
     }
 
     get(i) { return this.get1(i)}
+    is_valid_index(i,j,k) {
+        if(typeof i === 'undefined') return false
+        if(this.rank === 1) {
+            return i >= 0 && i < this.shape[0]
+        }
+        if(this.rank === 2) {
+            if(is_mdarray(i)) {
+                let n = i
+                i = n.get(0)
+                j = n.get(1)
+            }
+            return (
+                i >= 0 && i < this.shape[0]
+                && j >= 0 && j < this.shape[1]
+            )
+        }
+    }
     index(i,j,k) {
         if(this.rank === 1) return i
         if(this.rank === 2) return i + j*this.shape[0]

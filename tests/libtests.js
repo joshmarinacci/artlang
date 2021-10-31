@@ -53,6 +53,13 @@ async function list_tests() {
     test(add(5,new MDList(0,1,2)), new MDList(5,6,7))
     test(add(new MDList(0,1,2),5), new MDList(5,6,7))
 
+    //test valid array indexes
+    test(new MDList(0,1,2).is_valid_index(0),true)
+    test(new MDList(0,1,2).is_valid_index(2),true)
+    test(new MDList(0,1,2).is_valid_index(3),false)
+    test(new MDList(0,1,2,3).reshape(new MDList(2,2)).is_valid_index(0,0),true)
+    test(new MDList(0,1,2,3).reshape(new MDList(2,2)).is_valid_index(3,3),false)
+
     //fill()
     test(new MDArray([3]).fill(88), new MDList(88,88,88))
 
