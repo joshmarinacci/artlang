@@ -40,7 +40,7 @@ async function syntax_tests() {
     test_parse('5 mod 6')
     test_parse('not true')
     test_parse('a + b')
-    test_parse('a += b ')
+    // test_parse('a += b ')
 
     //function call with positional arguments
     test_parse('foo()')
@@ -283,10 +283,57 @@ async function parse_tree_tests() {
     })
 }
 
+async function precedence_tests() {
+    const [grammar, semantics] = await make_grammar_semantics()
+    function test_parse(code, ans) {
+        console.log(`parsing: "${code}"`)
+        let result = grammar.match(code,'Exp')
+        if(!result.succeeded()) throw new Error(`failed parsing ${code} ${result}`)
+        let ast = semantics(result).ast()
+        ast = ast_preprocess(ast)
+
+        function dump(ast) {
+            return JSON.stringify(ast,null,'   ')
+        }
+
+        console.log('result is',dump(ast))
+        console.log("ans is",dump(ans))
+        checkEqual(ast,ans)
+    }
+
+    test_parse(`4+5`,{
+        type:AST_TYPES.binexp,
+        op:"+",
+        exp1:{ type:AST_TYPES.literal, kind:AST_TYPES.integer, value:4 },
+        exp2:{ type:AST_TYPES.literal, kind:AST_TYPES.integer, value:5 },
+    })
+    test_parse(`4*5`,{
+        type:AST_TYPES.binexp,
+        op:"*",
+        exp1:{ type:AST_TYPES.literal, kind:AST_TYPES.integer, value:4 },
+        exp2:{ type:AST_TYPES.literal, kind:AST_TYPES.integer, value:5 },
+    })
+    test_parse(`4*5+6`,{
+        type:AST_TYPES.binexp,
+        op:"+",
+        exp1: {
+            type: AST_TYPES.binexp,
+            op: "*",
+            exp1: {type: AST_TYPES.literal, kind: AST_TYPES.integer, value: 4},
+            exp2: {type: AST_TYPES.literal, kind: AST_TYPES.integer, value: 5},
+        },
+        exp2:{ type:AST_TYPES.literal, kind:AST_TYPES.integer, value:6 },
+    })
+    // test_parse(`4+5*6`,{
+    //
+    // })
+}
+
 async function all_tests() {
     await syntax_tests()
     await simple_math_tests()
     await parse_tree_tests()
+    // await precedence_tests()
 }
 
 all_tests().then(()=>console.log("all tests pass"))

@@ -123,6 +123,24 @@ export async function make_grammar_semantics() {
             condition:exp.ast(),
             block:block.ast(),
         }),
+        // AddExp_add:(exp1, op, exp2) => ({
+        //     type:AST_TYPES.binexp,
+        //     op:op.sourceString,
+        //     exp1:exp1.ast(),
+        //     exp2:exp2.ast(),
+        // }),
+        // MulExp_mul:(exp1, op, exp2) => ({
+        //     type:AST_TYPES.binexp,
+        //     op:op.sourceString,
+        //     exp1:exp1.ast(),
+        //     exp2:exp2.ast(),
+        // }),
+        // OtherExp_binop:(exp1, op, exp2) => ({
+        //     type:AST_TYPES.binexp,
+        //     op:op.sourceString,
+        //     exp1:exp1.ast(),
+        //     exp2:exp2.ast(),
+        // }),
         BinExp: (exp1, op, exp2) => ({
             type:AST_TYPES.binexp,
             op:op.sourceString,
