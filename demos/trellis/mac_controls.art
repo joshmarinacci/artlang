@@ -30,6 +30,9 @@ var mouse_click_slow_go = false
 var mouse_click_fast_go = false
 
 
+var WEBSTORM_TAB_RUN = [7,2]
+
+
 
 var TAN = KeyColor(r:1.0, g:0.8, b:0.1)
 var AQUA = KeyColor(r:0, g:1.0, b:0.7)
@@ -51,6 +54,7 @@ fun setup() {
     VOLUMES.each(@(pos,i) => { device.leds.set(pos,AQUA)    })
     device.leds.set(VOLUME_MUTE, KeyColor(r:0.0, g:0.4, b:1.0))
     device.leds.set(WEBSTORM_RUN, RED)
+    device.leds.set(WEBSTORM_TAB_RUN, RED)
     device.leds.set(MOUSE_CLICK_SLOW, MAGENTA)
     device.leds.set(MOUSE_CLICK_FAST, MAGENTA)
 }
@@ -98,6 +102,13 @@ fun loop() {
 
         if is_true(pos == PLAYPAUSE) device.cc.send(ConsumerControlCode.PLAY_PAUSE)
         if is_true(pos == WEBSTORM_RUN) device.keyboard.send(Keycode.SHIFT, Keycode.OPTION, Keycode.R)
+        if (is_true(pos == WEBSTORM_TAB_RUN)) {
+            device.keyboard.send(Keycode.SHIFT, Keycode.OPTION, Keycode.R)
+            wait(1.5)
+            device.keyboard.send(Keycode.COMMAND, Keycode.TAB)
+            wait(1.0)
+            device.keyboard.send(Keycode.COMMAND, Keycode.R)
+        }
         if (is_true(pos == MOUSE_CLICK_SLOW)) {
             mouse_click_slow_go = not mouse_click_slow_go
             device.leds.set(MOUSE_CLICK_SLOW, MAGENTA)
