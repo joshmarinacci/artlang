@@ -16,14 +16,24 @@ var UR = [1,2]
 var LR = [1,3]
 var QUADS = [UL, LL, UR, LR]
 
-var PLAYPAUSE   = [7,0]
+var PLAYPAUSE   = [4,3]
 var VOLUME_DOWN = [5,3]
 var VOLUME_UP   = [7,3]
 var VOLUME_MUTE = [6,3]
 var VOLUMES =[ VOLUME_DOWN, VOLUME_MUTE, VOLUME_UP]
+var WEBSTORM_RUN = [6,2]
+
+
+var MOUSE_CLICK_SLOW = [6,0]
+var MOUSE_CLICK_FAST = [7,0]
+var mouse_click_slow_go = false
+var mouse_click_fast_go = false
+
+
 
 var TAN = KeyColor(r:1.0, g:0.8, b:0.1)
 var AQUA = KeyColor(r:0, g:1.0, b:0.7)
+var MAGENTA = KeyColor(r:0.6, g:0.1, b:1.0)
 
 @type("start",setup)
 fun setup() {
@@ -40,8 +50,31 @@ fun setup() {
     device.leds.set(PLAYPAUSE, RED)
     VOLUMES.each(@(pos,i) => { device.leds.set(pos,AQUA)    })
     device.leds.set(VOLUME_MUTE, KeyColor(r:0.0, g:0.4, b:1.0))
+    device.leds.set(WEBSTORM_RUN, RED)
+    device.leds.set(MOUSE_CLICK_SLOW, MAGENTA)
+    device.leds.set(MOUSE_CLICK_FAST, MAGENTA)
+}
 
 
+
+@type("loop",mouse_click_loop)
+fun mouse_click_loop() {
+    if(mouse_click_slow_go) {
+        device.leds.set(MOUSE_CLICK_SLOW, TAN)
+        device.mouse.press(Mouse.LEFT_BUTTON)
+        wait(0.5)
+        device.mouse.release_all()
+        device.leds.set(MOUSE_CLICK_SLOW, MAGENTA)
+        wait(0.2)
+    }
+    if(mouse_click_fast_go) {
+        device.leds.set(MOUSE_CLICK_FAST, TAN)
+        device.mouse.press(Mouse.LEFT_BUTTON)
+        wait(0.05)
+        device.mouse.release_all()
+        device.leds.set(MOUSE_CLICK_FAST, MAGENTA)
+        wait(0.05)
+    }
 }
 
 @type("loop",loop)
@@ -64,6 +97,14 @@ fun loop() {
         if is_true(pos == VOLUME_DOWN)  device.cc.send(ConsumerControlCode.VOLUME_DECREMENT)
 
         if is_true(pos == PLAYPAUSE) device.cc.send(ConsumerControlCode.PLAY_PAUSE)
-
+        if is_true(pos == WEBSTORM_RUN) device.keyboard.send(Keycode.SHIFT, Keycode.OPTION, Keycode.R)
+        if (is_true(pos == MOUSE_CLICK_SLOW)) {
+            mouse_click_slow_go = not mouse_click_slow_go
+            device.leds.set(MOUSE_CLICK_SLOW, MAGENTA)
+        }
+        if (is_true(pos == MOUSE_CLICK_FAST)) {
+            mouse_click_fast_go = not mouse_click_fast_go
+            device.leds.set(MOUSE_CLICK_FAST, MAGENTA)
+        }
     })
 }
