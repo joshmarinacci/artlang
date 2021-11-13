@@ -18,18 +18,10 @@ class Logger {
     }
 }
 let l = new Logger()
-export class KCanvas extends KRect {
+export class BaseCanvas extends KRect {
     constructor(opts) {
         super(opts)
         this.scale = opts.scale || 1
-        if(isBrowser()) {
-            this.canvas = document.createElement('canvas')
-            this.canvas.width = this.w*this.scale
-            this.canvas.height = this.h*this.scale
-            this.canvas.style.width = `${this.w*this.scale/window.devicePixelRatio}px`
-            this.canvas.style.height = `${this.h*this.scale/window.devicePixelRatio}px`
-            document.body.append(this.canvas)
-        }
         this.globalAlpha = 1.0
     }
     get width() {
@@ -232,6 +224,19 @@ export class KCanvas extends KRect {
         ctx.scale(this.scale,this.scale)
         param(ctx)
         ctx.restore()
+    }
+}
+export class KCanvas extends BaseCanvas {
+    constructor(opts) {
+        super(opts)
+        if (isBrowser()) {
+            this.canvas = document.createElement('canvas')
+            this.canvas.width = this.w * this.scale
+            this.canvas.height = this.h * this.scale
+            this.canvas.style.width = `${this.w * this.scale / window.devicePixelRatio}px`
+            this.canvas.style.height = `${this.h * this.scale / window.devicePixelRatio}px`
+            document.body.append(this.canvas)
+        }
     }
 }
 

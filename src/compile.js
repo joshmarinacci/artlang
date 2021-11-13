@@ -14,7 +14,7 @@ function strip_directives(ast) {
     return directives
 }
 
-async function compile_js(src_file,out_dir) {
+async function compile_js(src_file,out_dir, opts) {
     let src = await file_to_string(src_file)
     src = "\n{\n" + src + "\n}\n" //add the implicit block braces
     let generated_src_prefix = calc_basename(src_file)
@@ -65,6 +65,7 @@ async function compile_js(src_file,out_dir) {
         }
     })
 
+    if(opts && opts.board) board = BOARDS[opts.board]
     console.log("using board",board)
     let generated_src = ast_to_js(ast).join("\n")
 
@@ -93,6 +94,7 @@ async function compile_js(src_file,out_dir) {
             do_cycle()
         `)
     }
+    if(board.javascript.after) after.push(board.javascript.after)
     generated_src = before.join("\n") + generated_src + after.join("\n")
     // console.log('final',generated_src)
     let outfile = path.join(out_dir, generated_src_out_name)
@@ -129,6 +131,7 @@ async function web_template(src, out_dir, board) {
 async function copy_js_libs(out_dir) {
     await copy_file("./libs_js/common.js",path.join(out_dir,'common.js'))
     await copy_file("./libs_js/canvas.js",path.join(out_dir,'canvas.js'))
+    await copy_file("./libs_js/pcanvas.js",path.join(out_dir,'pcanvas.js'))
     await copy_file("./libs_js/matrixportal.js",path.join(out_dir,'matrixportal.js'))
     await copy_file("./libs_js/trellis.js",path.join(out_dir,'trellis.js'))
     await copy_file("./libs_js/thumby.js",path.join(out_dir,'thumby.js'))
@@ -296,10 +299,10 @@ export async function build(opts) {
     await prep(opts.outdir)
     if(opts.target === 'js') {
         if (opts.browser) await start_webserver(opts.src, opts.outdir)
-        await compile_js(opts.src, opts.outdir)
+        await compile_js(opts.src, opts.outdir, opts)
         await copy_js_libs(opts.outdir)
         if (opts.browser) await start_filewatcher(opts.src, opts.outdir,async ()=>{
-            await compile_js(opts.src,opts.outdir)
+            await compile_js(opts.src,opts.outdir,opts)
         })
     }
     if(opts.target === 'py') {

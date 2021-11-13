@@ -8,6 +8,21 @@ export const BOARDS = {
         },
     },
 
+    "nodejs":{
+        name:"nodejs",
+        javascript:{
+            before:`import {PCanvas as KCanvas} from './pcanvas.js'`,
+            standard_cycle:false,
+            after:`
+            tm.start_only()
+            let pth = "./output.png"
+            console.log("writing out",pth)
+            screen.write_to_png(pth).then(()=>console.log("finished"))
+            `,
+            template_path: 'templates/node_template.js'
+        }
+    },
+
 
     "matrix":{
         name:"matrix",

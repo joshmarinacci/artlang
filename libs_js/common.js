@@ -1124,4 +1124,7 @@ export class TaskManager {
         this.tasks.filter(t => t.type === 'loop').forEach(this._run_task)
         this.tasks.filter(t => t.type === 'mode').forEach(this._run_task)
     }
+    start_only() {
+        this.tasks.filter(t => t.type === 'start').forEach(this._run_task)
+    }
 }

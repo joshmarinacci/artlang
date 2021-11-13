@@ -19,7 +19,7 @@
     "canvas-picross": "node src/build.js --src demos/canvas/picross.art --target js --browser",
     "canvas-maze": "node src/build.js --src demos/canvas/mazegen.art --target js --browser",
     "canvas-mand": "node src/build.js --src demos/canvas/mand.art --target js --browser",
-    "canvas-lines": "node src/build.js --src demos/canvas/lines01.key --target js-headless"
+    "canvas-lines-png": "node src/render_to_png.js demos/canvas/lines01.key output.png"
   },
   "author": "",
   "license": "ISC",
@@ -33,6 +33,7 @@
     "@rollup/plugin-node-resolve": "^13.0.5",
     "chalk": "^4.1.2",
     "express": "^4.17.1",
+    "pureimage": "^0.3.6",
     "rollup": "^2.58.0"
   }
 }
